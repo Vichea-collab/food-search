@@ -1,0 +1,71 @@
+/* Base elements and small shared pieces (icons, avatar, bot status). */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 var(--t-base)/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+:lang(km) { line-height: 1.75; }      /* Khmer stacks vowels and subscripts: it needs more leading */
+
+button, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--link, var(--tarp)); }
+:focus-visible { outline: 2px solid var(--tarp); outline-offset: 2px; border-radius: 8px; }
+[hidden] { display: none !important; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.ico {
+  width: 20px; height: 20px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---------- avatar ---------- */
+
+/* the bot's profile picture keeps its own colours in every theme, like a photo would */
+.avatar { display: block; flex: none; border-radius: 50%; overflow: hidden; }
+.avatar svg { display: block; width: 100%; height: 100%; }
+.avatar.sm { width: 30px; height: 30px; }
+.avatar.md { width: 40px; height: 40px; }
+.avatar.xl { width: 88px; height: 88px; }
+
+.status { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--t-sm); color: var(--muted); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--open); }
+.status.busy { color: var(--tarp); }
+.status.busy .status-dot { background: var(--tarp); animation: pulse 1.2s infinite ease-in-out; }
+@keyframes pulse { 50% { opacity: .3; } }
+
+
+/* round icon button (theme, language, close) */
+.icon-btn {
+  display: inline-grid; grid-auto-flow: column; align-items: center; justify-content: center; gap: 6px;
+  min-width: 40px; height: 40px; padding: 0 10px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); font-size: var(--t-sm); font-weight: 500;
+}
+.icon-btn:hover { border-color: var(--tarp); }
+.icon-btn.ghost { border-color: transparent; background: none; }
+.icon-btn[aria-pressed="true"] { background: var(--tarp); border-color: var(--tarp); color: var(--tarp-ink); }
+.icon-btn .ico { width: 18px; height: 18px; }
+
+/* a styled <select> (AI model menu) */
+.select-wrap { position: relative; }
+.select-wrap select {
+  width: 100%; min-height: 42px; padding: 0 36px 0 12px; appearance: none;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--paper); color: var(--ink);
+  font: inherit; font-size: var(--t-sm); font-weight: 500;
+}
+.select-wrap::after {   /* chevron */
+  content: ""; position: absolute; right: 14px; top: 50%; width: 7px; height: 7px; margin-top: -5px;
+  border-right: 1.8px solid var(--muted); border-bottom: 1.8px solid var(--muted); transform: rotate(45deg); pointer-events: none;
+}
+.select-wrap select:focus-visible { outline: 2px solid var(--tarp); outline-offset: 1px; }

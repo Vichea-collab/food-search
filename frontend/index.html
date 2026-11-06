@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#eef1f5" />
+    <meta name="description" content="Chat with a food guide for Phnom Penh. Ask for a dish, a place or a time, in English or Khmer." />
+    <title>Klean Nham (ឃ្លានញ៉ាំ) – Phnom Penh food guide</title>
+    <link rel="icon" type="image/svg+xml" href="/bot-avatar.svg" />
+    <link rel="apple-touch-icon" href="/bot-avatar.png" />
+    <script>
+      /* Theme before first paint (no flash). "auto" follows the system, or the Telegram theme inside Telegram. */
+      (function () {
+        var pref = "auto";
+        try { pref = localStorage.getItem("theme") || "auto"; } catch (e) {}
+        var inTg = /tgWebAppData=/.test(location.hash) || /tgWebAppData=/.test(sessionStorage.getItem("__telegram__initParams") || "");
+        var dark = pref === "dark" || (pref === "auto" && !inTg && matchMedia("(prefers-color-scheme: dark)").matches);
+        if (pref !== "auto" || !inTg) document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
+    <!-- Telegram Mini App API: harmless in a normal browser (initData is empty there) -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Moul&display=swap" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

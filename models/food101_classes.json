@@ -1,0 +1,406 @@
+[
+ {
+  "id": "apple_pie",
+  "name": "Apple pie"
+ },
+ {
+  "id": "baby_back_ribs",
+  "name": "Baby back ribs"
+ },
+ {
+  "id": "baklava",
+  "name": "Baklava"
+ },
+ {
+  "id": "beef_carpaccio",
+  "name": "Beef carpaccio"
+ },
+ {
+  "id": "beef_tartare",
+  "name": "Beef tartare"
+ },
+ {
+  "id": "beet_salad",
+  "name": "Beet salad"
+ },
+ {
+  "id": "beignets",
+  "name": "Beignets"
+ },
+ {
+  "id": "bibimbap",
+  "name": "Bibimbap"
+ },
+ {
+  "id": "bread_pudding",
+  "name": "Bread pudding"
+ },
+ {
+  "id": "breakfast_burrito",
+  "name": "Breakfast burrito"
+ },
+ {
+  "id": "bruschetta",
+  "name": "Bruschetta"
+ },
+ {
+  "id": "caesar_salad",
+  "name": "Caesar salad"
+ },
+ {
+  "id": "cannoli",
+  "name": "Cannoli"
+ },
+ {
+  "id": "caprese_salad",
+  "name": "Caprese salad"
+ },
+ {
+  "id": "carrot_cake",
+  "name": "Carrot cake"
+ },
+ {
+  "id": "ceviche",
+  "name": "Ceviche"
+ },
+ {
+  "id": "cheese_plate",
+  "name": "Cheese plate"
+ },
+ {
+  "id": "cheesecake",
+  "name": "Cheesecake"
+ },
+ {
+  "id": "chicken_curry",
+  "name": "Chicken curry"
+ },
+ {
+  "id": "chicken_quesadilla",
+  "name": "Chicken quesadilla"
+ },
+ {
+  "id": "chicken_wings",
+  "name": "Chicken wings"
+ },
+ {
+  "id": "chocolate_cake",
+  "name": "Chocolate cake"
+ },
+ {
+  "id": "chocolate_mousse",
+  "name": "Chocolate mousse"
+ },
+ {
+  "id": "churros",
+  "name": "Churros"
+ },
+ {
+  "id": "clam_chowder",
+  "name": "Clam chowder"
+ },
+ {
+  "id": "club_sandwich",
+  "name": "Club sandwich"
+ },
+ {
+  "id": "crab_cakes",
+  "name": "Crab cakes"
+ },
+ {
+  "id": "creme_brulee",
+  "name": "Crème brûlée"
+ },
+ {
+  "id": "croque_madame",
+  "name": "Croque madame"
+ },
+ {
+  "id": "cup_cakes",
+  "name": "Cup cakes"
+ },
+ {
+  "id": "deviled_eggs",
+  "name": "Deviled eggs"
+ },
+ {
+  "id": "donuts",
+  "name": "Donuts"
+ },
+ {
+  "id": "dumplings",
+  "name": "Dumplings"
+ },
+ {
+  "id": "edamame",
+  "name": "Edamame"
+ },
+ {
+  "id": "eggs_benedict",
+  "name": "Eggs Benedict"
+ },
+ {
+  "id": "escargots",
+  "name": "Escargots"
+ },
+ {
+  "id": "falafel",
+  "name": "Falafel"
+ },
+ {
+  "id": "filet_mignon",
+  "name": "Filet mignon"
+ },
+ {
+  "id": "fish_and_chips",
+  "name": "Fish and chips"
+ },
+ {
+  "id": "foie_gras",
+  "name": "Foie gras"
+ },
+ {
+  "id": "french_fries",
+  "name": "French fries"
+ },
+ {
+  "id": "french_onion_soup",
+  "name": "French onion soup"
+ },
+ {
+  "id": "french_toast",
+  "name": "French toast"
+ },
+ {
+  "id": "fried_calamari",
+  "name": "Fried calamari"
+ },
+ {
+  "id": "fried_rice",
+  "name": "Fried rice"
+ },
+ {
+  "id": "frozen_yogurt",
+  "name": "Frozen yogurt"
+ },
+ {
+  "id": "garlic_bread",
+  "name": "Garlic bread"
+ },
+ {
+  "id": "gnocchi",
+  "name": "Gnocchi"
+ },
+ {
+  "id": "greek_salad",
+  "name": "Greek salad"
+ },
+ {
+  "id": "grilled_cheese_sandwich",
+  "name": "Grilled cheese sandwich"
+ },
+ {
+  "id": "grilled_salmon",
+  "name": "Grilled salmon"
+ },
+ {
+  "id": "guacamole",
+  "name": "Guacamole"
+ },
+ {
+  "id": "gyoza",
+  "name": "Gyoza"
+ },
+ {
+  "id": "hamburger",
+  "name": "Hamburger"
+ },
+ {
+  "id": "hot_and_sour_soup",
+  "name": "Hot and sour soup"
+ },
+ {
+  "id": "hot_dog",
+  "name": "Hot dog"
+ },
+ {
+  "id": "huevos_rancheros",
+  "name": "Huevos rancheros"
+ },
+ {
+  "id": "hummus",
+  "name": "Hummus"
+ },
+ {
+  "id": "ice_cream",
+  "name": "Ice cream"
+ },
+ {
+  "id": "lasagna",
+  "name": "Lasagna"
+ },
+ {
+  "id": "lobster_bisque",
+  "name": "Lobster bisque"
+ },
+ {
+  "id": "lobster_roll_sandwich",
+  "name": "Lobster roll sandwich"
+ },
+ {
+  "id": "macaroni_and_cheese",
+  "name": "Macaroni and cheese"
+ },
+ {
+  "id": "macarons",
+  "name": "Macarons"
+ },
+ {
+  "id": "miso_soup",
+  "name": "Miso soup"
+ },
+ {
+  "id": "mussels",
+  "name": "Mussels"
+ },
+ {
+  "id": "nachos",
+  "name": "Nachos"
+ },
+ {
+  "id": "omelette",
+  "name": "Omelette"
+ },
+ {
+  "id": "onion_rings",
+  "name": "Onion rings"
+ },
+ {
+  "id": "oysters",
+  "name": "Oysters"
+ },
+ {
+  "id": "pad_thai",
+  "name": "Pad thai"
+ },
+ {
+  "id": "paella",
+  "name": "Paella"
+ },
+ {
+  "id": "pancakes",
+  "name": "Pancakes"
+ },
+ {
+  "id": "panna_cotta",
+  "name": "Panna cotta"
+ },
+ {
+  "id": "peking_duck",
+  "name": "Peking duck"
+ },
+ {
+  "id": "pho",
+  "name": "Pho"
+ },
+ {
+  "id": "pizza",
+  "name": "Pizza"
+ },
+ {
+  "id": "pork_chop",
+  "name": "Pork chop"
+ },
+ {
+  "id": "poutine",
+  "name": "Poutine"
+ },
+ {
+  "id": "prime_rib",
+  "name": "Prime rib"
+ },
+ {
+  "id": "pulled_pork_sandwich",
+  "name": "Pulled pork sandwich"
+ },
+ {
+  "id": "ramen",
+  "name": "Ramen"
+ },
+ {
+  "id": "ravioli",
+  "name": "Ravioli"
+ },
+ {
+  "id": "red_velvet_cake",
+  "name": "Red velvet cake"
+ },
+ {
+  "id": "risotto",
+  "name": "Risotto"
+ },
+ {
+  "id": "samosa",
+  "name": "Samosa"
+ },
+ {
+  "id": "sashimi",
+  "name": "Sashimi"
+ },
+ {
+  "id": "scallops",
+  "name": "Scallops"
+ },
+ {
+  "id": "seaweed_salad",
+  "name": "Seaweed salad"
+ },
+ {
+  "id": "shrimp_and_grits",
+  "name": "Shrimp and grits"
+ },
+ {
+  "id": "spaghetti_bolognese",
+  "name": "Spaghetti bolognese"
+ },
+ {
+  "id": "spaghetti_carbonara",
+  "name": "Spaghetti carbonara"
+ },
+ {
+  "id": "spring_rolls",
+  "name": "Spring rolls"
+ },
+ {
+  "id": "steak",
+  "name": "Steak"
+ },
+ {
+  "id": "strawberry_shortcake",
+  "name": "Strawberry shortcake"
+ },
+ {
+  "id": "sushi",
+  "name": "Sushi"
+ },
+ {
+  "id": "tacos",
+  "name": "Tacos"
+ },
+ {
+  "id": "takoyaki",
+  "name": "Takoyaki"
+ },
+ {
+  "id": "tiramisu",
+  "name": "Tiramisu"
+ },
+ {
+  "id": "tuna_tartare",
+  "name": "Tuna tartare"
+ },
+ {
+  "id": "waffles",
+  "name": "Waffles"
+ }
+]

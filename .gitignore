@@ -4,3 +4,8 @@ chroma_db/
 __pycache__/
 .ipynb_checkpoints/
 *.session
+export/
+export_backups/
+data/food101/
+food_classification_outputs.zip
+data/raw/foodcom/

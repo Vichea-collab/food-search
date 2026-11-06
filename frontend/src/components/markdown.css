@@ -1,0 +1,49 @@
+/* Tables in answers (comparisons): scroll sideways inside the bubble on a phone instead of widening the page. */
+.md-table {
+  overflow-x: auto;
+  margin: 2px -4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.md-table:last-child { margin-bottom: 0; }
+.md-table:focus-visible { outline: 2px solid var(--tarp); outline-offset: 2px; }
+.md-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+  line-height: 1.35;
+}
+.md-table th {
+  padding: 7px 10px;
+  text-align: left;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  background: var(--tarp-soft);
+}
+.md-table td {
+  padding: 7px 10px;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+  min-width: 5.5em;
+}
+.md-table .by-place td:nth-child(2) { font-weight: 600; min-width: 8em; }      /* the place name */
+.md-table .by-detail thead th { color: var(--ink); font-size: var(--t-sm); white-space: normal; min-width: 7em; }
+.md-table tbody th {                                                           /* the detail: Price, Hours… */
+  padding: 7px 10px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  background: none;
+}
+.md-table td.md-num { min-width: 0; width: 1%; color: var(--muted); font-variant-numeric: tabular-nums; }
+.md-table td.md-none { color: var(--muted); }
+.md-table tbody tr:nth-child(even) > * { background: color-mix(in srgb, var(--tarp-soft) 35%, transparent); }
+
+.md-note { font-size: var(--t-xs); color: var(--muted); }

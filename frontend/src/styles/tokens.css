@@ -1,0 +1,67 @@
+/* Design tokens: colours, type, spacing. Light by default; html[data-theme=dark] for dark;
+   html.tg without data-theme = the Telegram theme (Mini App, theme "Auto"). Shared by the chat and the demo. */
+
+:root {
+  --paper: #eef1f5;         /* chat background */
+  --surface: #ffffff;       /* bubbles, panels */
+  --ink: #15202e;
+  --muted: #5a6474;
+  --line: #dde2ea;
+  --tarp: #2347c5;          /* the blue of street-stall tarps and plastic stools */
+  --tarp-ink: #ffffff;
+  --tarp-soft: #e4e9fb;
+  --open: #1e7a47;
+  --warn: #b4361f;
+  --shadow: 0 1px 2px rgba(21, 32, 46, 0.08);
+
+  --font: "Kantumruy Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sign: "Moul", "Kantumruy Pro", serif;
+
+  --t-xs: 0.75rem;
+  --t-sm: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.25rem;
+
+  --gap: 16px;
+  --bubble: 18px;
+  --small: 10px;
+  --thread-max: 780px;
+  --side-w: 340px;
+
+  --safe-top: max(env(safe-area-inset-top), var(--tg-safe-area-inset-top, 0px));
+  --safe-bottom: max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom, 0px));
+  --content-top: var(--tg-content-safe-area-inset-top, 0px);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #0f1622;
+  --surface: #1a2436;
+  --ink: #e8ecf2;
+  --muted: #97a1b3;
+  --line: #2a3548;
+  --tarp: #7d97ff;
+  --tarp-ink: #0f1622;
+  --tarp-soft: #243262;
+  --open: #5fcf8e;
+  --warn: #ff8a73;
+  --shadow: none;
+  color-scheme: dark;
+}
+
+/* Inside Telegram, theme "Auto": the user's Telegram colours */
+:root.tg:not([data-theme]) {
+  --paper: var(--tg-theme-secondary-bg-color, var(--tg-theme-bg-color, #eef1f5));
+  --surface: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, #ffffff));
+  --ink: var(--tg-theme-text-color, #15202e);
+  --muted: var(--tg-theme-hint-color, #5a6474);
+  --line: var(--tg-theme-section-separator-color, color-mix(in srgb, var(--tg-theme-hint-color, #5a6474) 30%, transparent));
+  --tarp: var(--tg-theme-button-color, #2347c5);
+  --tarp-ink: var(--tg-theme-button-text-color, #ffffff);
+  --tarp-soft: color-mix(in srgb, var(--tg-theme-button-color, #2347c5) 15%, transparent);
+  --link: var(--tg-theme-link-color, var(--tarp));
+  --warn: var(--tg-theme-destructive-text-color, #b4361f);
+  --shadow: none;
+}
+
