@@ -77,6 +77,19 @@ dishes), shows its recipe (prep / cook / total time, ingredients, steps) and the
 2. **Recipes**: `data/recipes.csv` is built by `python scrapers/recipes_foodcom.py` (needs `pip install pyarrow`;
    downloads ~450 MB of Food.com recipes into `data/raw/foodcom/`). 99 of the 101 dishes have a recipe; Food.com has
    no proper sashimi or takoyaki recipe, and the app says so.
+3. **Learning from users**: when an answer is wrong, the user taps **`/correction`** (Telegram menu, or the `/`
+   command menu in the web chat) and then just types the right answer: the next message is the correction, no second
+   `/correction` needed (“cancel” skips it). In one go also works: `/correction amok`. Or tap the right dish under
+   “Not it?”, or type “no, it's amok”.
+   * After a photo: the app remembers that photo's fingerprint at once (that photo sent again gets the right dish
+     from then on; someone else's correction only counts for a near-identical photo) and saves the photo in
+     `data/feedback/` (git-ignored, no user names). `food_classification.ipynb` trains on these photos next time
+     (`use_feedback`); its section 9 measures the effect. A dish the app does not know yet is saved for training only.
+   * After a text answer (“/correction this place closed last year”): saved with the question and the answer, shown
+     to that user when they ask again, and to everyone once approved.
+
+   Review with `python scrapers/feedback_review.py` (`--list`, `--approve ID`, `--remove ID`); `/deleteme` in the bot
+   removes a user's own corrections.
 
 ## Run
 
@@ -103,6 +116,28 @@ Pages: `/` the chat app, `/demo` how answers are made (the 3 steps, retrieved ro
 
 **AI models:** `LLM_MODELS` in `.env` lists the models users can choose from (first = default), e.g.
 `gemini:gemini-3.5-flash-lite,gemini:gemini-3.6-flash`. If the chosen one is busy, the next one answers.
+
+**Local model (Ollama + Qwen, free and unlimited, runs on this Mac):**
+
+```bash
+brew install ollama && brew services start ollama   # Ollama runs in the background, also after a restart
+ollama pull qwen3.5:4b                              # 4 GB; qwen3.5:9b (7.6 GB) answers better but slower
+```
+
+then add it to `.env`, e.g. as the second model so it answers whenever Gemini is busy or out of free quota:
+`LLM_MODELS=gemini:gemini-3.5-flash-lite,ollama:qwen3.5:4b=Qwen 3.5 4B (local),...` and `OLLAMA_MODEL=qwen3.5:4b`.
+Users can also pick it in the model menu (web) or with `/model` (Telegram). Deciding what a message needs (follow-up
+or new search) always uses the default model when it is available; the chosen model writes the answer.
+
+## Tests
+
+```bash
+venv/bin/pip install pytest
+venv/bin/python -m pytest tests -q                  # 106 end-to-end tests (~1 min; Gemini and OpenStreetMap need internet)
+venv/bin/python -m pytest tests -q -m "not network" # offline ones only
+```
+
+Results and what they cover: `docs/testing-report.md`.
 
 ## Telegram Mini App
 
