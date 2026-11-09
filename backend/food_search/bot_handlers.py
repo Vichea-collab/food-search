@@ -2,6 +2,7 @@
 """Telegram bot (python-telegram-bot v20+): formatter, handlers and app builder."""
 import asyncio
 import html
+import io
 import logging
 import os
 import re
@@ -10,27 +11,40 @@ import time
 from collections import Counter, defaultdict, deque
 from datetime import datetime
 from pathlib import Path
-from urllib.parse import quote, quote_plus
+from urllib.parse import quote, quote_plus, urlencode
 
 import numpy as np
 import pandas as pd
-from telegram import (BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LinkPreviewOptions,
+from telegram import (BotCommand, ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, LinkPreviewOptions,
                       MenuButtonWebApp, ReplyKeyboardMarkup, ReplyKeyboardRemove, WebAppInfo)
 from telegram.constants import ChatAction, ParseMode
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler
 from telegram.ext import filters as tg_filters
 
-from . import dishes
-from .config import ADMIN_IDS, RATE_LIMIT_PER_MIN, TZ, WEBAPP_URL
+from . import dishes, voice
+from .config import ADMIN_IDS, GOOGLE_MAPS_API_KEY, MAX_VOICE_MB, MAX_VOICE_SECONDS, RATE_LIMIT_PER_MIN, TZ, WEBAPP_URL
 from .llm import (CONTEXT_PLACES, DEFAULT_MODEL_ID, HISTORY_TURNS, MODELS, MODELS_BY_ID, NO_LLM, answer_followup, no_match,
-                  chat_reply, fmt_hours, fmt_price, plan_turn, safe_error, search_lead, unverified_note)
-from .search import (detect_lang, geocode_place, get_rows, hybrid_search, image_search_available, is_open_at,
+                  asked_fields, chat_reply, followup_origin, fmt_hours, fmt_price, menu_items, menu_line, plan_turn, safe_error,
+                  search_lead, unverified_note)
+from . import search as search_module
+from .search import (detect_lang, dish_keys, geocode_place, haversine_km, get_rows, hybrid_search, image_search_available, is_open_at,
+                     matching_dishes,
                      parse_query_filters, search_images_by_image, HOME_CITY, PLACE_NAMES_KH)
 
 log = logging.getLogger("food_search.bot")
 
 
 def maps_url(lat, lng, name="", city="") -> str:
+    """Link behind every map button. With GOOGLE_MAPS_API_KEY and a public https WEBAPP_URL it goes through our
+    /api/go/map, which looks up the Google place id on the click and opens the exact listing (nothing is looked up
+    while searching, so results stay fast). Otherwise it is the plain Google Maps link below."""
+    name_clean = re.sub(r"\s+", " ", str(name or "")).strip()
+    if GOOGLE_MAPS_API_KEY and WEBAPP_URL.startswith("https://") and name_clean and not (pd.isna(lat) or pd.isna(lng)):
+        return f"{WEBAPP_URL}/api/go/map?" + urlencode({"name": name_clean, "lat": f"{lat:.6f}", "lng": f"{lng:.6f}", "city": city or ""})
+    return direct_maps_url(lat, lng, name, city)
+
+
+def direct_maps_url(lat, lng, name="", city="") -> str:
     """Google Maps link that opens the place itself (its listing with rating, photos and hours), not just a pin.
     The name is what is searched; the coordinates only centre the map, so a chain opens its closest branch."""
     name = re.sub(r"\s+", " ", str(name or "")).strip()
@@ -101,10 +115,9 @@ def page_label(url) -> str:
     return "facebook" if host.endswith(("facebook.com", "fb.com")) else "website"
 
 
-# Attribution required by the data licences, shown once per message (not on every place)
-DATA_CREDITS = {"openstreetmap": "© OpenStreetMap contributors", "overture": "Overture Maps (Meta)"}
-FOOTER_TEXT = {"en": {"from": "📏 From {where}", "me": "your location", "data": "Data: {credits}"},
-               "kh": {"from": "📏 ចម្ងាយគិតពី{where}", "me": "ទីតាំងរបស់អ្នក", "data": "ទិន្នន័យ៖ {credits}"}}
+# Data attribution is not repeated in every message; it lives in the /about text
+FOOTER_TEXT = {"en": {"from": "📏 From {where}", "me": "your location"},
+               "kh": {"from": "📏 ចម្ងាយគិតពី{where}", "me": "ទីតាំងរបស់អ្នក"}}
 NO_LLM_LABEL = "No AI (results only)"
 
 
@@ -112,7 +125,7 @@ def fmt_km(km) -> str:
     return f"{round(km * 100) * 10:.0f} m" if km < 1 else f"{km:.1f} km"
 
 
-def place_card(i, r, lang="en", hour_now=None) -> str:
+def place_card(i, r, lang="en", hour_now=None, with_menu=False, keys=()) -> str:
     """One place, three short lines at most:
     <b>1. Name</b> · 0.6 km
     Coffee · Chroy Changvar · Facebook
@@ -141,29 +154,38 @@ def place_card(i, r, lang="en", hour_now=None) -> str:
         facts.append(f"💲 {fmt_price(r.price_usd)}")
     if pd.notna(r.rating):
         facts.append(f"⭐ {r.rating:.1f}")
-    return "\n".join([title] + [" · ".join(x) for x in (sub, facts) if x])
+    lines = [title] + [" · ".join(x) for x in (sub, facts) if x]
+    matched = matching_dishes(menu_items(r), keys) if keys and not with_menu else []
+    if matched:                                    # the dish asked for, on its menu: why this place was found
+        lines.append("🍽 " + " · ".join(esc(menu_line(it, lang)) for it in matched))
+    if with_menu:                                  # "9K Foods menu": the dishes, one per line
+        items = menu_items(r)
+        if items:
+            lines.append("🍽 Menu:" if lang != "kh" else "🍽 ម៉ឺនុយ៖")
+            lines += [f"• {esc(menu_line(it, lang))}" for it in items[:15]]
+            if len(items) > 15:
+                lines.append(f"… +{len(items) - 15}")
+    return "\n".join(lines)
 
 
 def footer_line(shown, lang="en", origin="") -> str:
-    """One quiet line: where distances are measured from, and the data credits."""
+    """One quiet line: where distances are measured from (data credits live in /about)."""
     words = FOOTER_TEXT.get(lang, FOOTER_TEXT["en"])
-    sources = [str(x).strip().lower() for x in shown["source"]] if "source" in shown else []
-    credits = list(dict.fromkeys(DATA_CREDITS.get(x, SOURCE_LABELS.get(x, x.capitalize())) for x in sources if x and x != "nan"))
     parts = []
     if origin:
         parts.append(words["from"].format(where=words["me"] if origin == "me" else html.escape(origin, quote=False)))
-    if credits:
-        parts.append(words["data"].format(credits=", ".join(credits)))
     return f"<i>{' · '.join(parts)}</i>" if parts else ""
 
 
-def format_telegram(results, lang="en", start=0, max_items=5, origin="") -> str:
+def format_telegram(results, lang="en", start=0, max_items=5, origin="", with_menu=False) -> str:
     """Compact Telegram HTML list: numbered places + one footer line. Map links are the buttons below the message."""
     if results is None or len(results) == 0:
         return html.escape(no_match(lang, results), quote=False)
     now = datetime.now(TZ)
     shown = results.iloc[start:start + max_items]
-    cards = [place_card(i, r, lang, now.hour + now.minute / 60) for i, r in enumerate(shown.itertuples(), start + 1)]
+    keys = dish_keys(results.attrs.get("query_text", ""))
+    cards = [place_card(i, r, lang, now.hour + now.minute / 60, with_menu, keys)
+             for i, r in enumerate(shown.itertuples(), start + 1)]
     footer = footer_line(shown, lang, origin)
     return "\n\n".join(cards + ([footer] if footer else []))
 
@@ -176,7 +198,10 @@ HELP_TEXT = (
     "Every result shows its distance, price, rating, map link, Facebook page or website, and data source when known. You can also send a 📷 food photo.\n"
     "💬 Then just keep chatting: 'is the first one open now?', 'how far is number 2?', 'any cheaper ones?', 'pizza instead'.\n"
     "/new – start a new conversation · /setlocation <place> – tell me where you are · /model – choose the AI model · "
-    "/privacy – how your data is used · /deleteme – forget my location\n"
+    "/voice – voice settings · /privacy – how your data is used · /deleteme – forget my location\n"
+    "🎤 Or send a voice message (Khmer or English), then choose a text or a voice answer.\n"
+    "✏️ A wrong answer? Tap /correction, then just type the right one (e.g. 'amok' after a photo, or 'this place "
+    "closed' after a search). Or in one go: '/correction amok'. I learn from it.\n"
     "Place data: © OpenStreetMap contributors (ODbL); data from Meta, via the Overture Maps Foundation (CDLA Permissive 2.0)\n\n"
     "🍜 ឃ្លានញ៉ាំ (Klean Nham) – បូតស្វែងរកម្ហូបខ្មែរ\n"
     "សូមផ្ញើឈ្មោះម្ហូប ឧ. 'នំបញ្ចុក', 'គុយទាវ ថោក'។\n"
@@ -187,16 +212,21 @@ HELP_TEXT = (
 PRIVACY_TEXT = (
     "🔒 No account needed. Your location and photos are used only to answer your request "
     "and are not stored: your location stays in memory until /deleteme or a bot restart, "
-    "photos are deleted right after the search. A place name after 'near' (e.g. CADT) is sent to OpenStreetMap's "
+    "photos are deleted right after the search. Only when you correct an answer (\"Not it?\", \"no, it's amok\" or "
+    "/correction) is that photo, or your question and correction, kept without your name, so the bot learns from it; "
+    "/deleteme removes your corrections too. A place name after 'near' (e.g. CADT) is sent to OpenStreetMap's "
     "map search to find its coordinates; your own coordinates are never sent there. Distances (not coordinates) can "
-    "be part of the question sent to the AI model that writes the short summary.\n\n"
-    "🔒 មិនចាំបាច់មានគណនីទេ។ ទីតាំង និងរូបថតរបស់អ្នក ប្រើតែដើម្បីឆ្លើយតបប៉ុណ្ណោះ ហើយមិនត្រូវបានរក្សាទុកទេ។"
+    "be part of the question sent to the AI model that writes the short summary. A voice message is sent to Google "
+    "(Gemini) to be turned into text, and is not stored.\n\n"
+    "🔒 មិនចាំបាច់មានគណនីទេ។ ទីតាំង និងរូបថតរបស់អ្នក ប្រើតែដើម្បីឆ្លើយតបប៉ុណ្ណោះ ហើយមិនត្រូវបានរក្សាទុកទេ។ "
+    "លើកលែងតែពេលអ្នកកែម្ហូបដែលខុស៖ រូបថតនោះត្រូវបានរក្សាទុក (គ្មានឈ្មោះអ្នក) ដើម្បីឱ្យបូតរៀន។"
 )
 RATE_LIMIT_TEXT = "⏳ Too many requests – please wait a minute. / សូមរង់ចាំមួយនាទី។"
 ASK_LOCATION_TEXT = (
-    "📍 Where are you? Tap the closest landmark below. On a phone you can also share your exact location with the next message. "
-    "On a computer, type /setlocation and a place, e.g. /setlocation CADT. It is kept in memory only, for this chat.\n"
-    "📍 តើអ្នកនៅឯណា? សូមជ្រើសរើសទីតាំងដែលនៅជិតបំផុតខាងក្រោម។")
+    "📍 Where are you? Tap the closest landmark below, or just type a place (e.g. CADT, Toul Kork, Aeon Mall 1). "
+    "It is kept in memory only, for this chat.\n"
+    "📍 តើអ្នកនៅឯណា? សូមជ្រើសរើសទីតាំងខាងក្រោម ឬវាយឈ្មោះទីកន្លែង (ឧ. CADT, ទួលគោក)។")
+SHARE_LOCATION_TEXT = "📱 On a phone you can also share your exact location with the button below (not on a computer)."
 
 STATS = Counter()           # in-memory counters for /stats (no message text, no ids)
 _seen_users = set()
@@ -290,13 +320,17 @@ BOT_PROFILE = {   # (keys are Telegram language codes: "km" is the ISO code for 
                           "is made up.",
            "short": "Klean Nham: Find food across Cambodia, in English or Khmer. Answers only from real places.",
            "commands": [("start", "How to use the bot"), ("new", "Start a new conversation"), ("model", "Choose the AI model"),
+                        ("voice", "Voice: who reads, text or voice"),
                         ("setlocation", "Tell me where you are"),
+                        ("correction", "Correct my last answer"),
                         ("privacy", "How your data is used"), ("deleteme", "Forget my location")]},
     "km": {"description": "ឃ្លានញ៉ាំ (Klean Nham)៖ ស្វែងរកម្ហូបទូទាំងប្រទេសកម្ពុជា។ ផ្ញើឈ្មោះម្ហូប ទីកន្លែង ឬម៉ោង ជាភាសាខ្មែរ ឬអង់គ្លេស ឧ. “គុយទាវ” "
                           "“កាហ្វេ ជិតខ្ញុំ”។ ចម្លើយមកពីបញ្ជីហាងពិតប្រាកដរបស់យើងតែប៉ុណ្ណោះ។",
            "short": "ឃ្លានញ៉ាំ (Klean Nham)៖ ស្វែងរកម្ហូបទូទាំងប្រទេសកម្ពុជា ជាភាសាខ្មែរ ឬអង់គ្លេស។",
            "commands": [("start", "របៀបប្រើបូត"), ("new", "ចាប់ផ្តើមការសន្ទនាថ្មី"), ("model", "ជ្រើសរើសម៉ូដែល AI"),
+                        ("voice", "សំឡេង៖ ស្រី/ប្រុស អក្សរ ឬសំឡេង"),
                         ("setlocation", "ប្រាប់ទីតាំងរបស់អ្នក"),
+                        ("correction", "កែចម្លើយចុងក្រោយរបស់ខ្ញុំ"),
                         ("privacy", "របៀបប្រើទិន្នន័យរបស់អ្នក"), ("deleteme", "លុបទីតាំងរបស់ខ្ញុំ")]},
 }
 
@@ -360,7 +394,9 @@ async def privacy_cmd(update, context):
 
 async def deleteme_cmd(update, context):
     context.user_data.clear()                # location + last results
-    await update.message.reply_text("🗑️ Your saved location was deleted. / ទីតាំងរបស់អ្នកត្រូវបានលុប។")
+    removed = await asyncio.to_thread(dishes.forget_user, update.effective_user.id) if dishes.available() else 0
+    extra = f" Your {removed} correction{'s' if removed != 1 else ''} too." if removed else ""
+    await update.message.reply_text(f"🗑️ Your saved location was deleted.{extra} / ទីតាំងរបស់អ្នកត្រូវបានលុប។")
 
 
 async def setlocation_cmd(update, context):
@@ -392,11 +428,16 @@ async def stats_cmd(update, context):
     await update.message.reply_text("📊 Bot stats (since start)\n" + "\n".join(lines))
 
 
-async def send_results(message, context, results, lang, intro="", warning="", origin=""):
+async def send_results(message, context, results, lang, intro="", warning="", origin="", with_menu=False):
     """intro = the LLM summary; warning = a problem worth reading first; origin = where distances are measured from."""
     context.user_data.update(last_results=results, last_lang=lang, offset=0, last_origin=origin)
     head = "\n\n".join(x for x in (intro, warning) if x)
-    text = (head + "\n\n" if head else "") + format_telegram(results, lang, origin=origin)
+    text = (head + "\n\n" if head else "") + format_telegram(results, lang, origin=origin, with_menu=with_menu)
+    if len(text) > TG_MAX_CHARS:
+        text = text[:TG_MAX_CHARS].rsplit("\n", 1)[0] + "\n…"
+    if hasattr(message, "say"):                  # a voice answer: the short sentence and the first names are read out
+        await message.say(re.sub(r"<[^>]+>", "", intro) or search_lead(results, lang) if len(results) else "",
+                          [str(r.name) for r in results.head(3).itertuples()] if len(results) else ())
     await message.reply_text(text, parse_mode=ParseMode.HTML, reply_markup=results_keyboard(results),
                              link_preview_options=LinkPreviewOptions(is_disabled=True))
 
@@ -427,8 +468,10 @@ async def run_query(message, context, query, user_loc=None, rewritten=False):
     intro = html.escape(lead, quote=False)
     if rewritten:
         intro = f"🔎 <i>{html.escape(query, quote=False)}</i>" + (f"\n\n{intro}" if intro else "")
-    await send_results(message, context, results, lang, intro, warning, origin)
-    context.user_data["last_query"] = query
+    # a named place and "menu" / "what does it have": its dishes under the card
+    with_menu = bool(results.attrs.get("filters", {}).get("named_place")) and "menu" in asked_fields(query)
+    await send_results(message, context, results, lang, intro, warning, origin, with_menu)
+    context.user_data.update(last_query=query, last_question=query, last_kind="text")   # the search that was answered
     remember(context, "assistant", lead + " Places shown: " + places_summary(results.head(5)))
 
 
@@ -455,22 +498,92 @@ def shown_places(context):
 
 
 async def new_cmd(update, context):
-    for key in ("history", "last_results", "last_query", "offset", "last_origin", "pending_query"):
+    for key in ("history", "last_results", "last_query", "offset", "last_origin", "pending_query", "photo", "dish",
+                "awaiting_correction"):
         context.user_data.pop(key, None)                     # keeps the location and the chosen model
     await update.message.reply_text("🆕 New conversation. What would you like to eat? / ការសន្ទនាថ្មី។ តើអ្នកចង់ញ៉ាំអ្វី?")
+
+
+class Speaker:
+    """Wraps a Telegram message for a voice answer: the first plain reply goes out as a voice note (its text as the
+    caption); a reply with cards or buttons is sent as text, with the short sentence spoken before it. Anything the
+    wrapper does not know is passed to the message."""
+    def __init__(self, message, context):
+        self._m, self._gender, self._said = message, voice.valid_gender(context.user_data.get("voice_gender")), False
+
+    def __getattr__(self, name):
+        return getattr(self._m, name)
+
+    async def _voice(self, text, caption=None, parse_mode=None):
+        """Sends `text` as a voice note; True when it worked (no voice available -> the text is sent as usual)."""
+        await self._m.reply_chat_action(ChatAction.RECORD_VOICE)
+        audio = await asyncio.to_thread(voice.speak, text, None, self._gender)
+        if not audio:
+            return None
+        note = io.BytesIO(audio)
+        note.name = "answer.mp3"
+        return await self._m.reply_voice(note, caption=caption, parse_mode=parse_mode if caption else None)
+
+    async def say(self, text, names=()):
+        """The short sentence of a list of places, spoken once, before the cards."""
+        if not self._said and (spoken := voice.spoken_summary(text, names)):
+            self._said = True
+            await self._voice(spoken)
+
+    async def reply_text(self, text, **kw):
+        if self._said:
+            return await self._m.reply_text(text, **kw)
+        self._said = True
+        plain = voice.spoken_summary(text)
+        if not plain:
+            return await self._m.reply_text(text, **kw)
+        if kw.get("reply_markup") is None and len(text) <= 1000:       # a plain answer: voice, text as its caption
+            sent = await self._voice(plain, caption=text, parse_mode=kw.get("parse_mode"))
+            return sent or await self._m.reply_text(text, **kw)
+        await self._voice(plain)
+        return await self._m.reply_text(text, **kw)
 
 
 async def text_handler(update, context):
     if not await _guard(update, "text_queries"):
         return
-    query = update.message.text.strip()[:200]
+    await handle_text(update.message, context, update.message.text.strip()[:200], update.effective_user.id)
+
+
+async def handle_text(message, context, query, user_id, speak=False):
+    """A typed question, or a spoken one after it was turned into text (speak=True: the answer is read aloud)."""
+    if speak and voice.available():
+        message = Speaker(message, context)
     log.info("text query (lang=%s, %d chars)", detect_lang(query), len(query))   # never log text together with ids
-    await context.bot.send_chat_action(update.effective_chat.id, ChatAction.TYPING)
+    if awaiting_correction(context):             # "/correction" alone, then "amok": that is the right answer
+        if dishes.is_cancel(query):
+            await message.reply_text(dishes.TEXT[detect_lang(query)]["cmd_cancelled"])
+        else:
+            await apply_correction(message, context, query, user_id)
+        return
+    if context.user_data.get("pending_query") and await answer_where(message, context, query):
+        return                                   # "CADT" typed after "Where are you?": the search runs from there
+    await context.bot.send_chat_action(message.chat_id, ChatAction.TYPING)
     history = list(context.user_data.get("history", []))
     shown, model = shown_places(context), context.user_data.get("model")
     focus, named = context.user_data.get("dish"), dishes.find_dish(query)
+    photo_id = context.user_data.get("photo")
+    after_photo = photo_id and context.user_data.get("last_kind") == "photo"   # the last answer was about the photo
+    fix = dishes.correction(query, context.user_data.get("photo_dish")) if after_photo else None
+    if fix is not None:                          # "no, it's amok" after a photo: learn it
+        await correct_photo(message, context, photo_id, fix, user_id)
+        return
+    context.user_data.update(last_kind="text", last_question=query)     # what /correction refers to
+    for note in dishes.correction_notes(query, user_id):   # this question was answered wrongly before
+        await message.reply_text(note)
     if dishes.recipe_intent(query, has_dish=bool(named or focus)):      # "how do I make it?", "how long?"
-        await send_recipe_answer(update.message, context, query, named or focus)
+        remember(context, "user", query)
+        await send_recipe_answer(message, context, query, named or focus)
+        return
+    about = dishes.about_intent(query)
+    if about:                                     # "do u know amok?": the dish itself and buttons for what is next
+        remember(context, "user", query)
+        await send_dish(message, context, dishes.dish_json(about), lead=dishes.about_answer(about, detect_lang(query)))
         return
     query = dishes.resolve_reference(query, focus)    # "where can I eat it?" after a photo of pizza
     plan = await asyncio.to_thread(plan_turn, query, history, shown, model, context.user_data.get("last_query"))
@@ -478,17 +591,25 @@ async def text_handler(update, context):
 
     if plan["action"] == "chat":
         out = await asyncio.to_thread(chat_reply, query, history, model)
-        await update.message.reply_text(llm_to_telegram_html(out["text"]), parse_mode=ParseMode.HTML)
+        await message.reply_text(llm_to_telegram_html(out["text"]), parse_mode=ParseMode.HTML)
         remember(context, "assistant", out["text"])
         return
 
     if plan["action"] == "followup" and shown is not None:     # about the places already shown: no new search
+        origin = context.user_data.get("last_origin")
+        landmark = followup_origin(query)
+        spot = await asyncio.to_thread(geocode_place, landmark) if landmark else None
+        if spot:                                               # "which one is closest to Independence Monument?"
+            shown = shown.assign(distance_km=haversine_km(spot[0], spot[1], shown["lat"], shown["lng"]))
+            shown.attrs["origin"] = landmark
+        elif origin and origin != "me":
+            shown.attrs["origin"] = origin                     # "how far is 2?" after "... near CADT": from CADT
         out = await asyncio.to_thread(answer_followup, query, history, shown, plan["places"], model)
         text = llm_to_telegram_html(out["text"])               # AI sentence, or a list / table built from the data
         rows = list(shown.itertuples())                         # (a pandas Series' .name is its index, not the place)
         numbered = [(n, rows[n - 1]) for n in out["numbers"][:6]]
-        await update.message.reply_text(text, parse_mode=ParseMode.HTML,
-                                        reply_markup=InlineKeyboardMarkup(map_buttons(numbered)),
+        await message.reply_text(text, parse_mode=ParseMode.HTML,
+                                 reply_markup=InlineKeyboardMarkup(map_buttons(numbered)),
                                         link_preview_options=LinkPreviewOptions(is_disabled=True))
         remember(context, "assistant", out["text"])
         return
@@ -497,11 +618,37 @@ async def text_handler(update, context):
     _, flt = parse_query_filters(search_query)
     if flt.get("near") == "me" and not context.user_data.get("location"):
         context.user_data["pending_query"] = search_query          # answered as soon as the location arrives
-        await update.message.reply_text(ASK_LOCATION_TEXT, reply_markup=spots_keyboard())
-        await update.message.reply_text("📍 Or share your exact location (phone):", reply_markup=location_keyboard())
+        await message.reply_text(ASK_LOCATION_TEXT, reply_markup=spots_keyboard())
+        await message.reply_text(SHARE_LOCATION_TEXT, reply_markup=location_keyboard())
         return
-    await run_query(update.message, context, search_query, context.user_data.get("location"),
+    await run_query(message, context, search_query, context.user_data.get("location"),
                     rewritten=search_query.strip().lower() != query.strip().lower())
+
+
+async def answer_where(message, context, text) -> bool:
+    """After "Where are you?", a typed place ("CADT", "Toul Kork", "near Aeon Mall") is the answer: look it up and
+    run the waiting search from there. False when the message is something else (a new question, a dish)."""
+    place = re.sub(r"^\s*(?:(?:i'?m|i am|we'?re|we are|now|at|in|near|around|from|ខ្ញុំ|នៅ|ជិត)\s*)+", "", text,
+                   flags=re.I).strip(" .!?។")
+    if not place or len(place) > 40 or "?" in text or parse_query_filters(text)[1].get("near") == "me":
+        return False
+    words = re.findall(r"[a-z0-9]+", place.lower())
+    food = set(search_module.FOOD_VOCAB or [])
+    if dishes.find_dish(place) or (words and all(w in food for w in words)):
+        return False                             # "pizza", "kuy teav": a new question, not where the user is
+    spot = await asyncio.to_thread(geocode_place, place, None)
+    if not spot:
+        await message.reply_text(f"📍 I couldn't find “{place}” on the map. Tap a landmark above, or try its full name. "
+                                 f"/ ខ្ញុំរកមិនឃើញ “{place}” លើផែនទីទេ។")
+        return True
+    pending = context.user_data.pop("pending_query")
+    log.info("location typed after the question (found on the map)")
+    query = re.sub(r"\b(near[\s.,]*me|nearby|around me|close to me)\b|ជិតខ្ញុំ|នៅជិតខ្ញុំ", f"near {place}", pending,
+                   flags=re.I)
+    await message.reply_text(f"📍 OK, from {place}. Searching… / កំពុងស្វែងរក…", reply_markup=ReplyKeyboardRemove())
+    await context.bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+    await run_query(message, context, query if query != pending else f"{pending} near {place}", None)
+    return True
 
 
 async def spot_callback(update, context):
@@ -545,6 +692,8 @@ async def location_handler(update, context):
         return                                   # no reply, no rate limit: just keep the newest point
     if not await _guard(update, "locations"):
         return
+    log.info("location received (pending search: %s)", bool(context.user_data.get("pending_query")))
+    context.user_data.pop("awaiting_correction", None)
     loc = update.message.location
     context.user_data["location"] = (loc.latitude, loc.longitude)   # memory only
     pending = context.user_data.pop("pending_query", None)
@@ -559,24 +708,40 @@ async def location_handler(update, context):
 async def photo_handler(update, context):
     if not await _guard(update, "photo_queries"):
         return
+    context.user_data.pop("awaiting_correction", None)      # a new photo, not the answer to "What is it?"
     if not (dishes.available() or image_search_available()):
         await update.message.reply_text("📷 Photo search is not set up yet. Please type the dish name instead.")
         return
     await context.bot.send_chat_action(update.effective_chat.id, ChatAction.TYPING)
-    tg_file = await update.message.photo[-1].get_file()
+    if update.message.photo:
+        tg_file = await update.message.photo[-1].get_file()
+    elif update.message.document and (update.message.document.mime_type or "").startswith("image/"):
+        tg_file = await update.message.document.get_file()
+    else:
+        return
     fd, tmp_path = tempfile.mkstemp(suffix=".jpg")
     os.close(fd)
     try:
         await tg_file.download_to_drive(tmp_path)
         if dishes.available():
-            guesses = await asyncio.to_thread(dishes.classify, tmp_path, 3)
+            seen = await asyncio.to_thread(dishes.recognise, tmp_path, update.effective_user.id, 3)
         else:
             matches = await asyncio.to_thread(search_images_by_image, tmp_path, 10)
     finally:
-        Path(tmp_path).unlink(missing_ok=True)   # the user's photo is never kept
+        Path(tmp_path).unlink(missing_ok=True)   # the file is deleted; a copy waits in memory in case of a correction
+    if dishes.available() and seen.get("not_food"):          # a selfie, a pet, a street: not a dish
+        await update.message.reply_text(dishes.not_food_text(seen["not_food"]))
+        return
     if dishes.available():
+        guesses = seen["guesses"]
         best = guesses[0]
-        await send_dish(update.message, context, dishes.dish_json(best["id"], best["confidence"], guesses[1:]))
+        dish = dishes.dish_json(best["id"], best["confidence"], guesses[1:], seen["photo_id"], seen["learned"])
+        context.user_data.update(photo=seen["photo_id"], photo_dish=best["id"], last_kind="photo")   # "no, it's amok"
+        caption = (update.message.caption or "").strip()[:200]
+        about = bool(caption) and dishes.question_kind(caption) == "about"     # "what is this called?"
+        await send_dish(update.message, context, dish, with_buttons=not caption or about)
+        if caption and not about and not dish.get("low"):   # "how do I make this?", "where can I eat this near me?"
+            await answer_about_dish(update.message, context, caption, dish["id"])
         return
     results = get_rows([m["restaurant_id"] for m in matches])
     await send_results(update.message, context, results, "en", "📷 Places with similar-looking food:")
@@ -585,32 +750,66 @@ async def photo_handler(update, context):
 TG_MAX_CHARS = 4000          # Telegram allows 4096 characters per message
 
 
-async def send_dish(message, context, dish):
-    """The recognised (or picked) dish: what it is, its cooking time, buttons for the recipe and other guesses,
-    then the places that serve it."""
+async def send_dish(message, context, dish, with_buttons=True, lead=None):
+    """The recognised (or picked) dish: what it is, and buttons for what people ask next (recipe, cooking time,
+    places to eat it, other guesses). Nothing else is fetched until it is asked for."""
     lang = "en"
-    context.user_data["dish"] = dish["id"]
-    lines = [llm_to_telegram_html(dishes.photo_lead(dish, lang))]
-    r = dishes.recipe_json(dish["id"])
+    if not dish.get("low"):
+        context.user_data["dish"] = dish["id"]           # a too-unsure guess is not what "how do I make it?" refers to
+    # lead: a text question's answer ("Yes, I know Amok! ..."), which already says what the dish is
+    lines = [llm_to_telegram_html(lead or dishes.photo_lead(dish, lang))]
+    # a tap on another guess corrects this photo (fix:<photo>:<dish>), so the bot learns it
+    target = lambda a: f"fix:{dish['photo_id']}:{a['id']}" if dish.get("photo_id") else f"dish:{a['id']}"
+    pick = lambda a: InlineKeyboardButton(f"{a['name']} ({min(99, round(a['confidence'] * 100))}%)", callback_data=target(a))
+    pairs = lambda btns: [btns[k:k + 2] for k in range(0, len(btns), 2)]       # two per row: longer labels are not cut
     buttons = []
-    if r:
-        lines.append(llm_to_telegram_html(dishes.recipe_answer("how long", dish["id"], lang)["text"]))
-        lines.append("Ask me “how do I make it?”, “what are the ingredients?” or “where can I eat it?”.")
-        buttons.append([InlineKeyboardButton("🍳 Recipe", callback_data=f"recipe:{dish['id']}"),
-                        InlineKeyboardButton("🧺 Ingredients", callback_data=f"ingr:{dish['id']}")])
+    if dish.get("low"):
+        # too unsure to act on: no recipe / places buttons for a probably wrong dish; let the user pick what it is
+        guesses = [{"id": dish["id"], "name": dish["name"], "confidence": dish["confidence"]}, *dish["alternatives"][:3]]
+        buttons = pairs([pick(a) for a in guesses])
     else:
-        lines.append(html.escape(dishes.recipe_answer("recipe", dish["id"], lang)["text"], quote=False))
-    if not dish["sure"] and dish["alternatives"]:
-        lines.append("Not it? Tap the right dish:")
-        buttons.append([InlineKeyboardButton(f"{a['name']} ({round(a['confidence'] * 100)}%)", callback_data=f"dish:{a['id']}")
-                        for a in dish["alternatives"]])
-    await message.reply_text("\n\n".join(lines), parse_mode=ParseMode.HTML,
-                             reply_markup=InlineKeyboardMarkup(buttons) if buttons else None)
-    remember(context, "assistant", f"This photo looks like {dish['name']}.")
-    results = await asyncio.to_thread(hybrid_search, dish["name"], 15, context.user_data.get("location"))
-    if len(results):
-        await send_results(message, context, results, lang, f"📍 Places that serve {html.escape(dish['name'], quote=False)}:")
-        remember(context, "assistant", "Places shown: " + places_summary(results.head(5)))
+        about = "" if lead else dishes.about_text(dish["id"], lang)
+        if about:
+            lines.append(html.escape(about, quote=False))
+        if with_buttons:
+            lines.append("What would you like to know?")
+            if dish["id"] in dishes.RECIPES:
+                buttons.append([InlineKeyboardButton("🍳 How to make it", callback_data=f"recipe:{dish['id']}"),
+                                InlineKeyboardButton("⏱ Cooking time", callback_data=f"time:{dish['id']}")])
+            buttons.append([InlineKeyboardButton("📍 Where to eat it", callback_data=f"where:{dish['id']}")])
+        others = [a for a in dish["alternatives"]                              # "Not it?": unless very sure
+                  if (dish["confidence"] if dish["confidence"] is not None else 1) < 0.9 or a["confidence"] >= 0.05]
+        if others:
+            # one "Not it?" button; tapping it swaps the keyboard for the other guesses (and back), so the answer stays short
+            alts = pairs([pick(a) for a in others[:4]]) + [[InlineKeyboardButton("‹ Back", callback_data="notit:back"),
+                                                            InlineKeyboardButton("✏️ Type it", callback_data="notit:type")]]
+            buttons.append([InlineKeyboardButton("🤔 Not it?", callback_data="notit:open")])
+    sent = await message.reply_text("\n\n".join(lines), parse_mode=ParseMode.HTML,
+                                    reply_markup=InlineKeyboardMarkup(buttons) if buttons else None)
+    if not dish.get("low") and others:
+        kbs = context.user_data.setdefault("keyboards", {})
+        kbs[sent.message_id] = {"main": buttons, "alts": alts}
+        for old_id in list(kbs)[:-20]:                      # only the latest answers keep their nested buttons
+            del kbs[old_id]
+    if not dish.get("low"):
+        remember(context, "assistant", lead or f"This photo looks like {dish['name']}.")
+
+
+async def answer_about_dish(message, context, question, dish_id):
+    """A question about the dish in focus (a photo's caption): the recipe answer, or the places that serve it."""
+    if dishes.question_kind(question) == "recipe":
+        await send_recipe_answer(message, context, question, dish_id)
+        return
+    query = dishes.resolve_reference(question, dish_id)
+    if not dishes.find_dish(query) and dishes.search_words(dish_id).lower() not in query.lower():
+        query = f"{dishes.search_words(dish_id)} {question}"
+    remember(context, "user", question)
+    if parse_query_filters(query)[1].get("near") == "me" and not context.user_data.get("location"):
+        context.user_data["pending_query"] = query                  # answered as soon as the location arrives
+        await message.reply_text(ASK_LOCATION_TEXT, reply_markup=spots_keyboard())
+        await message.reply_text(SHARE_LOCATION_TEXT, reply_markup=location_keyboard())
+        return
+    await run_query(message, context, query, context.user_data.get("location"), rewritten=True)
 
 
 async def send_recipe_answer(message, context, question, dish_id):
@@ -621,13 +820,16 @@ async def send_recipe_answer(message, context, question, dish_id):
         text = text[:TG_MAX_CHARS].rsplit("\n", 1)[0] + "\n…"
     if r and r["source_url"] and out["focus"] in ("steps", "ingredients"):
         text += f'\n\n<a href="{html.escape(r["source_url"])}">Full recipe on {html.escape(r["source"])}</a>'
+    elif r and out["focus"] in ("steps", "ingredients"):
+        text += "\n\n<i>Typical Cambodian home recipe: every family makes it a little differently, times are approximate.</i>"
     await message.reply_text(text, parse_mode=ParseMode.HTML, link_preview_options=LinkPreviewOptions(is_disabled=True))
     context.user_data["dish"] = dish_id
     remember(context, "assistant", out["text"])
 
 
 async def dish_callback(update, context):
-    """Buttons under a recognised dish: recipe:<id>, ingr:<id> (answer from the recipe), dish:<id> (another guess)."""
+    """Buttons under a recognised dish: recipe:<id> / ingr:<id> / time:<id> (answers from the recipe),
+    where:<id> (places that serve it), dish:<id> (another guess)."""
     q = update.callback_query
     await q.answer()
     action, _, dish_id = q.data.partition(":")
@@ -635,8 +837,320 @@ async def dish_callback(update, context):
         return
     if action == "dish":
         await send_dish(q.message, context, dishes.dish_json(dish_id))
+    elif action == "where":
+        context.user_data["dish"] = dish_id
+        await run_query(q.message, context, dishes.search_words(dish_id), context.user_data.get("location"))
     else:
-        await send_recipe_answer(q.message, context, "ingredients" if action == "ingr" else "how to make it", dish_id)
+        question = {"ingr": "ingredients", "time": "how long does it take"}.get(action, "how to make it")
+        await send_recipe_answer(q.message, context, question, dish_id)
+
+
+async def correct_photo(message, context, photo_id, fix, user_id=None):
+    """The user says the dish of their last photo was wrong (fix: see dishes.correction)."""
+    user_id = user_id or message.chat.id
+    context.user_data.pop("awaiting_correction", None)      # answered (also by tapping a guess)
+    t = dishes.TEXT["en"]
+    if fix.get("dish"):
+        STATS["corrections"] += 1
+        status = await asyncio.to_thread(dishes.learn, photo_id, fix["dish"], user_id, "telegram")
+        context.user_data["photo_dish"] = fix["dish"]
+        corrected = {"saved": "saved", "expired": "expired"}.get(status)
+        await send_dish(message, context, dishes.dish_json(fix["dish"], corrected=corrected))
+    elif fix.get("name"):
+        STATS["corrections"] += 1
+        status = await asyncio.to_thread(dishes.learn, photo_id, None, user_id, "telegram", fix["name"])
+        text = t["corrected_new"].format(name=fix["name"]) if status != "expired" else t["corrected_expired"].format(dish=fix["name"])
+        await message.reply_text(llm_to_telegram_html(text), parse_mode=ParseMode.HTML)
+    else:                                         # just "no" / "wrong": ask, with the guesses to tap
+        context.user_data["awaiting_correction"] = time.time()    # the next message is its name
+        guesses = dishes.photo_guesses(photo_id)
+        buttons = [InlineKeyboardButton(f"{g['name']} ({min(99, round(g['confidence'] * 100))}%)",
+                                        callback_data=f"fix:{photo_id}:{g['id']}") for g in guesses]
+        await message.reply_text(llm_to_telegram_html(t["ask_what"]), parse_mode=ParseMode.HTML,
+                                 reply_markup=InlineKeyboardMarkup([buttons[k:k + 2] for k in range(0, len(buttons), 2)])
+                                 if buttons else None)
+
+
+CORRECTION_WAIT_S = 600       # after a bare /correction, the next message (within 10 minutes) is the right answer
+
+
+def awaiting_correction(context) -> bool:
+    """True once if the last thing the bot asked was "What is the right answer?" (a bare /correction)."""
+    asked = context.user_data.pop("awaiting_correction", None)
+    return bool(asked) and time.time() - asked < CORRECTION_WAIT_S
+
+
+def last_answer(context):
+    """(question, answer) of the last text answer: what a /correction refers to."""
+    history = context.user_data.get("history", [])
+    question = context.user_data.get("last_question") or next((h["text"] for h in reversed(history) if h["role"] == "user"), "")
+    answer = next((h["text"] for h in reversed(history) if h["role"] == "assistant"), "")
+    return question, answer
+
+
+async def correction_cmd(update, context):
+    """/correction <the right answer>: after a photo it corrects the dish (and the bot learns it); after a text answer
+    the correction is saved with the question and answer, shown when this user asks again, and to everyone once
+    approved (scrapers/feedback_review.py --approve). /correction alone asks for the right answer, and the next
+    message is taken as it, without typing /correction again."""
+    if not await _guard(update, "corrections"):
+        return
+    arg = " ".join(context.args or []).strip()[:300]
+    if arg:
+        await apply_correction(update.message, context, arg, update.effective_user.id)
+    else:
+        await ask_correction(update.message, context)
+
+
+async def ask_correction(message, context):
+    """A bare /correction: ask what the right answer is (with the photo's guesses to tap, after a photo)."""
+    photo_id = context.user_data.get("photo")
+    question, _ = last_answer(context)
+    t = dishes.TEXT["kh" if question and detect_lang(question) == "kh" else "en"]
+    if photo_id and context.user_data.get("last_kind") == "photo":
+        context.user_data["awaiting_correction"] = time.time()
+        buttons = [InlineKeyboardButton(f"{g['name']} ({min(99, round(g['confidence'] * 100))}%)",
+                                        callback_data=f"fix:{photo_id}:{g['id']}") for g in dishes.photo_guesses(photo_id)]
+        markup = (InlineKeyboardMarkup([buttons[k:k + 2] for k in range(0, len(buttons), 2)]) if buttons else
+                  ForceReply(selective=True, input_field_placeholder=t["cmd_hint_photo"]))
+        await message.reply_text(t["cmd_ask_photo"], reply_markup=markup)
+        return
+    if not question:
+        await message.reply_text(t["cmd_nothing"])
+        return
+    context.user_data["awaiting_correction"] = time.time()
+    await message.reply_text(t["cmd_ask_text"].format(q=question[:80]),
+                             reply_markup=ForceReply(selective=True, input_field_placeholder=t["cmd_hint_text"]))
+
+
+async def apply_correction(message, context, arg, user_id):
+    """The right answer, typed after /correction (in the same message or the next one)."""
+    arg = arg.strip()[:300]
+    photo_id = context.user_data.get("photo")
+    if photo_id and context.user_data.get("last_kind") == "photo":
+        await correct_photo(message, context, photo_id, dishes.photo_fix(arg), user_id)
+        return
+    t = dishes.TEXT["kh" if detect_lang(arg) == "kh" else "en"]
+    question, answer = last_answer(context)
+    if not question:
+        await message.reply_text(t["cmd_nothing"])
+        return
+    STATS["corrections"] += 1
+    await asyncio.to_thread(dishes.save_text_correction, question, answer, arg, user_id, "telegram")
+    await message.reply_text(t["text_saved"].format(q=question[:80]))
+
+
+async def notit_callback(update, context):
+    """notit:open / back / type: the nested "Not it?" button under a photo answer."""
+    q = update.callback_query
+    action = q.data.partition(":")[2]
+    kb = context.user_data.get("keyboards", {}).get(q.message.message_id)
+    if action == "type":
+        await q.answer()
+        if not await _guard(update, "corrections"):
+            return
+        context.user_data["awaiting_correction"] = time.time()
+        t = dishes.TEXT["en"]
+        await q.message.reply_text(t["cmd_ask_photo"].split(", or tap")[0].rstrip(".") + ".",
+                                   reply_markup=ForceReply(selective=True, input_field_placeholder=t["cmd_hint_photo"]))
+        return
+    if not kb:                                              # the bot restarted, or the answer is old
+        await q.answer("Send /correction and the right name.", show_alert=True)
+        return
+    await q.answer()
+    rows = kb["alts"] if action == "open" else kb["main"]
+    await q.edit_message_reply_markup(InlineKeyboardMarkup(rows))
+
+
+async def fix_callback(update, context):
+    """fix:<photo id>:<dish id>: a guess tapped under a photo: that is the dish, learn it."""
+    q = update.callback_query
+    await q.answer()
+    _, photo_id, dish_id = (q.data.split(":", 2) + ["", ""])[:3]
+    if dish_id not in dishes.DISHES or not await _guard(update, "dish_buttons"):
+        return
+    await correct_photo(q.message, context, photo_id, {"dish": dish_id}, update.effective_user.id)
+
+
+# ---------- voice: a spoken question -> text, then the user chooses a text or a voice answer ----------
+
+VOICE_TEXT = {
+    "en": {"off": "🎤 Voice is not available right now. Please type your question.",
+           "long": f"🎤 That voice message is too long. Please keep it under {MAX_VOICE_SECONDS} seconds.",
+           "unclear": "🎤 I couldn't hear that. Please try again, or type your question.",
+           "choose": "🎤 How should I answer?", "text": "📝 Reply as text", "voice": "🔊 Reply as voice",
+           "heard_btn": "👁 What I heard", "heard": "🎤 I heard: “{text}”",
+           "gone": "Send the voice message again, please.",
+           "pick": "🔊 Voice settings / ការកំណត់សំឡេង\n\nWho reads the answers, and how should I answer a voice "
+                   "message?\nអ្នកណាអានចម្លើយ ហើយតើខ្ញុំគួរឆ្លើយសារសំឡេងបែបណា?"},
+    "kh": {"off": "🎤 សំឡេងមិនទាន់អាចប្រើបានឥឡូវនេះទេ។ សូមវាយសំណួររបស់អ្នក។",
+           "long": f"🎤 សារសំឡេងនេះវែងពេក។ សូមកុំឱ្យលើស {MAX_VOICE_SECONDS} វិនាទី។",
+           "unclear": "🎤 ខ្ញុំស្តាប់មិនបានទេ។ សូមព្យាយាមម្តងទៀត ឬវាយសំណួររបស់អ្នក។",
+           "choose": "🎤 តើអ្នកចង់ឱ្យខ្ញុំឆ្លើយបែបណា?", "text": "📝 ឆ្លើយជាអក្សរ", "voice": "🔊 ឆ្លើយជាសំឡេង",
+           "heard_btn": "👁 អ្វីដែលខ្ញុំបានឮ", "heard": "🎤 ខ្ញុំបានឮ៖ “{text}”",
+           "gone": "សូមផ្ញើសារសំឡេងម្តងទៀត។"},
+}
+REPLY_MODES = ("ask", "voice", "text")      # how a voice message is answered: ask each time, or always voice / text
+
+
+class Recorder:
+    """Stands in for the Telegram message while the user is still choosing "text or voice": the answer is worked out
+    at once, but its replies are only noted, and sent (spoken or not) after the tap. Anything else is the message's."""
+    def __init__(self, message):
+        self._m, self.replies = message, []
+
+    def __getattr__(self, name):
+        return getattr(self._m, name)
+
+    async def reply_text(self, text, **kw):
+        self.replies.append(("text", text, kw))
+        return type("Noted", (), {"message_id": None})()
+
+    async def say(self, text, names=()):
+        self.replies.append(("say", text, names))
+
+    def spoken(self) -> str:
+        """What a voice answer would read aloud first (see Speaker), so the voice can be made in advance."""
+        for kind, text, extra in self.replies:
+            return voice.spoken_summary(text, extra if kind == "say" else ())
+        return ""
+
+    async def send_to(self, message):
+        for kind, text, extra in self.replies:
+            if kind == "say":
+                if hasattr(message, "say"):
+                    await message.say(text, extra)
+            else:
+                await message.reply_text(text, **extra)
+
+
+def reply_mode(context) -> str:
+    mode = context.user_data.get("voice_reply")
+    return mode if mode in REPLY_MODES else "ask"
+
+
+async def answer_ahead(message, context, text, user_id):
+    """Works out the answer to a spoken question while the user decides how to hear it, and makes the voice for it
+    too (free, and it saves the wait if they pick voice). Returns the Recorder with the replies to send."""
+    rec = Recorder(message)
+    await handle_text(rec, context, text, user_id)
+    spoken = rec.spoken()
+    if spoken:
+        await asyncio.to_thread(voice.speak, spoken, None, voice.valid_gender(context.user_data.get("voice_gender")))
+    return rec
+
+
+async def voice_handler(update, context):
+    """A voice note or audio file: transcribe it (Khmer or English) behind the scenes. The words are not shown (the
+    user's own voice note is the question; "What I heard" shows them). Then, as set with /voice: ask "text or voice?"
+    (the answer is already being found meanwhile), or answer at once as text or as voice."""
+    if not voice.available():
+        await update.message.reply_text(VOICE_TEXT["en"]["off"])
+        return
+    if not await _guard(update, "voice_queries"):
+        return
+    clip = update.message.voice or update.message.audio
+    if not clip:
+        return
+    if (clip.duration or 0) > MAX_VOICE_SECONDS or (clip.file_size or 0) > MAX_VOICE_MB * 1024 * 1024:
+        await update.message.reply_text(VOICE_TEXT["en"]["long"])
+        return
+    await context.bot.send_chat_action(update.effective_chat.id, ChatAction.TYPING)
+    try:
+        audio = bytes(await (await clip.get_file()).download_as_bytearray())     # in memory only, never saved or logged
+        text = await asyncio.to_thread(voice.transcribe, audio, clip.mime_type or "audio/ogg")
+    except Exception as e:
+        log.warning("voice message failed (%s)", safe_error(e))
+        text = ""
+    text = text.strip()[:200]
+    if not text:
+        await update.message.reply_text(VOICE_TEXT["en"]["unclear"])
+        return
+    t = VOICE_TEXT[detect_lang(text)]
+    user_id = update.effective_user.id
+    asked = context.user_data.get("awaiting_correction")
+    mode = reply_mode(context)
+    if (asked and time.time() - asked < CORRECTION_WAIT_S) or mode != "ask":   # nothing to choose
+        await handle_text(update.message, context, text, user_id, speak=mode == "voice")
+        return
+    task = None
+    if context.user_data.get("last_kind") != "photo":       # after a photo, "no, it's amok" must not run before the tap
+        task = asyncio.create_task(answer_ahead(update.message, context, text, user_id))
+    context.user_data["voice_pending"] = {"text": text, "task": task}
+    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(t["text"], callback_data="vreply:text"),
+                                      InlineKeyboardButton(t["voice"], callback_data="vreply:voice")],
+                                     [InlineKeyboardButton(t["heard_btn"], callback_data="vreply:heard")]])
+    await update.message.reply_text(t["choose"], reply_markup=keyboard, do_quote=True)   # under the voice note
+
+
+async def voice_callback(update, context):
+    """vreply:text / vreply:voice: send the answer (found meanwhile) as text, or read it aloud. vreply:heard: show
+    the words the bot heard, in the same message, keeping the two buttons."""
+    q = update.callback_query
+    pending = context.user_data.get("voice_pending")
+    if not pending:
+        await q.answer(VOICE_TEXT["en"]["gone"], show_alert=True)
+        return
+    t = VOICE_TEXT[detect_lang(pending["text"])]
+    if q.data.endswith("heard"):
+        await q.answer()
+        try:
+            await q.edit_message_text(f"{t['heard'].format(text=pending['text'])}\n\n{t['choose']}",
+                                      reply_markup=InlineKeyboardMarkup(q.message.reply_markup.inline_keyboard[:1]))
+        except Exception:
+            pass
+        return
+    context.user_data.pop("voice_pending", None)
+    await q.answer()
+    try:
+        await q.edit_message_reply_markup(reply_markup=None)     # the choice is made
+    except Exception:
+        pass
+    if not await _guard(update, "text_queries"):
+        return
+    speak = q.data.endswith("voice")
+    rec = None
+    if pending.get("task"):
+        await context.bot.send_chat_action(q.message.chat_id, ChatAction.RECORD_VOICE if speak else ChatAction.TYPING)
+        try:
+            rec = await pending["task"]
+        except Exception as e:
+            log.warning("answering ahead failed (%s)", safe_error(e))
+    if rec is None:                                              # not answered ahead: answer now
+        await handle_text(q.message, context, pending["text"], update.effective_user.id, speak=speak)
+        return
+    await rec.send_to(Speaker(q.message, context) if speak and voice.available() else q.message)
+
+
+def voices_keyboard(gender, mode):
+    tick = lambda on, label: ("✓ " if on else "") + label
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(tick(g == gender, label), callback_data=f"vgender:{g}")
+         for g, label in (("female", "👩 Female / ស្រី"), ("male", "👨 Male / ប្រុស"))],
+        [InlineKeyboardButton(tick(m == mode, label), callback_data=f"vmode:{m}")
+         for m, label in (("ask", "❓ Ask / សួរ"), ("voice", "🔊 Voice / សំឡេង"), ("text", "📝 Text / អក្សរ"))],
+    ])
+
+
+async def voice_cmd(update, context):
+    await update.message.reply_text(VOICE_TEXT["en"]["pick"], reply_markup=voices_keyboard(
+        voice.valid_gender(context.user_data.get("voice_gender")), reply_mode(context)))
+
+
+async def voice_gender_callback(update, context):
+    """vgender:female|male (who reads the answers) and vmode:ask|voice|text (how a voice message is answered)."""
+    q = update.callback_query
+    kind, _, value = q.data.partition(":")
+    if kind == "vgender":
+        context.user_data["voice_gender"] = voice.valid_gender(value)   # memory only, per user (like /model)
+    elif value in REPLY_MODES:
+        context.user_data["voice_reply"] = value
+    await q.answer("✓")
+    try:
+        await q.edit_message_reply_markup(reply_markup=voices_keyboard(
+            voice.valid_gender(context.user_data.get("voice_gender")), reply_mode(context)))
+    except Exception:
+        pass
 
 
 async def error_handler(update, context):
@@ -659,9 +1173,16 @@ def build_bot_app(token):
     app.add_handler(CommandHandler("setlocation", setlocation_cmd))
     app.add_handler(CallbackQueryHandler(more_callback, pattern="^more$"))
     app.add_handler(CallbackQueryHandler(spot_callback, pattern="^spot:"))
-    app.add_handler(CallbackQueryHandler(dish_callback, pattern="^(recipe|ingr|dish):"))
+    app.add_handler(CallbackQueryHandler(dish_callback, pattern="^(recipe|ingr|time|where|dish):"))
+    app.add_handler(CallbackQueryHandler(fix_callback, pattern="^fix:"))
+    app.add_handler(CallbackQueryHandler(notit_callback, pattern="^notit:"))
+    app.add_handler(CommandHandler(["correction", "correct"], correction_cmd))
     app.add_handler(MessageHandler(tg_filters.LOCATION, location_handler))
-    app.add_handler(MessageHandler(tg_filters.PHOTO, photo_handler))
+    app.add_handler(MessageHandler(tg_filters.PHOTO | tg_filters.Document.IMAGE, photo_handler))
+    app.add_handler(MessageHandler(tg_filters.VOICE | tg_filters.AUDIO, voice_handler))
+    app.add_handler(CallbackQueryHandler(voice_callback, pattern="^vreply:"))
+    app.add_handler(CommandHandler("voice", voice_cmd))
+    app.add_handler(CallbackQueryHandler(voice_gender_callback, pattern="^(vgender|vmode):"))
     app.add_handler(MessageHandler(tg_filters.TEXT & ~tg_filters.COMMAND, text_handler))
     app.add_error_handler(error_handler)
     return app

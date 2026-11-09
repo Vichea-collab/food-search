@@ -10,7 +10,7 @@ import pandas as pd
 import requests
 
 from .config import *  # noqa: F401,F403
-from .search import PLACE_NAMES_KH, about_food, detect_lang, is_open_at, parse_query_filters, place_count
+from .search import KHMER_RE, PLACE_NAMES_KH, about_food, detect_lang, is_open_at, parse_query_filters, place_count
 
 log = logging.getLogger("food_search.llm")
 
@@ -50,10 +50,12 @@ def unverified_note(results, lang) -> str:
 LEAD_TEXT = {
     "en": {"found": "Here's what I found", "for": " for “{what}”", "in": " in {place}", "open_now": "open now",
            "open_late": "open late", "under": "under ${v}", "rated": "rated {v}+", "near_me": "closest first",
-           "near": "closest to {name} first", "end": "."},
+           "near": "closest to {name} first", "end": ".", "named": "Here it is: {name}.",
+           "named_many": "I found {k} places called “{what}”:"},
     "kh": {"found": "នេះជាអ្វីដែលខ្ញុំរកឃើញ", "for": " សម្រាប់ “{what}”", "in": " នៅ{place}", "open_now": "កំពុងបើក",
            "open_late": "បើកយប់", "under": "ក្រោម ${v}", "rated": "ពិន្ទុ {v}+", "near_me": "ជិតខ្ញុំមុន",
-           "near": "ជិត {name} មុន", "end": "។"},
+           "near": "ជិត {name} មុន", "end": "។", "named": "នេះគឺ {name}។",
+           "named_many": "ខ្ញុំរកឃើញ {k} កន្លែងឈ្មោះ “{what}”៖"},
 }
 
 
@@ -65,6 +67,9 @@ def search_lead(results, lang, near=None) -> str:
     W = LEAD_TEXT[lang]
     flt, unverified = results.attrs.get("filters", {}), results.attrs.get("unverified") or []
     what = (results.attrs.get("query_text") or "").strip()
+    if flt.get("named_place") and len(results) and not near:   # "Shayoo Bite, do you know it?": the place itself
+        return (W["named"].format(name=results["name"].iloc[0]) if len(results) == 1
+                else W["named_many"].format(k=len(results), what=what))
     place = flt.get("area") or flt.get("city")
     if place and lang == "kh":
         place = PLACE_NAMES_KH.get(place, place)
@@ -134,6 +139,7 @@ def build_prompt(query, results, lang="en") -> str:
                     f" | hours: {fmt_hours(r.open_hour, r.close_hour)} | distance: {dist}"
                     f" | phone: {phone_val} | link: {page_val} | tags: {tags_val}"
                     f" | menu: {menu_val}"
+                    f" | delivery: {delivery_text(r)}"
                     f" | notes: {r.description}")
     language = "Khmer" if lang == "kh" else "English"
     return (
@@ -153,6 +159,8 @@ def build_prompt(query, results, lang="en") -> str:
         "- If the question says near me / near a place, prefer the closest places and give their distance.\n"
         "- Use only facts that are written in RESULTS: no opinions about taste, quality or popularity.\n"
         "- If none of the RESULTS fit the question, say clearly that nothing matches.\n"
+        "- \"delivery\" lists the delivery apps (Foodpanda, Grab) where the place was found; \"not found in our data\" means "
+        "no listing was found, not that it does not deliver.\n"
         + (f"- The data cannot confirm the question's condition on {', '.join(results.attrs['unverified'])}: do not say or "
            "imply that a place meets it.\n" if results.attrs.get("unverified") else "") +
         "- 1 or 2 short sentences, under 50 words, plain text: no greeting, no list, no closing question.\n\n"
@@ -196,16 +204,33 @@ def ollama_headers() -> dict:
     return {}
 
 
+_NO_JSON_FORMAT = set()     # Ollama models that refuse "format": "json" ("structured output is unavailable")
+
+
 def call_ollama(prompt, model=None, json_mode=False, timeout_s=None) -> str:
     model = model or OLLAMA_MODEL
     if not model:
         raise RuntimeError("OLLAMA_MODEL is not set")
-    r = requests.post(f"{OLLAMA_HOST}/api/generate", headers=ollama_headers(),
-                      json={"model": model, "prompt": prompt, "stream": False, "options": {"temperature": 0.2},
-                            **({"format": "json"} if json_mode else {})},
-                      timeout=(5, timeout_s or OLLAMA_TIMEOUT_S))        # (connect, read) seconds
+
+    def post(use_format):
+        return requests.post(f"{OLLAMA_HOST}/api/generate", headers=ollama_headers(),
+                             json={"model": model, "stream": False, "options": {"temperature": 0.2},
+                                   "think": False,          # Qwen3.x and other reasoning models: answer directly (faster)
+                                   "keep_alive": "30m",     # stay loaded between questions (loading takes seconds)
+                                   "prompt": prompt if use_format or not json_mode
+                                   else prompt + "\n\nReply with the JSON object only, no other text.",
+                                   **({"format": "json"} if use_format else {})},
+                             timeout=(5, timeout_s or OLLAMA_TIMEOUT_S))        # (connect, read) seconds
+
+    use_format = json_mode and model not in _NO_JSON_FORMAT
+    r = post(use_format)
+    if use_format and r.status_code == 501:       # this model has no structured output: ask for JSON in words
+        _NO_JSON_FORMAT.add(model)
+        r = post(False)
     r.raise_for_status()
-    text = r.json().get("response", "").strip()
+    text = re.sub(r"<think>.*?</think>", "", r.json().get("response", ""), flags=re.S).strip()
+    if json_mode:
+        text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text)  # some models wrap JSON in a code block
     if not text:
         raise RuntimeError("Ollama returned an empty answer")
     return text
@@ -290,6 +315,16 @@ def as_sentences(text) -> str:
     return " ".join(l for l in lines if l)
 
 
+def as_reply(text) -> str:
+    """A follow-up answer: plain sentences, except a list of several items (dishes, prices, places), which stays one
+    "- " line per item so it is easy to read."""
+    lines = [l.strip() for l in str(text).strip().splitlines() if l.strip()]
+    bullets = [l for l in lines if re.match(r"^[-*•]\s+", l)]
+    if len(bullets) < 2:
+        return as_sentences(text)
+    return "\n".join(re.sub(r"^[-*•]\s+", "- ", l) for l in lines)
+
+
 def generate_answer(query, results, model_id=None) -> dict:
     """RAG answer from the retrieved rows. Returns {text, provider, model, label, chosen}:
     provider = gemini | ollama | cards (no model answered) | no-results (nothing retrieved, no model call)."""
@@ -329,8 +364,13 @@ HISTORY_TURNS = 6          # earlier messages (user + assistant) the model sees
 CONTEXT_PLACES = 10        # places shown most recently that a follow-up can refer to
 PLAN_TIMEOUT_S = 10        # the "decide" step makes one quick attempt (Gemini's minimum); if it is slow or busy, word rules decide
 
-CHAT_RE = re.compile(r"^\s*(hi+|hello|hey|yo|thanks?|thank you|thx|ok(ay)?|cool|great|nice|bye|good (morning|afternoon|"
-                     r"evening|night)|សួស្តី|ជំរាបសួរ|អរគុណ|បាទ|ចាស|អូខេ|លា)\b[\s!.?😀-🙏]*$", re.I)
+# greetings, thanks, ok, bye. Khmer words get no \b after them: Khmer vowel signs (ី in សួស្តី) are not "word"
+# characters for Python's re, so \b never matches at their end and "សួស្តី" used to become a search
+EN_CHAT = (r"hi+|hello|hey|yo|thanks?(?:\s+(?:a\s+lot|so\s+much|very\s+much))?|thank\s+you(?:\s+(?:so|very)\s+much)?|"
+           r"thx|ty|ok(?:ay)?|cool|great|nice|bye|goodbye|good\s+(?:morning|afternoon|evening|night)")
+KH_CHAT = r"សួស្តី|ជំរាបសួរ|អរគុណ(?:ច្រើន|ណាស់|បាទ|ចាស)*|បាទ|ចាស|អូខេ|លា(?:ហើយ|សិនហើយ|សិន)?"
+CHAT_RE = re.compile(rf"^\s*(?:(?:{EN_CHAT})\b|(?:{KH_CHAT}))(?:\s+(?:there|bot|klean\s*nham|everyone))?"
+                     r"[\s!.?😀-🙏]*$", re.I)
 FOLLOWUP_RE = re.compile(r"\b(it|its|it's|that|this|those|these|they|them|their|there|first|second|third|last|"
                          r"closest|nearest|number\s*\d|no\.?\s*\d|menu|menus|dishes|serve|serves|open|opens|close|"
                          r"closes|closed|hours?|phone|call|contact|far|distance|address|where|located|facebook|page|"
@@ -343,11 +383,27 @@ ORDINALS = {"first": 1, "1st": 1, "second": 2, "2nd": 2, "third": 3, "3rd": 3, "
 FILLER_RE = re.compile(r"^\s*(show me|find me|find|search for|what about|how about|i want|i'd like|give me|any)\s+|"
                        r"\s+(instead|please|then)\s*[?.!]*$", re.I)
 ABOUT_RE = re.compile(r"\b(who are you|what are you|what can you do|what do you do|how (do|does) (this|it|you) work|"
-                      r"your name)\b|^\s*help\s*[?!.]*$|អ្នកជានរណា|អ្នកអាចធ្វើអ្វី", re.I)
+                      r"your name|how can you help|what can you help)\b|^\s*help\s*[?!.]*$|"
+                      r"អ្នកជានរណា|អ្នកជាអ្វី|អ្នកអាចធ្វើអ្វី|អាចជួយអ្វី|ជួយអ្វីបាន|ធ្វើអ្វីបានខ្លះ", re.I)
 HUNGRY_RE = re.compile(r"^\s*(i'?m|i am|im)\s+(so |very |really )?(hungry|starving)\b|^\s*(so |very )?(hungry|starving)\s*[!.?]*$|\bwhat (should|can|do) i eat\b|"
                        r"\b(don'?t|do not) know what to eat\b|\bany (food )?(ideas|suggestions)\b|^\s*ឃ្លាន|ញ៉ាំអីល្អ|ញ៉ាំអ្វីល្អ", re.I)
-OFF_TOPIC_RE = re.compile(r"\b(weather|poem|story|joke|song|lyrics|homework|translate|news|politics|essay|math|"
-                          r"programming|write (me )?(a|an))\b", re.I)
+OFF_TOPIC_RE = re.compile(r"\b(poem|lyrics|homework|essay|programming|write (me )?(a|an)|world cup|football|soccer|"
+                          r"premier league|nba|olympics|who won|capital of|president|prime minister|bitcoin|crypto|"
+                          r"stock price|python|javascript|java code|write code|source code|quicksort|algorithm|sql)\b", re.I)
+# also in place names ("Story Cafe", "News Bar"): off-topic only when nothing in the message is about food or places
+WEAK_OFF_TOPIC_RE = re.compile(r"\b(weather|story|joke|song|translate|news|politics|math)\b", re.I)
+PLACE_WORDS_RE = re.compile(r"\b(cafe|café|coffee|restaurant|bar|shop|food|eat|menu|near|open)\b", re.I)
+
+
+def is_off_topic(message) -> bool:
+    return bool(OFF_TOPIC_RE.search(message)
+                or (WEAK_OFF_TOPIC_RE.search(message) and not PLACE_WORDS_RE.search(message)))
+
+
+# attempts to change the bot's instructions or get secrets: answered with a fixed sentence, never sent to a model
+INJECTION_RE = re.compile(r"\b(ignore|disregard|forget)\b.{0,30}\b(instructions?|rules?|prompt)\b|system prompt|"
+                          r"\bapi[\s_-]?keys?\b|\bjailbreak|\bdeveloper mode\b|\byou are now\b|\bDAN\b|"
+                          r"\bact as\b|\bpretend (to be|you are)\b|\breveal\b.{0,20}\b(prompt|instructions|secret|key)", re.I)
 CHAT_FALLBACK = {"en": "Happy to help! Tell me a dish, an area or a time, for example “kuy teav near me”.",
                  "kh": "រីករាយជួយ! ប្រាប់ខ្ញុំពីម្ហូប តំបន់ ឬម៉ោង ឧ. “គុយទាវ ជិតខ្ញុំ”។"}
 NOT_IN_DATA = "not in our data"
@@ -375,9 +431,11 @@ def named_by_part(message, places) -> list:
     said = set(NAME_WORDS_RE.findall(message.lower()))
     names = [[w for w in NAME_WORDS_RE.findall(str(n).lower()) if len(w) >= 3] for n in places["name"]]
     common = {w for w in set().union(*map(set, names)) if len(names) >= 3 and sum(w in n for n in names) * 2 >= len(names)}
+    from . import search as _search                   # food words name a dish, not a place: "fried rice" is not
+    food = set(_search.FOOD_VOCAB or [])               # "Meng Heang Chicken Rice"
     scores = {}
     for i, words in enumerate(names, 1):
-        key = [w for w in words if w not in NAME_STOP and w not in common]
+        key = [w for w in words if w not in NAME_STOP and w not in common and w not in food]
         if any(w in said for w in key):                      # at least one distinctive word of the name
             scores[i] = sum(w in said for w in set(words))
     best = max(scores.values(), default=0)
@@ -417,11 +475,20 @@ GENERIC_WORDS = {"one", "ones", "place", "places", "spot", "spots", "something",
                  "ផ្សេង", "ទៀត", "ផ្សេងទៀត", "ហាង", "កន្លែង", "ហាងផ្សេង", "ហាងផ្សេងទៀត"}
 
 
-def carry_context(query, last_query) -> str:
+def carry_context(query, last_query, message=None) -> str:
     """Keeps what the user is looking for when a new search does not say it again:
-    'cheaper ones' after 'pizza near me' -> 'pizza cheap near me'; after 'pizza in Toul Kork' -> '... in Toul Kork'."""
+    'cheaper ones' after 'pizza near me' -> 'pizza cheap near me'; after 'pizza in Toul Kork' -> '... in Toul Kork'.
+    message = the user's own words: a place the model added to its rewrite ("kuy teav cheap Phnom Penh" for "any
+    cheaper ones?") is not the user's, so the previous search's place is kept instead."""
     if not last_query:
         return query
+    _, said = parse_query_filters(message) if message else (None, None)
+    _, wrote = parse_query_filters(query)
+    if said is not None and not (said.get("near") or said.get("area") or said.get("city")):
+        for name in (wrote.get("near"), wrote.get("area"), wrote.get("city")):
+            if name:                                   # invented by the model: drop it ("in Phnom Penh")
+                query = re.sub(rf"\b(?:in|near|at|around)?\s*{re.escape(name)}\b", " ", query, flags=re.I)
+        query = " ".join(query.split())
     query = re.sub(r"\bcheaper\b", "cheap", query, flags=re.I)        # "cheap" is a filter the search understands
     text, _ = parse_query_filters(query)
     if not [w for w in text.split() if w.strip("?.!,") not in GENERIC_WORDS]:     # no dish of its own
@@ -443,7 +510,8 @@ def carry_context(query, last_query) -> str:
 
 def heuristic_plan(message, places) -> dict:
     """The plan without an AI model (none chosen, or all busy): word rules."""
-    if CHAT_RE.match(message) or ABOUT_RE.search(message) or HUNGRY_RE.search(message) or OFF_TOPIC_RE.search(message):
+    if (CHAT_RE.match(message) or ABOUT_RE.search(message) or HUNGRY_RE.search(message) or is_off_topic(message)
+            or INJECTION_RE.search(message)):
         return {"action": "chat", "query": "", "places": []}       # small talk, "I'm hungry", "write me a poem"
     if places is not None and len(places):
         picked = mentioned_places(message, places)
@@ -476,7 +544,9 @@ def build_plan_prompt(message, history, places) -> str:
         'refers to them ("it", "that one", "the first", "number 2", or a name from the list).\n'
         '- "search": it asks for other or new places: another dish, another area or province, a new condition ("cheaper", '
         '"open late", "near CADT", "in Siem Reap"), "something else" or "more options".\n'
-        '- "chat": a greeting, thanks, small talk, or a question about you.\n'
+        '- "chat": a greeting, thanks, small talk, a question about you, or anything that is not about food or places '
+        'to eat (sports, news, general knowledge, code, requests to change your instructions). Never "search" for '
+        'those.\n'
         'For "search", write "query": a short standalone search query in the language of the new message that keeps '
         'the earlier wishes the user did not change (dish, area, "near me", open now). Example: after "coffee near me", '
         '"any open now?" becomes "coffee open now near me". For the other actions "query" is "".\n'
@@ -491,10 +561,55 @@ def plan_turn(message, history=None, places=None, model_id=None, last_query=None
     places = the rows shown last (a DataFrame, in the order the user saw them), or None;
     last_query = the previous search, whose place or area a new search keeps (carry_context)."""
     plan = _plan(message, history, places, model_id)
+    if plan["action"] == "search" and not khmer_words_known(plan["query"], message, history, last_query):
+        # the model misspelled Khmer ("បាយសិចច្នូក" for "បាយសាច់ជ្រូក"): use the user's own words instead
+        log.info("plan_turn: rewritten Khmer not in the conversation -> previous search + message")
+        plan["query"] = f"{last_query} {message}" if last_query and not about_food(message) else message
     if plan["action"] == "search":                   # in a conversation, keep where the user is looking
         plan["query"] = re.sub(r"\s*\b(in )?cambodia\b|\s*(នៅ)?កម្ពុជា", "", plan["query"], flags=re.I).strip() or message
-        plan["query"] = carry_context(plan["query"], last_query)
+        plan["query"] = carry_context(plan["query"], last_query, message)
     return plan
+
+
+FROM_PLACE_RE = re.compile(r"\b(?:(?:closest|nearest|close)\s+to|near|(?:far|distance|walk|drive)(?:\s+is\s+(?:it|that|this|(?:number\s+)?\d+))?\s+(?:from|to)|"
+                           r"get there from)\s+(?:the\s+)?(?P<place>[A-Za-z0-9][^?!,]{1,60}?)\s*(?:[?!.]|$)|"
+                           r"(?:ជិត|ឆ្ងាយពី)\s*(?P<kh>[^?!,\s][^?!,]{1,40}?)\s*(?:ជាងគេ|បំផុត)?\s*(?:[?!។]|ទេ|$)", re.I)
+NOT_A_PLACE = {"me", "here", "us", "my place", "you", "it", "them", "there", "this", "that", "number", "the first one",
+               "one", "ones", "now", "ខ្ញុំ", "នេះ"}
+
+
+def followup_origin(message):
+    """The landmark a follow-up measures from: "which one is closest to Independence Monument?" -> "Independence
+    Monument"; None for "how far is number 2?" (then the previous search's place or the user's location is used)."""
+    m = FROM_PLACE_RE.search(message or "")
+    if not m:
+        return None
+    place = (m.group("place") or m.group("kh") or "").strip()
+    if place.lower() in NOT_A_PLACE or re.match(r"(?i)(me|you|us|number|no\.?)\b", place) or re.fullmatch(r"\d+", place):
+        return None
+    return place
+
+
+# words that point at the places already shown ("is it near ...", "which one ...", "number 2 ...")
+POINTS_BACK_RE = re.compile(r"\b(it|its|they|them|their|which|number|no\.|first|second|third|fourth|fifth|last|"
+                            r"one|ones|these|those|this|that)\b|ហាងនេះ|ហាងនោះ|មួយណា|ទីមួយ|ទីពីរ|ទីបី|លេខ", re.I)
+
+
+def names_unshown_place(message, places) -> bool:
+    """Does the message name a place in our data that is not among the ones shown ("steaklub opening hours")?"""
+    from . import search as _search
+    hits = _search.hybrid_search(message, 5)
+    if not hits.attrs.get("filters", {}).get("named_place"):
+        return False
+    shown = set(places["id"]) if places is not None and "id" in places else set()
+    return not (set(hits["id"]) & shown)
+
+
+def khmer_words_known(query, message, history=None, last_query=None) -> bool:
+    """Every Khmer word of a rewritten search appears somewhere in what the user wrote (or was shown): models
+    sometimes write Khmer that looks right but is misspelled, which then finds nothing or the wrong places."""
+    known = " ".join([message or "", last_query or ""] + [str(t.get("text", "")) for t in (history or [])])
+    return all(w in known for w in KHMER_RE.findall(query or "") if len(w) >= 2)
 
 
 def _plan(message, history, places, model_id) -> dict:
@@ -503,6 +618,16 @@ def _plan(message, history, places, model_id) -> dict:
         if quick["action"] == "chat" or about_food(quick["query"]):
             return quick                             # "pizza", "hi": no AI call
     else:
+        if heuristic_plan(message, None)["action"] == "chat":
+            return {"action": "chat", "query": "", "places": []}   # small talk / off-topic first ("weather today?")
+        flt = parse_query_filters(message)[1]
+        if (not mentioned_places(message, places) and not POINTS_BACK_RE.search(message)
+                and names_unshown_place(message, places)):
+            return {"action": "search", "query": message, "places": []}   # "steaklub hours?": a place not shown yet
+        if (about_food(message) and (flt.get("near") or flt.get("area") or flt.get("city"))
+                and not mentioned_places(message, places) and not POINTS_BACK_RE.search(message)):
+            # "fried rice near CADT" after other results: a new search (a food + a place), not about the places shown
+            return {"action": "search", "query": message, "places": []}
         quick = heuristic_plan(message, places)
         if quick["action"] == "chat" or (quick["action"] == "followup" and quick["places"]):
             return quick                             # obvious (a greeting, or "number 2" / a place's name): no AI call
@@ -514,8 +639,11 @@ def _plan(message, history, places, model_id) -> dict:
             if focus and not (WHICH_RE.search(message) or COMPARE_RE.search(message) or LIST_RE.search(message)):
                 return {**quick, "places": focus}
     try:
-        text, _ = complete(build_plan_prompt(message, history, places), model_id, json_mode=True,
-                           max_models=1, timeout_s=PLAN_TIMEOUT_S)
+        # deciding what a message needs is a small, important step: it uses the default model (the strongest),
+        # whichever model the user chose to write answers; if that one is busy, the next one in LLM_MODELS decides
+        plan_model = model_id if model_id == NO_LLM else DEFAULT_MODEL_ID
+        text, _ = complete(build_plan_prompt(message, history, places), plan_model, json_mode=True,
+                           max_models=2, timeout_s=PLAN_TIMEOUT_S)
         plan = json.loads(text[text.find("{"):text.rfind("}") + 1])
         action = plan.get("action")
         if action not in ("followup", "search", "chat"):
@@ -567,9 +695,25 @@ def place_facts(n, r, hour_now) -> str:
             f" | distance: {'unknown' if pd.isna(d) else (f'{round(d * 100) * 10:.0f} m' if d < 1 else f'{d:.1f} km')}"
             f" | opening hours: {hours} | price: {fmt_price(price_val) if pd.notna(price_val) else NOT_IN_DATA}"
             f" | menu: {menu_str or NOT_IN_DATA}"
+            f" | delivery: {delivery_text(r)}"
             f" | phone: {phone if phone and phone.lower() != 'nan' else NOT_IN_DATA}"
             f" | link: {page if page else NOT_IN_DATA}"
             f" | notes: {desc or NOT_IN_DATA}")
+
+
+def delivery_platforms(r) -> list:
+    """[(platform, url), ...] the place is listed on (Foodpanda, Grab...), from the `delivery` column."""
+    raw = r.get("delivery", "") if isinstance(r, (pd.Series, dict)) else getattr(r, "delivery", "")
+    try:
+        items = json.loads(raw) if isinstance(raw, str) and raw.strip().startswith("[") else []
+    except ValueError:
+        return []
+    return [(it["platform"], it.get("url", "")) for it in items if isinstance(it, dict) and it.get("platform")]
+
+
+def delivery_text(r) -> str:
+    names = [p for p, _ in delivery_platforms(r)]
+    return ", ".join(names) if names else "not found in our data"
 
 
 def _hour_now():
@@ -585,14 +729,17 @@ def _hour_now():
 
 FIELD_RES = {      # what a question can ask about a place (checked in this order = the column order)
     "food": r"\b(food|serve|serves|sell|sells|kind of|type of|cuisine)\b|ម្ហូបអ្វី|លក់អ្វី|ប្រភេទ",
-    "menu": r"\b(menu|menus|dish|dishes)\b|ម៉ឺនុយ|មុខម្ហូប",
+    # "menu", and "what does it have?", "what do they sell?", "what can I order there?"
+    "menu": r"\b(menu|menus|dish|dishes)\b|\bwhat\b.*\b(have|has|sell|sells|offer|offers)\b|"
+            r"\bwhat can (i|we) (eat|order|get|have)\b|មុខម្ហូប|ម៉ឺនុយ|មានអ្វីខ្លះ|មានម្ហូបអ្វី|លក់អ្វីខ្លះ",
     "price": r"\b(price|prices|cost|costs|how much|cheap|cheaper|cheapest|expensive|budget)\b|តម្លៃ|ថ្លៃ|ថោក",
     "hours": r"\b(open|opens|opening|close|closes|closing|closed|hours?|what time)\b|បើក|បិទ|ម៉ោង",
-    "distance": r"\b(far|distance|closest|nearest|how long)\b|ឆ្ងាយ|ចម្ងាយ|ជិតជាងគេ",
+    "distance": r"\b(far|distance|closest|nearest|near|close to|how long)\b|ឆ្ងាយ|ចម្ងាយ|ជិតជាងគេ",
     "area": r"\b(where|address|located|location|which area|which khan)\b|នៅឯណា|ទីតាំង|អាសយដ្ឋាន",
     "phone": r"\b(phone|call|telephone|contact)\b|ទូរស័ព្ទ|លេខទូរស័ព្ទ",
     "link": r"\b(facebook|fb|page|website|site|link|order online)\b|ហ្វេសប៊ុក|គេហទំព័រ",
     "rating": r"\b(rating|ratings|rated|stars?|reviews?)\b|ផ្កាយ|ការវាយតម្លៃ",
+    "delivery": r"\b(deliver|delivers|delivery|foodpanda|grab|grabfood|takeaway|take away|order online)\b|ដឹក|ដឹកជញ្ជូន|ផ្ញើ",
 }
 FIELD_RES = {k: re.compile(v, re.I) for k, v in FIELD_RES.items()}
 DEFAULT_FIELDS = ["food", "area", "price", "hours", "distance"]      # "compare 1 and 2" without saying what
@@ -604,19 +751,46 @@ SUPERLATIVE_RE = re.compile(r"\b(cheapest|closest|nearest|best rated|highest rat
 WHICH_RE = re.compile(r"\b(which|who has|is there one|are any|any of them)\b|មួយណា|ណាមួយ|ហាងណា", re.I)
 LABELS = {
     "en": {"place": "Place", "food": "Food", "menu": "Menu", "price": "Price", "hours": "Hours", "distance": "Distance",
-           "area": "Area", "phone": "Phone", "link": "Page", "rating": "Rating", "unknown": "not in our data",
+           "area": "Area", "phone": "Phone", "link": "Page", "rating": "Rating", "delivery": "Delivery platform",
+           "unknown": "not in our data",
            "open": "open now", "closed": "closed now", "dash": "— = not in our data",
            "none": "Sorry, our data has no {what} for {places}.", "menu_of": "menu",
            "missing": "Our data has no {what} for these places.",
            "these": "these {n} places", "gaps": "Not in our data for number {nums}.",
+           "have_one": "Only 1 of these {n} places has a {what} in our data:",
+           "have_some": "{k} of these {n} places have a {what} in our data:",
+           "others": "The others (number {nums}): not in our data.",
            "which": "Which place's menu? Send its number or name, e.g. “menu of 2”."},
     "kh": {"place": "ហាង", "food": "ម្ហូប", "menu": "ម៉ឺនុយ", "price": "តម្លៃ", "hours": "ម៉ោងបើក", "distance": "ចម្ងាយ",
-           "area": "ទីតាំង", "phone": "ទូរស័ព្ទ", "link": "ទំព័រ", "rating": "ការវាយតម្លៃ", "unknown": "មិនមានក្នុងទិន្នន័យ",
+           "area": "ទីតាំង", "phone": "ទូរស័ព្ទ", "link": "ទំព័រ", "rating": "ការវាយតម្លៃ", "delivery": "កម្មវិធីដឹកជញ្ជូន",
+           "unknown": "មិនមានក្នុងទិន្នន័យ",
            "open": "កំពុងបើក", "closed": "បិទហើយ", "dash": "— = មិនមានក្នុងទិន្នន័យ",
            "none": "សូមអភ័យទោស ទិន្នន័យរបស់យើងមិនមាន{what}សម្រាប់ {places} ទេ។", "menu_of": "ម៉ឺនុយ",
            "missing": "ទិន្នន័យរបស់យើងមិនមាន{what}សម្រាប់ហាងទាំងនេះទេ។",
            "these": "ហាងទាំង {n} នេះ", "gaps": "មិនមានក្នុងទិន្នន័យសម្រាប់លេខ {nums}។",
+           "have_one": "មានតែ 1 ក្នុងចំណោម {n} ហាងនេះ ដែលមាន{what}ក្នុងទិន្នន័យ៖",
+           "have_some": "{k} ក្នុងចំណោម {n} ហាងនេះ មាន{what}ក្នុងទិន្នន័យ៖",
+           "others": "ហាងផ្សេងទៀត (លេខ {nums}) មិនមានក្នុងទិន្នន័យទេ។",
            "which": "ចង់មើលម៉ឺនុយហាងណា? សូមផ្ញើលេខ ឬឈ្មោះហាង ឧ. “ម៉ឺនុយលេខ 2”។"},
+}
+
+
+# what the user can do when our data does not have the detail they asked for
+NO_DATA_TIPS = {
+    "en": {"rating": "Open a place in Google Maps (📍 or Directions) to read its reviews.",
+           "hours": "Their Facebook page or Google Maps listing usually shows the hours.",
+           "price": "Their page or a delivery app (Foodpanda, Grab) usually lists prices.",
+           "menu": "Their Facebook page or a delivery app usually shows the menu.",
+           "phone": "Their Facebook page or Google Maps listing usually has a phone number.",
+           "delivery": "Search their name in Foodpanda or Grab to check.",
+           "link": "Try searching their name on Facebook."},
+    "kh": {"rating": "បើកហាងក្នុង Google Maps (📍) ដើម្បីអានការវាយតម្លៃ។",
+           "hours": "ទំព័រ Facebook ឬ Google Maps របស់ពួកគេ ជាធម្មតាមានម៉ោងបើក។",
+           "price": "ទំព័ររបស់ពួកគេ ឬកម្មវិធីដឹកជញ្ជូន (Foodpanda, Grab) ជាធម្មតាមានតម្លៃ។",
+           "menu": "ទំព័រ Facebook ឬកម្មវិធីដឹកជញ្ជូន ជាធម្មតាមានម៉ឺនុយ។",
+           "phone": "ទំព័រ Facebook ឬ Google Maps ជាធម្មតាមានលេខទូរស័ព្ទ។",
+           "delivery": "ស្វែងរកឈ្មោះពួកគេក្នុង Foodpanda ឬ Grab។",
+           "link": "សាកស្វែងរកឈ្មោះពួកគេលើ Facebook។"},
 }
 
 
@@ -687,6 +861,9 @@ def field_value(r, field, lang, hour_now) -> str:
         return f"⭐ {float(v):.1f}" if v != "" else ""
     if field == "menu":
         return ", ".join(menu_line(it, lang) for it in menu_items(r))
+    if field == "delivery":
+        plats = delivery_platforms(r)
+        return ", ".join(f"[{p}]({u})" if u.startswith("http") else p for p, u in plats)
     return ""
 
 
@@ -700,6 +877,17 @@ def _cell(text) -> str:
     return str(text).replace("|", "/").replace("\n", " ") or "—"
 
 
+def number_ranges(numbers) -> str:
+    """[1, 2, 3, 4, 6, 7, 8] -> '1–4, 6–8'."""
+    parts, nums = [], sorted(numbers)
+    for n in nums:
+        if parts and n == parts[-1][1] + 1:
+            parts[-1][1] = n
+        else:
+            parts.append([n, n])
+    return ", ".join(str(a) if a == b else f"{a}, {b}" if b == a + 1 else f"{a}–{b}" for a, b in parts)
+
+
 def facts_answer(shape, fields, rows, numbers, lang, hour_now):
     """The list or table for `rows` (numbered as shown), with only `fields`. None when the data has none of it."""
     L = LABELS[lang]
@@ -710,7 +898,8 @@ def facts_answer(shape, fields, rows, numbers, lang, hour_now):
         what = ", ".join(L[f].lower() if lang == "en" else L[f] for f in fields)
         places = (", ".join(f"{n}. {_val(r, 'name')}" for n, r in zip(numbers, rows)) if len(numbers) <= 3
                   else L["these"].format(n=len(numbers)))
-        return L["none"].format(what=what, places=places)
+        tip = NO_DATA_TIPS[lang].get(fields[0], "") if len(fields) == 1 else ""
+        return L["none"].format(what=what, places=places) + (f" {tip}" if tip else "")
     if shape == "list" and "menu" in fields:  # one bullet per dish, under each place
         blocks = []
         for n, r in zip(numbers, rows):
@@ -733,8 +922,14 @@ def facts_answer(shape, fields, rows, numbers, lang, hour_now):
         if len(gaps) == 1 and len(numbers) <= 3:
             n = gaps[0]
             lines.append(f"- **{n}. {_val(rows[numbers.index(n)], 'name')}** — {L['unknown']}")
+        elif gaps and len(fields) == 1:       # "can it deliver?" about 10 places: say how many have it, then the rest
+            what = L[fields[0]].lower() if lang == "en" else L[fields[0]]
+            k = len(numbers) - len(gaps)
+            lines.insert(0, L["have_one" if k == 1 else "have_some"].format(k=k, n=len(numbers), what=what))
+            tip = NO_DATA_TIPS[lang].get(fields[0], "")
+            lines.append("\n" + L["others"].format(nums=number_ranges(gaps)) + (f" {tip}" if tip else ""))
         elif gaps:
-            lines.append("\n" + L["gaps"].format(nums=", ".join(map(str, gaps))))
+            lines.append("\n" + L["gaps"].format(nums=number_ranges(gaps)))
         return "\n".join(lines)
     cols = [f for f in asked_known if f != "menu"] or asked_known
     if len(numbers) <= 3:                     # side by side: one column per place, one row per detail (fits a phone)
@@ -761,7 +956,9 @@ OPEN_Q_RE = re.compile(r"\b(is|are)\b.*\bopen\b|\bopen (now|today|tonight|right 
 FACT_TEXT = {
     "en": {"open_yes": "Yes, {p} is open now ({v}).", "open_no": "No, {p} is closed now. Its hours are {v}.",
            "hours": "{p} is open {v}.", "price": "{p}: about {v}.", "phone": "{p}: {v}", "distance": "{p} is {v} away.",
+           "distance_from": "{p} is {v} from {o}.",
            "area": "{p} is in {v}.", "link": "{p}: {v}", "rating": "{p} is rated {v}.", "food": "{p} serves {v}.",
+           "delivery": "Yes, {p} delivers: order on {v}.",
            "unknown": "Our data has no {what} for {p}.",
            "no_location": "I don't know where you are yet. Share your location, or ask again with “near me”, and I'll "
                           "give the distance.",
@@ -769,7 +966,9 @@ FACT_TEXT = {
            "try_page": " Their {link} may have it.", "try_phone": " You could call them: {phone}."},
     "kh": {"open_yes": "បាទ {p} កំពុងបើក ({v})។", "open_no": "ទេ {p} បិទហើយ។ ម៉ោងបើក៖ {v}។",
            "hours": "{p} បើក {v}។", "price": "{p}៖ ប្រហែល {v}។", "phone": "{p}៖ {v}", "distance": "{p} ឆ្ងាយ {v}។",
+           "distance_from": "{p} ឆ្ងាយពី {o} {v}។",
            "area": "{p} នៅ {v}។", "link": "{p}៖ {v}", "rating": "{p} ទទួលបាន {v}។", "food": "{p} លក់ {v}។",
+           "delivery": "បាទ {p} មានសេវាដឹកជញ្ជូន៖ កុម្ម៉ង់តាម {v}។",
            "unknown": "ទិន្នន័យរបស់យើងមិនមាន{what}សម្រាប់ {p} ទេ។",
            "no_location": "ខ្ញុំមិនទាន់ដឹងថាអ្នកនៅឯណាទេ។ សូមចែករំលែកទីតាំង ឬសួរម្តងទៀតដោយថា “ជិតខ្ញុំ”។",
            "no_xy": "ទិន្នន័យរបស់យើងមិនមានទីតាំងលើផែនទីសម្រាប់ {p} ទេ ដូច្នេះមិនអាចប្រាប់ចម្ងាយបាន។",
@@ -781,7 +980,7 @@ def fact_sentence(message, fields, n, r, lang, hour_now, places):
     """One-sentence answer from the data when a question asks one detail of one place ("is it open now?",
     "phone of 2?", "how far is number 3?", "tell me about the first one"). None = let the model answer."""
     F, L = FACT_TEXT[lang], LABELS[lang]
-    p = f"{n}. {_val(r, 'name')}"
+    p = _val(r, 'name') if len(places) == 1 else f"{n}. {_val(r, 'name')}"   # one place shown: no number needed
     if not fields:                                   # "tell me about number 2": its known facts in one line
         return facts_answer("list", [], [r], [n], lang, hour_now) if TELL_RE.search(message) else None
     if len(fields) != 1 or fields[0] == "menu":
@@ -796,6 +995,8 @@ def fact_sentence(message, fields, n, r, lang, hour_now, places):
         if OPEN_Q_RE.search(message):
             return F["open_yes" if is_open_at(o, c, hour_now) else "open_no"].format(p=p, v=fmt_hours(o, c))
         return F["hours"].format(p=p, v=v)
+    if f == "distance" and v and places.attrs.get("origin"):          # "near CADT": say where it is measured from
+        return F["distance_from"].format(p=p, v=v, o=places.attrs["origin"])
     if v:
         return F[f].format(p=p, v=v)
     what = L[f].lower() if lang == "en" else L[f]
@@ -866,7 +1067,11 @@ def which_answer(message, fields, rows, numbers, lang, hour_now, places):
             return FACT_TEXT[lang]["no_location"]
         best = min(known.values())
         win = [n for n, d in known.items() if d == best]
-        return W["distance"].format(w=named(win), be=be(win), v=field_value(rows[numbers.index(win[0])], f, lang, hour_now))
+        text = W["distance"].format(w=named(win), be=be(win), v=field_value(rows[numbers.index(win[0])], f, lang, hour_now))
+        origin = places.attrs.get("origin") if places is not None else None
+        if origin:                                   # "closest to Independence Monument": say from where
+            text = text.rstrip(".។") + (f" from {origin}." if lang == "en" else f" ពី {origin}។")
+        return text
     col = {"price": "price_usd", "rating": "rating"}[f]
     known = {n: float(_val(r, col)) for n, r in zip(numbers, rows) if _val(r, col) != ""}
     if not known:
@@ -918,19 +1123,24 @@ def answer_followup(message, history, places, numbers=None, model_id=None) -> di
         "Rules:\n"
         f"- Answer in {'Khmer' if lang == 'kh' else 'English'} (the language of the question).\n"
         "- Answer exactly what is asked, nothing more: start with the answer itself (yes / no / the value / the "
-        "place), in one short sentence (two only if the question has two parts). No greeting, no list, no extra "
-        "details the user did not ask for.\n"
+        "place), in one short sentence (two only if the question has two parts). No greeting, no extra details the "
+        "user did not ask for.\n"
+        "- If the answer is several items (dishes with prices, places, values), write one short line first, then put "
+        "each item on its own line starting with \"- \", e.g. \"- Beef Fried Rice ($3.00)\". Never join 3 or more "
+        "items into one long sentence.\n"
         "- Use ONLY the facts in PLACES. When you name a place, write its number and name as in PLACES, e.g. "
         "\"1. Costa\".\n"
         "- If the question asks which place fits (cheapest, closest, open now…), name the place(s) that fit and the "
         "one value that shows it.\n"
         "- If PLACES does not have the fact (\"not in our data\"), say that in one sentence and suggest one next "
-        "step (call them, check their page, or search again).\n\n"
+        "step (call them, check their page, or search again).\n"
+        "- \"delivery\" lists the delivery apps (Foodpanda, Grab) where the place was found. If it says \"not found in our "
+        "data\", say we found no delivery-app listing for it; never say it has no delivery.\n\n"
         f"CONVERSATION SO FAR:\n{history_text(history)}\n\nPLACES:\n{facts}\n\nQUESTION: {message}"
     )
     try:
         text, m = complete(prompt, model_id)
-        return {"text": as_sentences(text), "provider": m["provider"], "model": m["id"], "label": m["label"],
+        return {"text": as_reply(text), "provider": m["provider"], "model": m["id"], "label": m["label"],
                 "numbers": numbers, "shape": "direct"}
     except NoModelAnswered:                          # no AI: the asked facts as a list
         text = facts_answer("list", fields, picked, numbers, lang, hour)
@@ -944,6 +1154,8 @@ CHAT_REPLIES = {    # greetings, thanks and "who are you?" need no AI: instant, 
            "hungry": "Let's fix that! 🍜 Do you feel like noodles (kuy teav), rice (bai sach chrouk), Khmer BBQ, pizza "
                      "or coffee? Tell me one, and add “near me” to see what's close.",
            "bye": "Bye! Enjoy your meal 🍜",
+           "refuse": "I can only help you find food and places to eat in Cambodia 🍜. Try “kuy teav near me” or "
+                     "“pizza in Siem Reap”.",
            "ok": "Great! Ask me anything about these places, or tell me what else you'd like to eat.",
            "about": "I'm Klean Nham, a food guide for Cambodia 🍜. I search our list of {n:,} places: ask for a dish, "
                     "an area or a time (“coffee near me”, “pizza in Siem Reap”, “bbq under $5”), then keep asking "
@@ -953,6 +1165,7 @@ CHAT_REPLIES = {    # greetings, thanks and "who are you?" need no AI: instant, 
            "hungry": "តោះរកម្ហូប! 🍜 ចង់ញ៉ាំគុយទាវ បាយសាច់ជ្រូក សាច់អាំង ភីហ្សា ឬកាហ្វេ? ប្រាប់ខ្ញុំមួយ ហើយថែម “ជិតខ្ញុំ” "
                      "ដើម្បីមើលហាងនៅជិត។",
            "bye": "លាហើយ! ញ៉ាំឲ្យឆ្ងាញ់ 🍜",
+           "refuse": "ខ្ញុំអាចជួយតែស្វែងរកម្ហូប និងកន្លែងញ៉ាំនៅកម្ពុជាប៉ុណ្ណោះ 🍜។ សាកសួរ “គុយទាវ ជិតខ្ញុំ”។",
            "ok": "បាទ! សួរខ្ញុំអំពីហាងទាំងនេះ ឬប្រាប់ថាចង់ញ៉ាំអ្វីទៀត។",
            "about": "ខ្ញុំជា ឃ្លានញ៉ាំ ជំនួយការស្វែងរកម្ហូបនៅកម្ពុជា 🍜។ ខ្ញុំស្វែងរកក្នុងបញ្ជីហាង {n:,} កន្លែង៖ "
                     "សួររកម្ហូប តំបន់ ឬម៉ោង (“កាហ្វេ ជិតខ្ញុំ”) រួចសួរបន្តអំពីហាង៖ ម៉ោងបើក ម៉ឺនុយ "
@@ -968,6 +1181,8 @@ CHAT_KINDS = [("about", ABOUT_RE), ("hungry", HUNGRY_RE),
 def chat_reply(message, history=None, model_id=None) -> dict:
     """A short reply to greetings, thanks, small talk and off-topic messages. Returns {text, provider, model, label}."""
     lang = detect_lang(message)
+    if INJECTION_RE.search(message):              # never forwarded to a model
+        return {"text": CHAT_REPLIES[lang]["refuse"], "provider": "facts", "model": None, "label": None}
     if CHAT_RE.match(message) or ABOUT_RE.search(message) or HUNGRY_RE.search(message):
         kind = next((k for k, rx in CHAT_KINDS if rx.search(message)), "hello")
         return {"text": CHAT_REPLIES[lang][kind].format(n=place_count()), "provider": "facts", "model": None, "label": None}

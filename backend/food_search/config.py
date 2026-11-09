@@ -26,6 +26,7 @@ BACKEND_DIR = ROOT / "backend"
 # --- secrets & provider settings (values are never printed) ---
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
 GEMINI_API_KEY = get_secret("GEMINI_API_KEY")
+GOOGLE_MAPS_API_KEY = get_secret("GOOGLE_MAPS_API_KEY")   # optional: map links open the exact Google Maps listing (Places API)
 GEMINI_MODEL = get_secret("GEMINI_MODEL")          # no hardcoded model: set it in .env
 OLLAMA_MODEL = get_secret("OLLAMA_MODEL")          # e.g. any model you pulled with `ollama pull`
 OLLAMA_HOST = get_secret("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
@@ -70,5 +71,17 @@ TZ = ZoneInfo("Asia/Phnom_Penh")
 # --- LLM & bot settings ---
 LLM_TIMEOUT_S = 20
 OLLAMA_TIMEOUT_S = 60     # local models can be slow on the first call
-RATE_LIMIT_PER_MIN = 10
+RATE_LIMIT_PER_MIN = int(get_secret("RATE_LIMIT_PER_MIN", "30"))   # per user; a lively conversation reaches 10 a minute
 TG_POST_LIMIT = 100       # recent posts read per seller channel
+
+# --- voice: speak a question (Khmer or English), hear the answer ---
+VOICE_ENABLED = get_secret("VOICE_ENABLED", "1") != "0"
+STT_MODEL = get_secret("STT_MODEL")                 # Gemini model that transcribes; empty = the first Gemini model of LLM_MODELS
+MAX_VOICE_SECONDS = 60
+MAX_VOICE_MB = 2
+VOICES = {                                           # edge-tts voices: language -> gender -> voice
+    "kh": {"female": get_secret("EDGE_VOICE_KH_FEMALE", "km-KH-SreymomNeural"),
+           "male": get_secret("EDGE_VOICE_KH_MALE", "km-KH-PisethNeural")},
+    "en": {"female": get_secret("EDGE_VOICE_EN_FEMALE", "en-US-JennyNeural"),
+           "male": get_secret("EDGE_VOICE_EN_MALE", "en-US-GuyNeural")},
+}

@@ -3,8 +3,10 @@
 
   GET  /api/config        what the UI can offer (photo search, number of places, AI models)
   POST /api/chat          a question -> places + a short AI answer written only from those places
-  POST /api/photo         a food photo -> the dish (Food-101 classifier), its recipe and places that serve it
+  POST /api/photo         a food photo (+ an optional question) -> the dish, and the answer to the question
                           (without a dish model: places with similar-looking food photos)
+  POST /api/voice/transcribe  a recorded question (Khmer or English) -> its text
+  POST /api/voice/speak       an answer -> an MP3 read aloud in the chosen voice (female / male)
   POST /api/dish          a dish chosen by the user (another guess for the photo) -> recipe + places
   POST /api/demo/ask      the demo: answer + the 3 steps (understand, retrieve, generate) + scored rows + prompt
   POST /api/demo/compare  the demo: BM25 vs embeddings vs hybrid ranking for one query
@@ -17,11 +19,14 @@ Telegram user id is used for the rate limit. Outside Telegram the client IP is u
 Call search.init() before create_app(). No X-Frame-Options header: Telegram Web shows Mini Apps in an iframe.
 """
 import asyncio
+import base64
+import io
 import hashlib
 import hmac
 import json
 import logging
 import os
+import re
 import tempfile
 import time
 from datetime import datetime
@@ -33,18 +38,19 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, FastAPI, File, Form, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from pydantic import BaseModel, Field
 
-from . import dishes, search
-from .bot_handlers import SOURCE_LABELS, STATS, allow_request, maps_url, page_label
-from .config import ENABLE_DEMO, FRONTEND_DIST, HYBRID_WEIGHT, MAX_PHOTO_MB, TELEGRAM_TOKEN, TOP_K, TZ
-from .llm import (CONTEXT_PLACES, DEFAULT_MODEL_ID, HISTORY_TURNS, MODELS, MODELS_BY_ID, NO_LLM, no_match,
+from . import dishes, place_ids, search, voice
+from .bot_handlers import SOURCE_LABELS, STATS, allow_request, direct_maps_url, maps_url, page_label
+from .config import ENABLE_DEMO, FRONTEND_DIST, HYBRID_WEIGHT, MAX_PHOTO_MB, MAX_VOICE_MB, RESULTS_DIR, TELEGRAM_TOKEN, TOP_K, TZ
+from .llm import (followup_origin, CONTEXT_PLACES, delivery_platforms, DEFAULT_MODEL_ID, HISTORY_TURNS, MODELS, MODELS_BY_ID, NO_LLM, no_match,
                   answer_followup, asked_fields, build_prompt, chat_reply, generate_answer, plan_turn, safe_error, search_lead,
                   unverified_note,
                   valid_model_id)
-from .search import (bm25_search, detect_lang, embedding_search, geocode_place, get_rows, haversine_km, hybrid_search,
-                     image_search_available, is_open_at, parse_query_filters, search_images_by_image)
+from .search import (bm25_search, detect_lang, dish_keys, embedding_search, geocode_place, get_rows, haversine_km,
+                     hybrid_search, image_search_available, is_open_at, matching_dishes, parse_query_filters,
+                     search_images_by_image)
 
 log = logging.getLogger("food_search.web")
 
@@ -84,7 +90,26 @@ def telegram_user(init_data: str):
 def client_key(request: Request):
     """Rate-limit key: the verified Telegram user id (shared with the bot), else the client IP."""
     user = telegram_user(request.headers.get("X-Telegram-Init-Data", ""))
-    return user["id"] if user else f"ip:{request.client.host if request.client else 'unknown'}"
+    if user:
+        return user["id"]
+    host = request.client.host if request.client else "unknown"
+    # behind the Cloudflare tunnel every visitor arrives from this machine: the visitor's address is in a header
+    # (trusted only from the local tunnel, which sets it; a visitor cannot reach this port directly)
+    if host in ("127.0.0.1", "::1") and request.headers.get("CF-Connecting-IP"):
+        host = request.headers["CF-Connecting-IP"]
+    return f"ip:{host}"
+
+
+def feedback_user(request: Request):
+    """Who sent a correction, to show it to them again and to count different people: the verified Telegram user,
+    else the browser's random id (X-Client-Id, kept in the browser), else the address. Only a salted hash is stored."""
+    user = telegram_user(request.headers.get("X-Telegram-Init-Data", ""))
+    if user:
+        return user["id"]
+    cid = request.headers.get("X-Client-Id", "")
+    if re.fullmatch(r"[0-9a-fA-F-]{8,40}|\d{6,20}", cid):
+        return f"web:{cid.lower()}"
+    return client_key(request)
 
 
 def error(status, code, message):
@@ -183,8 +208,9 @@ def place_json(r, lang, hour_now) -> dict:
                         "name": name_dish,
                         "name_en": it.get("name_en", ""),
                         "name_kh": it.get("name_kh", ""),
-                        "price_usd": float(it.get("price_usd", 0)),
-                        "price_khr": int(it.get("price_khr", 0)),
+                        "description": it.get("description", ""),
+                        "price_usd": float(it.get("price_usd") or 0),      # 0 = the source gave no price
+                        "price_khr": int(it.get("price_khr") or 0),
                     })
         except Exception:
             menu_list = []
@@ -210,6 +236,7 @@ def place_json(r, lang, hour_now) -> dict:
         "page_kind": page_label(page_url) or None,
         "image_url": img_url if img_url.startswith(("http://", "https://")) else None,
         "menu": menu_list,
+        "delivery": [{"platform": a, "url": b} for a, b in delivery_platforms(r) if b.startswith(("http://", "https://"))],
     }
 
 
@@ -218,8 +245,12 @@ def places_json(results, lang, with_menu=False) -> list:
     now = datetime.now(TZ)
     hour = now.hour + now.minute / 60
     places = [place_json(r, lang, hour) for r in results.itertuples()]
-    if not with_menu:
-        for p in places:
+    keys = dish_keys(results.attrs.get("query_text", ""))
+    for p in places:
+        # the dish asked for on this place's menu ("lok lak" -> "Beef Lok Lak $3.50"): shows why it was found
+        p["matched"] = [] if with_menu else [{"name": m["name"], "price_usd": m["price_usd"]}
+                                             for m in matching_dishes(p["menu"], keys)]
+        if not with_menu:
             p["menu"] = []
     return places
 
@@ -251,12 +282,18 @@ class ChatRequest(BaseModel):
     direct: bool = Field(False, description="Search `query` as it is, without planning (e.g. after the location step).")
     dish_id: str | None = Field(None, max_length=60, description="The dish shown last (from a photo), so 'how long does "
                                                                  "it take?' is about that dish.")
+    photo_id: str | None = Field(None, max_length=40, description="The last photo (dish.photo_id), so 'no, it's amok' "
+                                                                  "corrects its dish and the app learns it.")
+    last_question: str | None = Field(None, max_length=300, description="The question the last answer was for (the "
+                                                                         "search actually run): what '/correction ...' corrects.")
 
 
 class DishRequest(BaseModel):
     dish_id: str = Field(max_length=60, examples=["pad_thai"], description="A dish id (one of the 101 Food-101 dishes).")
     lang: Literal["en", "kh"] = "en"
     location: Location | None = None
+    photo_id: str | None = Field(None, max_length=40, description="The photo this dish is a correction for "
+                                                                  "(dish.photo_id of the photo reply): the app learns it.")
 
 
 class DemoAskRequest(BaseModel):
@@ -277,13 +314,76 @@ chat_router = APIRouter(prefix="/api", tags=["chat"])
 @chat_router.get("/config", summary="What the UI can offer")
 async def config():
     return {"photo_search": dishes.available() or image_search_available(), "dish_model": dishes.model_label(),
+            "learned_photos": dishes.memory_size(),
             "places": int(len(search.df)),
             "models": [{"id": m["id"], "label": m["label"]} for m in MODELS], "default_model": DEFAULT_MODEL_ID,
-            "no_llm": NO_LLM}
+            "no_llm": NO_LLM, "voice": voice.available()}
+
+
+_known_spots = None      # {(lat, lng) rounded to 5 decimals} of our places: only these may cost a Google lookup
+
+
+@chat_router.get("/go/map", include_in_schema=False)
+def go_map(request: Request, name: str = "", lat: float = 0.0, lng: float = 0.0, city: str = ""):
+    """Opens the place in Google Maps. Looks up its Google place id (cached) so the exact listing opens;
+    if there is no key, no match, or too many requests, it opens the plain search link instead."""
+    global _known_spots
+    name, city = name.strip()[:150], city.strip()[:80]
+    fallback = direct_maps_url(lat, lng, name, city)
+    if _known_spots is None:
+        _known_spots = {(round(a, 5), round(b, 5)) for a, b in zip(search.df["lat"], search.df["lng"]) if pd.notna(a) and pd.notna(b)}
+    if name and (round(lat, 5), round(lng, 5)) in _known_spots and allow_request(client_key(request)):
+        pid = place_ids.place_id(name, lat, lng)
+        if pid:
+            return RedirectResponse(place_ids.place_link(name, pid), status_code=302)
+    return RedirectResponse(fallback, status_code=302)
 
 
 @chat_router.post("/chat", summary="Ask a question (search + AI answer)")
 async def chat(body: ChatRequest, request: Request):
+    query = body.query.strip()[:400]
+    arg = dishes.correction_command(query)
+    if arg is not None:                          # "/correction amok", "/correction this place is closed"
+        lang = detect_lang(arg or body.last_question or "")
+        if not allow_request(client_key(request)):
+            return too_many(lang)
+        return await asyncio.to_thread(command_correction, arg, body, feedback_user(request), lang)
+    resp = await answer_chat(body, request)
+    if isinstance(resp, dict) and resp.get("kind") in ("search", "chat", "followup", "recipe"):
+        notes = dishes.correction_notes(query[:200], feedback_user(request), resp.get("lang", "en"))
+        if notes:                                # this question was answered wrongly before: say what users said
+            resp["corrections"] = notes
+    return resp
+
+
+def command_correction(arg, body, user, lang) -> dict:
+    """/correction <the right answer>: after a photo it corrects the dish (as "no, it's amok" does); after a text
+    answer it saves the correction with the question and the answer (see dishes.save_text_correction).
+    /correction alone asks for the right answer ("awaiting": the app sends the next message as /correction <it>)."""
+    t = dishes.TEXT.get(lang, dishes.TEXT["en"])
+    base = {"kind": "chat", "query": arg, "lang": lang, "provider": "correction", "model": None, "model_label": None,
+            "results": [], "filters": {}}
+    question = body.last_question or next((turn.text for turn in reversed(body.history) if turn.role == "user"), "")
+    answer = next((turn.text for turn in reversed(body.history) if turn.role == "assistant"), "")
+    if arg and dishes.is_cancel(arg):            # "cancel" typed after a bare /correction
+        return {**base, "answer": t["cmd_cancelled"]}
+    if body.photo_id:
+        if not arg:                              # "What is it?", with the photo's guesses to tap
+            return {**base, "answer": t["cmd_ask_photo"], "awaiting": "correction", "photo_id": body.photo_id,
+                    "hint": t["cmd_hint_photo"], "pick_dishes": dishes.photo_guesses(body.photo_id)}
+        fix = dishes.photo_fix(arg)
+        return correction_reply(fix, body.photo_id, user, lang, body.dish_id)
+    if not question:
+        return {**base, "answer": t["cmd_nothing"]}
+    if not arg:
+        return {**base, "answer": t["cmd_ask_text"].format(q=question[:80]), "awaiting": "correction",
+                "hint": t["cmd_hint_text"]}
+    STATS["corrections"] += 1
+    dishes.save_text_correction(question, answer, arg, user, "web")
+    return {**base, "answer": t["text_saved"].format(q=question[:80])}
+
+
+async def answer_chat(body: ChatRequest, request: Request):
     query = body.query.strip()[:200]
     if not query:
         return error(400, "empty_query", "Type a dish or a place.")
@@ -298,6 +398,9 @@ async def chat(body: ChatRequest, request: Request):
     model = valid_model_id(body.model)
     history = [{"role": t.role, "text": t.text} for t in body.history][-HISTORY_TURNS * 2:]
     focus = body.dish_id if body.dish_id in dishes.DISHES else None
+    fix = dishes.correction(query, focus) if body.photo_id else None
+    if fix is not None:                          # "no, it's amok" after a photo: learn it, then show that dish
+        return await asyncio.to_thread(correction_reply, fix, body.photo_id, feedback_user(request), lang, focus)
     named = dishes.find_dish(query)
     kind = dishes.recipe_intent(query, has_dish=bool(named or focus))
     if kind:                                     # "how do I make it?", "how long does pad thai take?": the recipe
@@ -305,13 +408,33 @@ async def chat(body: ChatRequest, request: Request):
         out = await asyncio.to_thread(dishes.recipe_answer, query, dish_id, lang, model)
         return {"kind": "recipe", "query": query, "lang": lang, "answer": out["text"], "provider": out["provider"],
                 "model": out["model"], "model_label": out["label"], "dish": dishes.dish_json(dish_id),
-                "recipe": dishes.recipe_json(dish_id), "focus": out["focus"], "results": [], "filters": {}}
+                "recipe": dishes.recipe_json(dish_id), "focus": out["focus"], "results": [], "filters": {},
+                "suggestions": dishes.suggestions(dish_id, lang, skip=(kind,) if kind in ("steps", "time") else ())}
+    about = dishes.about_intent(query)
+    if about:                                    # "do u know amok?": the dish itself, then what to ask next
+        return {"kind": "dish", "query": query, "lang": lang, "answer": dishes.about_answer(about, lang),
+                "provider": "facts", "model": None, "model_label": None, "dish": dishes.dish_json(about),
+                "recipe": None, "results": [], "filters": {}, "origin": None, "no_match": None,
+                "suggestions": dishes.suggestions(about, lang)}
     query = dishes.resolve_reference(query, focus)   # "where can I eat it?" after a photo of pizza -> "... pizza?"
     search_query, rewritten = query, False
     if not body.direct:
         places = get_rows(body.context_ids[:CONTEXT_PLACES]) if body.context_ids else None
-        if places is not None and len(places) and user_loc:
+        landmark = followup_origin(query) if places is not None and len(places) else None
+        spot = await asyncio.to_thread(geocode_place, landmark) if landmark else None
+        if spot:                                                 # "which one is closest to Independence Monument?"
+            places = places.assign(distance_km=haversine_km(spot[0], spot[1], places["lat"], places["lng"]))
+            places.attrs["origin"] = landmark
+        elif places is not None and len(places) and user_loc:
             places = places.assign(distance_km=haversine_km(user_loc[0], user_loc[1], places["lat"], places["lng"]))
+        elif places is not None and len(places) and body.last_query:      # "kuy teav near CADT", then "how far is 2?"
+            near_flt = parse_query_filters(body.last_query)[1]
+            if near_flt.get("near") and near_flt["near"] != "me":
+                spot = await asyncio.to_thread(geocode_place, near_flt["near"], near_flt.get("city"))
+                if spot:
+                    places = places.assign(distance_km=haversine_km(spot[0], spot[1], places["lat"], places["lng"]))
+                    i = body.last_query.lower().rfind(near_flt["near"].lower())
+                    places.attrs["origin"] = body.last_query[i:i + len(near_flt["near"])] if i >= 0 else near_flt["near"]
         plan = await asyncio.to_thread(plan_turn, query, history, places, model, body.last_query)
         if plan["action"] == "chat":
             out = await asyncio.to_thread(chat_reply, query, history, model)
@@ -348,18 +471,68 @@ async def chat(body: ChatRequest, request: Request):
     }
 
 
-def dish_reply(dish, lang, user_loc=None) -> dict:
-    """A dish (recognised or picked) -> the lead sentence, the dish, its recipe and the places that serve it."""
-    results = hybrid_search(dish["name"], RESULTS_PER_QUERY, user_loc)
-    return {"kind": "dish", "query": dish["name"], "lang": lang, "answer": dishes.photo_lead(dish, lang),
-            "provider": "photo", "model": None, "model_label": dish.get("model"), "origin": {"kind": "me"} if user_loc else None,
-            "dish": dish, "recipe": dishes.recipe_json(dish["id"]), "filters": {},
-            "no_match": no_match(lang, results) if len(results) == 0 else None, "results": places_json(results, lang)}
+def dish_reply(dish, lang, question="", user_loc=None, model=None, no_location=False) -> dict:
+    """A dish (recognised from a photo, or picked) and, when the photo came with one, the answer to its question.
+    No question: what the dish is and the follow-up questions to tap (recipe, cooking time, places), nothing fetched
+    before it is asked. A recipe question ("how do I make this?"): the recipe answer + card. Any other question
+    ("where can I eat this near me?"): a place search for the dish (the UI first asks for the location if needed)."""
+    question = (question or "").strip()[:200]
+    lang = detect_lang(question) if question else lang
+    lead = dishes.photo_lead(dish, lang)
+    base = {"kind": "dish", "query": question or dish["name"], "lang": lang, "dish": dish, "recipe": None,
+            "results": [], "filters": {}, "provider": "photo", "model": None, "model_label": dish.get("model"),
+            "origin": None, "no_match": None}
+    kind = dishes.question_kind(question) if question else "about"
+    if kind == "about":                          # no question, or "what is this called?": the dish, nothing fetched
+        about = dishes.about_text(dish["id"], lang)
+        return {**base, "answer": f"{lead}\n\n{about}" if about else lead,
+                "suggestions": dishes.suggestions(dish["id"], lang)}
+    if kind == "recipe":
+        out = dishes.recipe_answer(question, dish["id"], lang, model)
+        return {**base, "answer": f"{lead}\n\n{out['text']}", "provider": out["provider"], "model": out["model"],
+                "recipe": dishes.recipe_json(dish["id"]), "focus": out["focus"],
+                "suggestions": dishes.suggestions(dish["id"], lang, skip=(dishes.recipe_intent(question, True),))}
+    query = dishes.resolve_reference(question, dish["id"])
+    if not dishes.find_dish(query) and dishes.search_words(dish["id"]).lower() not in query.lower():
+        query = f"{dishes.search_words(dish['id'])} {question}"         # a photo's question is about the dish
+    if parse_query_filters(query)[1].get("near") == "me" and not user_loc and not no_location:
+        return {**base, "answer": lead, "need_location": True, "search_query": query}   # then /api/chat with direct=true
+    out = answer_query(query, user_loc, model, RESULTS_PER_QUERY, True)
+    results = out["results"]
+    return {**base, "answer": f"{lead}\n\n{out['answer']}" if len(results) else lead, "search_query": query,
+            "origin": out["origin"], "results": places_json(results, lang),
+            "filters": {k: v for k, v in results.attrs.get("filters", {}).items() if k != "near"},
+            "no_match": no_match(lang, results) if len(results) == 0 else None,
+            "suggestions": dishes.suggestions(dish["id"], lang, skip=("places",))}
+
+
+def correction_reply(fix, photo_id, user, lang, shown_id=None) -> dict:
+    """The user said the dish of their photo was wrong. fix = dishes.correction(...): {"dish"} a dish the app knows
+    (learned, then shown like a picked dish), {"name"} one it does not know (photo saved for the next training),
+    {} just "no" (asks what it is, with the other guesses to tap)."""
+    base = {"kind": "chat", "lang": lang, "provider": "photo", "model": None, "model_label": None, "results": [],
+            "filters": {}, "photo_id": photo_id}
+    t = dishes.TEXT.get(lang, dishes.TEXT["en"])
+    if fix.get("dish"):
+        STATS["corrections"] += 1
+        status = dishes.learn(photo_id, fix["dish"], user, "web")
+        return dish_reply(dishes.dish_json(fix["dish"], photo_id=photo_id,
+                                           corrected="expired" if status == "expired" else "saved"), lang)
+    if fix.get("name"):
+        STATS["corrections"] += 1
+        status = dishes.learn(photo_id, None, user, "web", name=fix["name"])
+        text = t["corrected_new"].format(name=fix["name"]) if status != "expired" else \
+            t["corrected_expired"].format(dish=fix["name"])
+        return {**base, "query": fix["name"], "answer": text}
+    return {**base, "query": "", "answer": t["ask_what"], "pick_dishes": dishes.photo_guesses(photo_id),
+            "awaiting": "correction", "hint": t["cmd_hint_photo"]}       # the next message is its name
 
 
 @chat_router.post("/photo", summary="Search with a food photo")
 async def photo(request: Request, photo: UploadFile = File(...), lang: Literal["en", "kh"] = Form("en"),
-                lat: float | None = Form(None, ge=-90, le=90), lng: float | None = Form(None, ge=-180, le=180)):
+                lat: float | None = Form(None, ge=-90, le=90), lng: float | None = Form(None, ge=-180, le=180),
+                query: str = Form("", max_length=2000, description="An optional question sent with the photo."),
+                model: str | None = Form(None, max_length=100), no_location: bool = Form(False)):
     if not (dishes.available() or image_search_available()):
         return error(503, "photo_search_off", "Photo search is not set up yet. Type the dish name instead.")
     STATS["web_photo_queries"] += 1
@@ -373,33 +546,97 @@ async def photo(request: Request, photo: UploadFile = File(...), lang: Literal["
         with os.fdopen(fd, "wb") as f:
             f.write(data)
         if dishes.available():
-            guesses = await asyncio.to_thread(dishes.classify, tmp_path, 3)
+            seen = await asyncio.to_thread(dishes.recognise, tmp_path, feedback_user(request), 3)
         else:
             matches = await asyncio.to_thread(search_images_by_image, tmp_path, 10)
     except Exception as e:                        # not an image, unreadable file, ...
         log.warning("photo search failed (%s)", safe_error(e))
         return error(400, "bad_photo", "That file could not be read as a photo.")
     finally:
-        Path(tmp_path).unlink(missing_ok=True)    # the user's photo is never kept
+        Path(tmp_path).unlink(missing_ok=True)    # the file is deleted; a copy waits in memory in case of a correction
+    if dishes.available() and seen.get("not_food"):          # a selfie, a pet, a street: not a dish
+        log.info("photo: not food (%s)", seen["not_food"])
+        return {"kind": "chat", "query": "", "lang": lang, "provider": "photo", "model": None, "model_label": None,
+                "results": [], "filters": {}, "answer": dishes.not_food_text(seen["not_food"], lang)}
     if dishes.available():
+        guesses = seen["guesses"]
         best = guesses[0]
-        log.info("photo: %s (%.0f%%)", best["id"], best["confidence"] * 100)
-        dish = dishes.dish_json(best["id"], best["confidence"], guesses[1:])
+        log.info("photo: %s (%.0f%%)%s", best["id"], best["confidence"] * 100, " [learned]" if seen["learned"] else "")
+        dish = dishes.dish_json(best["id"], best["confidence"], guesses[1:], seen["photo_id"], seen["learned"])
         user_loc = (lat, lng) if lat is not None and lng is not None else None
-        return await asyncio.to_thread(dish_reply, dish, lang, user_loc)
+        return await asyncio.to_thread(dish_reply, dish, lang, query, user_loc, valid_model_id(model), no_location)
     results = get_rows([m["restaurant_id"] for m in matches])
     return {"query": "", "lang": "en", "answer": None, "provider": "photo", "origin": None, "filters": {},
             "no_match": no_match("en", results) if len(results) == 0 else None, "results": places_json(results, "en")}
 
 
-@chat_router.post("/dish", summary="A dish chosen by the user: recipe + places")
+class SpeakRequest(BaseModel):
+    text: str = Field(max_length=4000, description="The answer to read aloud (only the first ~350 characters are spoken).")
+    gender: Literal["female", "male"] = "female"
+    names: list[str] = Field(default_factory=list, max_length=3, description="Place names added to a bare lead sentence.")
+    lang: Literal["en", "kh"] = "en"
+
+
+VOICE_TEXT = {"en": {"off": "Voice is not available right now. Please type your question.",
+                     "unclear": "I couldn't hear that. Please try again, or type your question.",
+                     "big": f"Voice messages can be up to {MAX_VOICE_MB} MB (about a minute).",
+                     "tts": "I couldn't speak that answer right now. The text is above."},
+              "kh": {"off": "សំឡេងមិនទាន់អាចប្រើបានឥឡូវនេះទេ។ សូមវាយសំណួររបស់អ្នក។",
+                     "unclear": "ខ្ញុំស្តាប់មិនបានទេ។ សូមព្យាយាមម្តងទៀត ឬវាយសំណួររបស់អ្នក។",
+                     "big": f"សារសំឡេងអាចមានទំហំរហូតដល់ {MAX_VOICE_MB} MB (ប្រហែលមួយនាទី)។",
+                     "tts": "ខ្ញុំមិនអាចអានចម្លើយនេះបានទេឥឡូវនេះ។ អត្ថបទនៅខាងលើ។"}}
+
+
+@chat_router.post("/voice/transcribe", summary="A recorded question (Khmer or English) -> text")
+async def voice_transcribe(request: Request, audio: UploadFile = File(...), lang: Literal["en", "kh"] = Form("en")):
+    t = VOICE_TEXT[lang]
+    if not voice.available():
+        return error(503, "voice_off", t["off"])
+    STATS["web_voice_queries"] += 1
+    if not allow_request(client_key(request)):
+        return too_many(lang)
+    data = await audio.read(MAX_VOICE_MB * 1024 * 1024 + 1)         # kept in memory only, never written or logged
+    if len(data) > MAX_VOICE_MB * 1024 * 1024:
+        return error(413, "too_large", t["big"])
+    if len(data) < 800:
+        return error(400, "no_speech", t["unclear"])
+    try:
+        text = await asyncio.to_thread(voice.transcribe, data, audio.content_type or "audio/wav")
+    except Exception as e:
+        log.warning("voice transcription failed (%s)", safe_error(e))
+        return error(422, "stt_failed", t["unclear"])
+    if not text:
+        return error(400, "no_speech", t["unclear"])
+    return {"text": text[:200], "lang": detect_lang(text)}
+
+
+@chat_router.post("/voice/speak", summary="An answer -> speech (MP3), in a female or male voice")
+async def voice_speak(body: SpeakRequest, request: Request):
+    t = VOICE_TEXT[body.lang]
+    if not voice.available():
+        return error(503, "voice_off", t["off"])
+    if not allow_request(client_key(request)):
+        return too_many(body.lang)
+    audio = await asyncio.to_thread(voice.speak, voice.spoken_summary(body.text, body.names), None, body.gender)
+    if not audio:
+        return error(502, "tts_failed", t["tts"])
+    return Response(audio, media_type="audio/mpeg", headers={"Cache-Control": "no-store"})
+
+
+@chat_router.post("/dish", summary="A dish chosen by the user (another guess for their photo): the app learns it")
 async def dish(body: DishRequest, request: Request):
     if body.dish_id not in dishes.DISHES:
         return error(400, "unknown_dish", "Unknown dish.")
     if not allow_request(client_key(request)):
         return too_many(body.lang)
     user_loc = (body.location.lat, body.location.lng) if body.location else None
-    return await asyncio.to_thread(dish_reply, dishes.dish_json(body.dish_id), body.lang, user_loc)
+    corrected = None
+    if body.photo_id:                            # tapped under "Not it?": a correction of that photo's guess
+        STATS["corrections"] += 1
+        status = await asyncio.to_thread(dishes.learn, body.photo_id, body.dish_id, feedback_user(request), "web")
+        corrected = {"saved": "saved", "expired": "expired"}.get(status)
+    return await asyncio.to_thread(dish_reply, dishes.dish_json(body.dish_id, photo_id=body.photo_id, corrected=corrected),
+                                   body.lang, "", user_loc)
 
 
 # ======================= demo routes ("How it works" page, /demo) =======================
@@ -473,6 +710,80 @@ async def ask(body: DemoAskRequest, request: Request):
         "prompt": prompt,
         "weight": HYBRID_WEIGHT,
     }
+
+
+MODEL_METRICS = RESULTS_DIR / "food_classification" / "metrics.csv"
+
+
+def model_comparison() -> list:
+    """The three photo models compared in food_classification.ipynb (test set), for the demo's side panel."""
+    if not MODEL_METRICS.exists():
+        return []
+    rows = pd.read_csv(MODEL_METRICS).to_dict("records")
+    return [{"model": r["model"], "top1": num(r["top1_acc"], 4), "top5": num(r["top5_acc"], 4),
+             "food101": num(r["top1_food101"], 4), "khmer": num(r["top1_khmer"], 4), "f1": num(r["macro_f1"], 3),
+             "params_m": num(r["params_M"], 1), "ms": num(r["ms_per_photo"], 1),
+             "train_min": num(r["train_minutes"], 0)} for r in rows]
+
+
+def photo_steps(path, user) -> dict:
+    """Every step from a photo to an answer: what the model sees, its top 5, then the dish's recipe and places."""
+    from PIL import Image
+    img = Image.open(path).convert("RGB")
+    crop = dishes.input_preview(img.copy())
+    buf = io.BytesIO()
+    crop.save(buf, "JPEG", quality=85)
+    started = time.perf_counter()
+    seen = dishes.recognise(path, user, 5)
+    classify_ms = (time.perf_counter() - started) * 1000
+    guesses = seen["guesses"]
+    best = guesses[0]
+    recipe = dishes.recipe_json(best["id"])
+    words = dishes.search_words(best["id"])
+    started = time.perf_counter()
+    results = hybrid_search(words, TOP_K)
+    retrieve_ms = (time.perf_counter() - started) * 1000
+    places = [{k: p.get(k) for k in ("name", "dish", "area", "matched", "maps_url")} for p in places_json(results, "en")]
+    return {
+        "model": dishes.model_label(),
+        "classes": dishes.class_count(),
+        "input": {"width": img.width, "height": img.height, "size": dishes.input_size(),
+                  "crop": "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()},
+        "guesses": [{**g, "name_kh": dishes.DISH_INFO.get(g["id"], {}).get("name_kh") or None,
+                     "khmer": g["id"].startswith("kh_")} for g in guesses],
+        "learned": seen["learned"],
+        "lead": dishes.photo_lead(dishes.dish_json(best["id"], best["confidence"], guesses[1:], seen["photo_id"],
+                                                   seen["learned"])),
+        "classify_ms": round(classify_ms, 1),
+        "recipe": recipe and {k: recipe[k] for k in ("title", "prep_minutes", "cook_minutes", "total_minutes", "servings",
+                                                     "source")} | {"ingredients": len(recipe["ingredients"]),
+                                                                    "steps": len(recipe["steps"])},
+        "search_query": words,
+        "retrieve_ms": round(retrieve_ms, 1),
+        "places": places,
+        "models": model_comparison(),
+    }
+
+
+@demo_router.post("/photo", summary="Photo -> dish: every step of the image classifier")
+async def demo_photo(request: Request, photo: UploadFile = File(...)):
+    if not dishes.available():
+        return error(503, "photo_search_off", "The photo model is not loaded.")
+    if not allow_request(client_key(request)):
+        return too_many()
+    data = await photo.read(MAX_PHOTO_MB * 1024 * 1024 + 1)
+    if len(data) > MAX_PHOTO_MB * 1024 * 1024:
+        return error(413, "too_large", f"Photos can be up to {MAX_PHOTO_MB} MB.")
+    fd, tmp_path = tempfile.mkstemp(suffix=Path(photo.filename or "").suffix.lower() or ".jpg")
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(data)
+        return await asyncio.to_thread(photo_steps, tmp_path, feedback_user(request))
+    except Exception as e:                        # not an image, unreadable file, ...
+        log.warning("demo photo failed (%s)", safe_error(e))
+        return error(400, "bad_photo", "That file could not be read as a photo.")
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
 
 
 @demo_router.post("/compare", summary="BM25 vs embeddings vs hybrid for one query")
