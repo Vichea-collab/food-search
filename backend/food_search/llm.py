@@ -380,7 +380,8 @@ NEW_SEARCH_RE = re.compile(r"\b(other|another|else|instead|more|different|cheape
                            r"in\s+[a-z]+\s+[a-z]+)\b|ផ្សេង|ទៀត", re.I)
 ORDINALS = {"first": 1, "1st": 1, "second": 2, "2nd": 2, "third": 3, "3rd": 3, "fourth": 4, "4th": 4, "fifth": 5,
             "5th": 5, "ទីមួយ": 1, "ទីពីរ": 2, "ទីបី": 3, "ទីបួន": 4, "ទីប្រាំ": 5}
-FILLER_RE = re.compile(r"^\s*(show me|find me|find|search for|what about|how about|i want|i'd like|give me|any)\s+|"
+FILLER_RE = re.compile(r"^\s*(show me|find me|find|search for|what about|how about|"
+                       r"(?:i want|i wanna|i'd like|i would like)(?:\s+(?:to\s+)?(?:eat|have|try))?|let'?s eat|give me|any)\s+|"
                        r"\s+(instead|please|then)\s*[?.!]*$", re.I)
 ABOUT_RE = re.compile(r"\b(who are you|what are you|what can you do|what do you do|how (do|does) (this|it|you) work|"
                       r"your name|how can you help|what can you help)\b|^\s*help\s*[?!.]*$|"

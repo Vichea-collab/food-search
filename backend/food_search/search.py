@@ -53,9 +53,22 @@ def normalize_text(s) -> str:
     return re.sub(r"\s+", " ", s).strip().lower()
 
 
+KHMER_SYLLABLE_RE = re.compile(r"[\u17a3-\u17b3\u17b6-\u17c5]")   # vowels: ~ one per syllable (បាយ សាច់ ជ្រូក = 3)
+LATIN_WORD_RE = re.compile(r"[A-Za-z][A-Za-z'’]*")
+
+
 def detect_lang(text) -> str:
-    """'kh' if the text contains Khmer script, otherwise 'en'."""
-    return "kh" if KHMER_RE.search(str(text)) else "en"
+    """The language to answer in: the main language of the text. 'kh' when it has at least as many Khmer vowels
+    (about one per syllable) as English words, so "កាហ្វេ near CADT" and "pizza នៅទួលគោក" are Khmer, "where can I eat នំបញ្ចុក in Siem Reap"
+    is English. Names (Siem Reap, CADT, Aeon Mall: capitalised words other than the first word and "I") are not
+    counted as English: they are the same in a Khmer sentence."""
+    text = str(text)
+    if not KHMER_RE.search(text):
+        return "en"
+    words = LATIN_WORD_RE.findall(text)
+    english = [w for i, w in enumerate(words)
+               if w == "I" or not w[0].isupper() or (i == 0 and text.lstrip().startswith(w) and not w.isupper())]
+    return "kh" if len(KHMER_SYLLABLE_RE.findall(text)) >= len(english) else "en"
 
 
 def khr_to_usd(amount_khr, rate=None) -> float:
@@ -680,7 +693,8 @@ CONVERSATIONAL_STOP_PATTERNS = [
     r"ណាខ្លះ\s*\??", r"ខ្លះ\s*\??", r"មួយណា\s*\??", r"ឯណា\s*\??", r"នៅឯណា\s*\??",
     r"ណា(?=[^ក-៿]|$)", r"មួយ(?=[^ក-៿]|$)",
     r"\b(?:is|are)\s+there\s+any\b", r"\bwhere\s+(?:can\s+i|to)\s+(?:find|get|eat)\b",
-    r"\blooking\s+for\b", r"\bi\s+want\s+(?:to\s+eat)?\b",
+    r"\blooking\s+for\b", r"\bi\s*(?:want|wanna|would\s+like|'?\s*d\s+like)\b(?:\s+(?:to\s+)?(?:eat|have|try)\b)?",
+    r"\b(?:want\s+)?to\s+(?:eat|have|try)\b",
     r"\b(?:can\s+you\s+)?recommend(?:\s+me)?\b",
     r"\b(?:delicious|good|tasty|best|popular)\b",
     r"\b(?:restaurant|restaurants|resturants?|restuarants?|restaraunts?|place|places|shop|shops)\b",

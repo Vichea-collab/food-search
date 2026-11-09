@@ -95,6 +95,29 @@ def voice_lang(text) -> str:
     return "kh" if khmer and khmer >= latin * 0.5 else "en"
 
 
+SCRIPT_RUN_RE = re.compile(r"[\u1780-\u17ff\u19e0-\u19ff]+|[A-Za-z][A-Za-z'’\-]*|[^A-Za-z\u1780-\u17ff\u19e0-\u19ff]+")
+MAX_PARTS = 10
+
+
+def parts(text) -> list:
+    """[(lang, text), ...]: the text cut where it changes between Khmer and English, so each part is read by the
+    voice of its own language ("នៅ Burrata Republic Pizza" = Khmer + English). Digits, spaces and punctuation stay
+    with the part they follow. Too many changes (> MAX_PARTS): one voice, the main language."""
+    runs = []
+    for m in SCRIPT_RUN_RE.finditer(str(text)):
+        piece = m.group()
+        kind = "kh" if KHMER_RE.match(piece) else "en" if piece[0].isascii() and piece[0].isalpha() else None
+        if runs and (kind is None or runs[-1][0] in (kind, None)):
+            runs[-1][1] += piece
+            runs[-1][0] = runs[-1][0] or kind
+        else:
+            runs.append([kind, piece])
+    runs = [(k or "en", t.strip()) for k, t in runs if t.strip() and re.search(r"\w", t)]
+    if not runs or len(runs) > MAX_PARTS:
+        return [(voice_lang(text), str(text).strip())]
+    return runs
+
+
 _cache: "OrderedDict[str, bytes]" = OrderedDict()
 
 
@@ -124,13 +147,27 @@ def speak(text, lang=None, gender="female") -> bytes:
     text = speakable(text)
     if not text or not available():
         return b""
-    voice = VOICES[voice_lang(text)][valid_gender(gender)]
-    key = hashlib.sha1(f"{voice}|{text}".encode()).hexdigest()
+    gender = valid_gender(gender)
+    key = hashlib.sha1(f"{gender}|{text}".encode()).hexdigest()
     if key in _cache:
         _cache.move_to_end(key)
         return _cache[key]
+
+    async def all_parts():
+        """The parts are made at the same time, then joined (MP3 frames join cleanly). A part the service drops is
+        asked once more; if it fails again, the whole text is read by one voice (its main language)."""
+        pieces = parts(text)
+        clips = await asyncio.gather(*(_synth(t, VOICES[lang][gender]) for lang, t in pieces), return_exceptions=True)
+        try:
+            clips = [c if isinstance(c, bytes) else await _synth(t, VOICES[lang][gender])
+                     for c, (lang, t) in zip(clips, pieces)]
+        except Exception:
+            if len(pieces) == 1:
+                raise
+            return await _synth(text, VOICES[voice_lang(text)][gender])
+        return b"".join(clips)
     try:
-        audio = asyncio.run(asyncio.wait_for(_synth(text, voice), 30))
+        audio = asyncio.run(asyncio.wait_for(all_parts(), 30))
     except Exception as e:                              # offline, the service is busy, ...
         log.warning("text-to-speech failed (%s)", safe_error(e))
         return b""
