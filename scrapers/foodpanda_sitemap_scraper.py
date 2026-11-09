@@ -60,6 +60,8 @@ PROVINCE_PATTERNS = [
 ]
 
 # Baseline meal price and bilingual dish mapping based on culinary category
+# A label is only a guess from the name: name no specific dish the name does not show (a 'rice' shop was labelled
+# lok lak before, which put 50 places that never said so on top of every lok lak search).
 CUISINE_MAPPINGS = [
     (re.compile(r"no?m[-_ ]?b[ao]nh[-_ ]?ch[o|u]k|so?mlo?r[-_ ]?khmer", re.I), "Nom Banh Chok (Khmer Noodle Soup)", "នំបញ្ចុក និងសម្លខ្មែរ", "2.25"),
     (re.compile(r"num[-_ ]?pang|numpang|baguette|sandwich|chrouk[-_ ]?kvai|chruk[-_ ]?kvai", re.I), "Num Pang (Cambodian Baguettes & Sandwiches)", "នំប៉័ងសាច់ប៉ាតេ និងសាច់ជ្រូកខ្វៃ", "2.00"),
@@ -73,7 +75,7 @@ CUISINE_MAPPINGS = [
     (re.compile(r"bay[-_ ]?sach|bai[-_ ]?sach", re.I), "Bai Sach Chrouk (Grilled Pork & Rice)", "បាយសាច់ជ្រូក", "2.00"),
     (re.compile(r"lok[-_ ]?lak", re.I), "Beef Lok Lak", "ឡុកឡាក់សាច់គោ", "4.50"),
     (re.compile(r"amok", re.I), "Fish Amok & Traditional Khmer Curries", "អាម៉ុកត្រី និងការីខ្មែរ", "5.00"),
-    (re.compile(r"pt[eh]s[-_ ]?bay|ptah[-_ ]?bay|louk[-_ ]?bay|mho?b[-_ ]?kamo?ng|bay[-_ ]?bak", re.I), "Khmer Made-to-Order Rice Dishes", "បាយកុម្ម៉ង់ ឡុកឡាក់ និងម្ហូបខ្មែរ", "2.75"),
+    (re.compile(r"pt[eh]s[-_ ]?bay|ptah[-_ ]?bay|louk[-_ ]?bay|mho?b[-_ ]?kamo?ng|bay[-_ ]?bak", re.I), "Khmer Made-to-Order Rice Dishes", "បាយកុម្ម៉ង់ និងម្ហូបខ្មែរ", "2.75"),
     (re.compile(r"kuy[-_ ]?teav|kuyteav|noodle|ramen|pho\b|mee\b|soup[-_ ]?mee|udon", re.I), "Noodles & Soup", "គុយទាវ និងមី", "2.50"),
     (re.compile(r"pizza|pasta|spaghetti|italian", re.I), "Pizza & Italian Cuisine", "ភីហ្សា និងម្ហូបអ៊ីតាលី", "7.50"),
     (re.compile(r"burger|fries|crispy[-_ ]?chicken|fried[-_ ]?chicken|kfc|lotteria|texas[-_ ]?chicken|potato[-_ ]?corner|vons[-_ ]?chicken", re.I), "Burgers & Fried Chicken", "ប៊ឺហ្គឺ និងមាន់បំពងស្រួយ", "4.50"),
@@ -88,7 +90,7 @@ CUISINE_MAPPINGS = [
     (re.compile(r"dim[-_ ]?sum|bao\b|dumpling|chinese|peking[-_ ]?duck|chongqing|szechuan", re.I), "Chinese Dim Sum & Dishes", "ម្ហូបចិន ឌីមសាំ និងគាវ", "6.00"),
     (re.compile(r"seafood|crab|prawn|fish|kampot[-_ ]?crab|lobster|salmon|shrimp", re.I), "Seafood Dishes", "គ្រឿងសមុទ្រស្រស់ៗ", "8.50"),
     (re.compile(r"hot[-_ ]?pot|hotpot|shabu|soup|suki", re.I), "Hot Pot & Soup", "ស៊ុប និងស៊ុបឆ្នាំងដី", "7.50"),
-    (re.compile(r"rice|bay[-_ ]?sach|bay[-_ ]?chhar|fried[-_ ]?rice|curry", re.I), "Khmer Rice Dishes & Daily Specials", "បាយសាច់ជ្រូក ឡុកឡាក់ និងម្ហូបខ្មែរ", "2.75"),
+    (re.compile(r"rice|bay[-_ ]?sach|bay[-_ ]?chhar|fried[-_ ]?rice|curry", re.I), "Khmer Rice Dishes & Daily Specials", "ម្ហូបបាយ និងម្ហូបខ្មែរ", "2.75"),
     (re.compile(r"street[-_ ]?food|snack|meatball|changret|prahit", re.I), "Khmer Street Food & Snacks", "អាហារសម្រន់តាមផ្លូវ និងប្រហិត", "1.75"),
     (re.compile(r"vegetarian|vegan|plant[-_ ]?based", re.I), "Vegetarian Food", "ម្ហូបបួស និងអាហារសុខភាព", "3.50"),
 ]

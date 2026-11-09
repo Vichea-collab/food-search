@@ -290,6 +290,8 @@ def main():
         return
     out = build(d)
     out.to_csv(OUT, index=False)
+    import recipes_khmer                              # keep the hand-written Khmer recipes in data/recipes.csv
+    recipes_khmer.merge_into(OUT, recipes_khmer.rows())
     print(f"wrote {OUT.relative_to(ROOT)}: {len(out)} dishes; no recipe: {', '.join(sorted(NO_RECIPE))}")
 
 

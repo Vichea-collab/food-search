@@ -22,6 +22,7 @@ AVAILABLE_SCRAPERS = {
     "foodchow": ("FoodChow Phnom Penh", "scrapers/foodchow_scraper.py"),
     "foodpanda": ("Foodpanda Sitemaps", "scrapers/foodpanda_sitemap_scraper.py"),
     "grabfood": ("GrabFood Categories", "scrapers/grabfood_scraper.py"),
+    "grabfood-merchants": ("GrabFood Merchants (sitemaps)", "scrapers/grabfood_sitemap_scraper.py"),
     "wikidata": ("Wikidata Khmer Dishes", "scrapers/wikidata_scraper.py"),
     "osm": ("OpenStreetMap Overpass", "scrapers/osm_overpass_scraper.py"),
     "overture": ("Overture Maps Foundation", "scrapers/overture_scraper.py"),
