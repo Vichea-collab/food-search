@@ -6,13 +6,16 @@ import { inTelegram } from "../../lib/telegram";
 import { useTheme } from "../../theme/ThemeContext";
 import type { Status } from "./useChat";
 
-/** "Online", "typing…" or "finding your location…" with a dot (pulses while busy). */
-export function StatusLine({ status }: { status: Status }) {
+/** What the status line can show: the chat's own state, or "offline" when the server does not answer. */
+export type ShownStatus = Status | "offline";
+
+/** "Online", "typing…", "finding your location…" or "Offline" with a dot (green, pulsing while busy, red offline). */
+export function StatusLine({ status }: { status: ShownStatus }) {
   const { t } = useI18n();
   return (
-    <p className={`status${status !== "online" ? " busy" : ""}`}>
+    <p className={`status${status === "offline" ? " offline" : status !== "online" ? " busy" : ""}`}>
       <span className="status-dot" />
-      <span>{t(status)}</span>
+      <span>{t(status === "offline" ? "offline_status" : status)}</span>
     </p>
   );
 }
@@ -23,7 +26,7 @@ export function ChatHeader({
   profileOpen,
   onOpenProfile,
 }: {
-  status: Status;
+  status: ShownStatus;
   profileOpen: boolean;
   onOpenProfile: () => void;
 }) {

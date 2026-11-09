@@ -56,6 +56,16 @@ export function PlaceCard({ place: p, rank }: { place: Place; rank: number }) {
             {p.area && <span>{p.area}</span>}
           </p>
         )}
+        {p.matched && p.matched.length > 0 && (
+          <p className="place-match" aria-label={t("menuTitle")}>
+            {p.matched.map((m, i) => (
+              <span key={i}>
+                🍽 {m.name}
+                {m.price_usd > 0 && <b> ${m.price_usd.toFixed(2)}</b>}
+              </span>
+            ))}
+          </p>
+        )}
       </div>
       <div className="place-side">
         {p.image_url && (
@@ -77,7 +87,7 @@ export function PlaceCard({ place: p, rank }: { place: Place; rank: number }) {
               <div key={i} className="menu-chip">
                 <span className="menu-dish-name">• {dish.name}</span>
                 <span className="menu-dish-dots" aria-hidden="true" />
-                <span className="menu-dish-price">${dish.price_usd.toFixed(2)}</span>
+                {dish.price_usd > 0 && <span className="menu-dish-price">${dish.price_usd.toFixed(2)}</span>}
               </div>
             ))}
           </div>
@@ -94,6 +104,11 @@ export function PlaceCard({ place: p, rank }: { place: Place; rank: number }) {
             {t("call")}
           </a>
         )}
+        {p.delivery?.map((d) => (
+          <ExternalLink key={d.platform} href={d.url} className="act">
+            {d.platform}
+          </ExternalLink>
+        ))}
         {p.page_url && (
           <ExternalLink href={p.page_url} className="act">
             {t(p.page_kind === "facebook" ? "pageFacebook" : "pageWebsite")}

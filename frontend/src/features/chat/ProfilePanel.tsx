@@ -1,16 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "../../components/Avatar";
 import { Icon } from "../../components/Icon";
 import { Segmented } from "../../components/Segmented";
 import { useI18n } from "../../i18n/I18nContext";
 import { htmlLang } from "../../i18n/strings";
+import { api } from "../../lib/api";
 import { inTelegram, showTelegramBack } from "../../lib/telegram";
 import type { AppConfig, Coords } from "../../lib/types";
 import { useMediaQuery } from "../../lib/useMediaQuery";
 import { useTheme, type ThemePref } from "../../theme/ThemeContext";
-import { StatusLine } from "./ChatHeader";
-import type { Status } from "./useChat";
+import { StatusLine, type ShownStatus } from "./ChatHeader";
+import type { VoiceReply } from "./useChat";
+
+export type VoiceGender = "female" | "male";
 
 /** The bot's profile: a fixed sidebar on wide screens, a panel that slides in on phones. */
 export function ProfilePanel({
@@ -20,6 +23,10 @@ export function ProfilePanel({
   config,
   model,
   onModel,
+  voiceGender,
+  onVoiceGender,
+  voiceReply,
+  onVoiceReply,
   location,
   onLocationOff,
   recent,
@@ -28,10 +35,14 @@ export function ProfilePanel({
 }: {
   open: boolean;
   onClose: () => void;
-  status: Status;
+  status: ShownStatus;
   config: AppConfig | null;
   model: string | null;
   onModel: (id: string) => void;
+  voiceGender: VoiceGender;
+  onVoiceGender: (g: VoiceGender) => void;
+  voiceReply: VoiceReply;
+  onVoiceReply: (mode: VoiceReply) => void;
   location: Coords | null;
   onLocationOff: () => void;
   recent: string[];
@@ -43,6 +54,21 @@ export function ProfilePanel({
   const isSheet = useMediaQuery("(max-width: 1023px)");
   const closeBtn = useRef<HTMLButtonElement>(null);
   const showOpen = isSheet && open;
+  const [previewing, setPreviewing] = useState(false);
+  const preview = async () => {                       // one sample sentence in the chosen voice
+    if (previewing) return;
+    setPreviewing(true);
+    try {
+      const url = await api.speak(t("voiceSample"), lang, voiceGender);
+      const audio = new Audio(url);
+      audio.onended = () => URL.revokeObjectURL(url);
+      await audio.play();
+    } catch {
+      /* no voice right now: nothing to hear */
+    } finally {
+      setPreviewing(false);
+    }
+  };
 
   // on phones: focus moves in when it opens; Escape and Telegram's back button close it
   useEffect(() => {
@@ -120,6 +146,27 @@ export function ProfilePanel({
                 </select>
               </div>
               <p className="hint">{t("aiModelHint")}</p>
+            </>
+          )}
+          {config?.voice && (
+            <>
+              <h3 id="voiceLabel">{t("voice")}</h3>
+              <Segmented
+                options={[{ value: "female", label: t("voiceFemale") }, { value: "male", label: t("voiceMale") }]}
+                value={voiceGender}
+                onChange={onVoiceGender}
+                labelledBy="voiceLabel"
+              />
+              <p className="hint">{t("voiceHint")} <button className="link-btn" type="button" disabled={previewing}
+                                                          onClick={() => void preview()}>{t("voicePreview")}</button></p>
+              <h3 id="voiceReplyLabel">{t("voiceReply")}</h3>
+              <Segmented
+                options={[{ value: "ask", label: t("voiceReplyAsk") }, { value: "voice", label: t("voiceReplyVoice") },
+                          { value: "text", label: t("voiceReplyText") }]}
+                value={voiceReply}
+                onChange={onVoiceReply}
+                labelledBy="voiceReplyLabel"
+              />
             </>
           )}
           <h3>{t("location")}</h3>

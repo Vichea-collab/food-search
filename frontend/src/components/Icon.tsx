@@ -21,6 +21,20 @@ const PATHS = {
   chat: <path d="M4 5h16v11H9l-5 4z" />,
   translate: <path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 6 8M11 5c0 4-3 8-7 9M13 21l4-10 4 10M14.5 17.5h5" />,
   list: <path d="M4 6h16M4 12h16M4 18h10" />,
+  mic: (
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" />
+    </>
+  ),
+  speaker: (
+    <>
+      <path d="M4 10v4h4l5 4V6l-5 4z" />
+      <path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11" />
+    </>
+  ),
+  slash: <path d="M15 4 9 20" strokeWidth="2" strokeLinecap="round" />,
+  edit: <path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4" />,
   back: <path d="M15 5l-7 7 7 7" />,
   close: <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round" />,
   down: <path d="M12 5v14M6 13l6 6 6-6" />,

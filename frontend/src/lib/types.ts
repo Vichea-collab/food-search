@@ -13,6 +13,8 @@ export interface AppConfig {
   models: ModelOption[];
   default_model: string;
   no_llm: string;
+  /** speaking a question and hearing the answer is switched on */
+  voice?: boolean;
 }
 
 export interface MenuItem {
@@ -44,6 +46,9 @@ export interface Place {
   page_kind: "facebook" | "website" | null;
   image_url?: string | null;
   menu?: MenuItem[];
+  /** the dish asked for, on this place's menu (why it was found): "lok lak" -> Beef Lok Lak $4.00 */
+  matched?: { name: string; price_usd: number }[];
+  delivery?: { platform: string; url: string }[];
 }
 
 export type Origin =
@@ -77,6 +82,12 @@ export interface Dish {
   alternatives: DishGuess[];
   model: string | null;
   has_recipe: boolean;
+  /** the photo it was recognised from: sent back when the user corrects the guess, so the app learns it */
+  photo_id?: string | null;
+  /** the answer came from earlier corrections, not from the model */
+  learned?: { users: number; by_you: boolean; similarity: number } | null;
+  /** the user just corrected the guess: "saved" (learned) or "expired" (the photo was no longer in memory) */
+  corrected?: "saved" | "expired" | null;
 }
 
 /** A recipe from data/recipes.csv (Food.com). Times are in minutes. */
@@ -113,7 +124,7 @@ export interface ChatResponse {
   lang: "en" | "kh";
   need_location?: boolean;
   answer?: string | null;
-  provider?: "gemini" | "ollama" | "cards" | "facts" | "no-results" | "photo";
+  provider?: "gemini" | "ollama" | "cards" | "facts" | "no-results" | "photo" | "correction";
   model?: string | null;
   model_label?: string | null;
   no_match?: string | null;
@@ -126,6 +137,18 @@ export interface ChatResponse {
   recipe?: Recipe | null;
   /** recipe: the part of the recipe the question was about (opened in the card) */
   focus?: "ingredients" | "steps" | null;
+  /** follow-up questions to offer as buttons (sent as normal messages, about the dish in focus) */
+  suggestions?: string[];
+  /** after "no, that's wrong": the photo's guesses to tap (each one corrects photo_id) */
+  pick_dishes?: DishGuess[];
+  /** "correction": the bot asked for the right answer (a bare /correction, or "no" after a photo): the next message
+   *  is sent as "/correction <it>" */
+  awaiting?: "correction" | null;
+  /** an example of the right answer, shown in the empty box while awaiting */
+  hint?: string | null;
+  photo_id?: string | null;
+  /** earlier corrections of the answer to this same question (the user's own, or checked ones) */
+  corrections?: string[];
 }
 
 export interface Coords {
@@ -211,4 +234,35 @@ export interface DataStats {
   areas: CountRow[];
   kinds: CountRow[];
   sources: CountRow[];
+}
+
+/* ---------- demo: photo -> dish ---------- */
+
+export interface ModelScore {
+  model: string;
+  top1: number;
+  top5: number;
+  food101: number;
+  khmer: number | null;
+  f1: number;
+  params_m: number;
+  ms: number;
+  train_min: number;
+}
+
+export interface DemoPhotoResponse {
+  model: string | null;
+  /** how many dishes the model can tell apart */
+  classes: number;
+  input: { width: number; height: number; size: number | null; crop: string };
+  guesses: (DishGuess & { name_kh: string | null; khmer: boolean })[];
+  learned: { users: number; by_you: boolean; similarity: number } | null;
+  lead: string;
+  classify_ms: number;
+  recipe: { title: string; prep_minutes: number; cook_minutes: number; total_minutes: number; servings: number | null;
+            source: string; ingredients: number; steps: number } | null;
+  search_query: string;
+  retrieve_ms: number;
+  places: { name: string; dish: string; area: string; matched: { name: string; price_usd: number }[]; maps_url: string }[];
+  models: ModelScore[];
 }

@@ -4,7 +4,7 @@
 
 .app {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   height: 100vh;
   height: 100dvh;
 }
@@ -14,6 +14,7 @@
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);   /* never wider than the screen: the text box shrinks instead */
   min-height: 0;
   min-width: 0;
 }
@@ -22,7 +23,8 @@
 
 .bar {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding: calc(8px + var(--safe-top) + var(--content-top)) 12px 8px;
+  /* on a wide screen the name and buttons line up with the message column (not the window edges) */
+  padding: calc(8px + var(--safe-top) + var(--content-top)) max(12px, calc((100% - var(--thread-max)) / 2 + 12px)) 8px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
@@ -71,7 +73,7 @@
 .msg > .avatar { align-self: flex-end; margin-bottom: 22px; }
 .msg-body { display: flex; flex-direction: column; min-width: 0; }
 .msg.user .msg-body { align-items: flex-end; max-width: min(80%, 34em); }
-.msg.bot .msg-body { align-items: flex-start; flex: 1; max-width: 40em; }
+.msg.bot .msg-body { align-items: flex-start; flex: 1; max-width: 46em; }
 .msg.bot .msg-body > .places { align-self: stretch; }
 
 .bubble {
@@ -111,6 +113,7 @@
 
 .note { margin: 6px 4px 0; font-size: var(--t-sm); color: var(--muted); }
 .note.warn { color: var(--warn); }
+.note.correction-note { padding-left: 8px; border-left: 2px solid var(--muted); }
 
 .suggest { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .suggest button {
@@ -189,6 +192,9 @@
 .place-dish::first-letter { text-transform: uppercase; }
 .place-sub { margin: 1px 0 0; color: var(--muted); font-size: var(--t-sm); }
 .place-sub span + span::before { content: ", "; }
+.place-match { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: var(--t-sm); }
+.place-match span { padding: 2px 8px; border-radius: 8px; background: var(--tarp-soft); }
+.place-match b { color: var(--link, var(--tarp)); font-weight: 600; }
 
 .place-side {
   display: flex;
@@ -349,6 +355,7 @@
 /* ---------- composer ---------- */
 
 .composer {
+  position: relative;                 /* the command menu opens above it */
   padding: 8px 12px calc(10px + var(--safe-bottom));
   background: var(--paper);
 }
@@ -367,10 +374,11 @@
   padding: 9px 10px 9px 14px;
   border: 0; background: none;
   font-size: 16px;                    /* 16px+ stops iOS from zooming into the field */
+  caret-color: var(--tarp);           /* a clear blue typing cursor, as in Telegram */
   line-height: 1.45;
 }
 .composer textarea:focus-visible { outline: none; }
-.composer textarea::placeholder { color: var(--muted); }
+.composer textarea::placeholder { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }   /* one line on phones: "Ask for a dish or pl…" */
 .send-btn {
   display: grid; place-items: center; flex: none;
   width: 42px; height: 42px; border-radius: 50%; border: 0;
@@ -447,6 +455,14 @@
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
+  /* the select is invisible, but its dropdown list is native: give it the theme colours (it was default grey #3B3B3B in dark mode) */
+  background-color: var(--surface);
+  color: var(--ink);
+  color-scheme: inherit;
+}
+.model-pill-select option {
+  background-color: var(--surface);
+  color: var(--ink);
 }
 
 /* ---------- profile ---------- */
@@ -504,11 +520,14 @@
 
 .profile-foot { margin: auto 0 0; display: grid; gap: 2px; font-size: var(--t-xs); color: var(--muted); }
 
-/* phones and tablets: the profile slides in over the chat */
+/* phones and tablets: the profile slides in over the chat and fills the screen; on a tablet its content stays a
+   readable column in the middle */
 @media (max-width: 1023px) {
   .profile {
-    position: fixed; inset: 0 auto 0 0; z-index: 20;
-    width: min(100%, 400px);
+    position: fixed; inset: 0; z-index: 20;
+    width: 100%;
+    padding-left: max(20px, calc((100% - 560px) / 2));
+    padding-right: max(20px, calc((100% - 560px) / 2));
     transform: translateX(-100%);
     transition: transform .25s ease, visibility 0s linear .25s;    /* hide only after sliding out */
     visibility: hidden;
@@ -522,7 +541,7 @@
 
 /* desktop: the profile is a fixed sidebar */
 @media (min-width: 1024px) {
-  .app { grid-template-columns: var(--side-w) 1fr; }
+  .app { grid-template-columns: var(--side-w) minmax(0, 1fr); }
   .profile { border-right: 1px solid var(--line); padding-top: 32px; }
   .profile-top, .scrim { display: none !important; }
   .intro { display: none; }
@@ -659,7 +678,136 @@
 
 .recipe-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
 .recipe-foot .act.src { margin-left: auto; }
+.recipe-home { flex-basis: 100%; margin: 2px 0 0; font-size: var(--t-xs); color: var(--muted); }
+
+/* a photo waiting to be sent, above the message box */
+.composer-attach {
+  display: flex; align-items: center; gap: 10px;
+  max-width: var(--thread-max); margin: 0 auto 6px;
+  padding: 6px 6px 6px 6px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
+}
+.composer-attach img { width: 52px; height: 52px; flex: none; border-radius: 10px; object-fit: cover; }
+.composer-attach p { flex: 1; min-width: 0; margin: 0; font-size: var(--t-sm); color: var(--muted); }
+.composer-attach .icon-btn { flex: none; }
+.msg.user .bubble.photo-caption { margin-top: 4px; }
 
 @media (prefers-reduced-motion: reduce) {
   .recipe-part summary::after { transition: none; }
+}
+
+/* phones: a little less space around the text box, so more of the question fits */
+@media (max-width: 440px) {
+  .composer { padding-left: 8px; padding-right: 8px; }
+  .composer textarea { padding-left: 6px; }
+  .recipe { padding: 12px 12px 10px; }
+  .recipe-stats { grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)); gap: 6px; }   /* 4 boxes in one row */
+  .recipe-stats div { padding: 6px 8px; }
+  .recipe-stats dd { font-size: var(--t-sm); }
+}
+
+/* ---------- "/" command menu (as the Telegram bot's menu) and the "correcting" bar ---------- */
+.cmd-btn { flex: none; min-width: 36px; width: 36px; height: 36px; padding: 0; margin-bottom: 3px; color: var(--muted); }
+.cmd-btn:hover:not(:disabled), .cmd-btn[aria-expanded="true"] { color: var(--tarp); }
+.cmd-btn:disabled { opacity: .4; }
+.cmd-menu {
+  position: absolute; left: 12px; right: 12px; bottom: calc(100% - 4px); z-index: 5;
+  max-width: var(--thread-max); margin: 0 auto; padding: 6px;
+  list-style: none;
+  border: 1px solid var(--line); border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px rgba(21, 32, 46, 0.14);
+  animation: cmd-in .12s ease-out;
+}
+@keyframes cmd-in { from { opacity: 0; transform: translateY(4px); } }
+.cmd-menu li {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.cmd-menu li.active { background: var(--tarp-soft); }
+.cmd-menu .ico { width: 18px; height: 18px; flex: none; color: var(--tarp); }
+.cmd-name { font-weight: 600; color: var(--tarp); }
+.cmd-label { min-width: 0; color: var(--muted); font-size: var(--t-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.composer-correcting {
+  display: flex; align-items: center; gap: 8px;
+  max-width: var(--thread-max); margin: 0 auto 8px;
+  padding: 6px 6px 6px 12px;
+  border-left: 3px solid var(--tarp); border-radius: 10px;
+  background: var(--tarp-soft);
+}
+.composer-correcting .ico { width: 16px; height: 16px; flex: none; color: var(--tarp); }
+.composer-correcting p { flex: 1; min-width: 0; margin: 0; font-size: var(--t-sm); }
+.composer-correcting button {
+  flex: none; min-height: 32px; padding: 0 12px;
+  border: 0; border-radius: 999px;
+  background: none; color: var(--tarp); font-weight: 600; font-size: var(--t-sm);
+  cursor: pointer;
+}
+.composer-correcting button:hover { background: var(--surface); }
+@media (max-width: 440px) {
+  .cmd-menu { left: 8px; right: 8px; }
+  .cmd-btn { min-width: 32px; width: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { .cmd-menu { animation: none; } }
+
+/* voice: the microphone (in the send button's place), the recording bar, the "text or voice?" buttons, and voice
+   messages drawn as in Telegram: a round play button, the waveform and the time */
+.send-btn.mic-btn { cursor: pointer; }
+.send-btn.mic-btn.recording { background: var(--warn); color: #fff; animation: rec-pulse 1.4s ease-in-out infinite; }
+@keyframes rec-pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--warn) 22%, transparent); } }
+.composer-recording { border-left-color: var(--warn); }
+.rec-dot { width: 12px; height: 12px; flex: none; margin: 0 2px; border-radius: 50%; background: var(--warn); transition: transform .1s; }
+.voice-choice button { display: inline-flex; align-items: center; gap: 6px; }
+.voice-choice .ico { width: 16px; height: 16px; }
+.msg.bot.spoken { padding-left: 40px; margin-bottom: 8px; }
+
+.voice-row { display: flex; align-items: center; gap: 10px; }
+.voice-bubble {
+  display: flex; flex-direction: column; gap: 6px;
+  flex: none; width: 15.5rem; max-width: calc(100vw - 96px); padding: 8px 14px 8px 8px;
+  --voice-btn: var(--tarp); --voice-btn-ink: var(--tarp-ink); --voice-bar: color-mix(in srgb, var(--tarp) 30%, transparent);
+  --voice-bar-on: var(--tarp); --voice-time: var(--muted);
+}
+.msg.user .voice-bubble.mine {
+  --voice-btn: var(--tarp-ink); --voice-btn-ink: var(--tarp); --voice-bar: color-mix(in srgb, var(--tarp-ink) 40%, transparent);
+  --voice-bar-on: var(--tarp-ink); --voice-time: color-mix(in srgb, var(--tarp-ink) 80%, transparent);
+}
+.voice-play {
+  display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
+  background: var(--voice-btn); color: var(--voice-btn-ink); cursor: pointer;
+}
+.voice-play svg { width: 22px; height: 22px; fill: currentColor; }
+.voice-play:disabled { cursor: default; opacity: .7; }
+.voice-play:focus-visible, .voice-bars:focus-visible { outline: 2px solid var(--voice-bar-on); outline-offset: 2px; }
+.voice-spin {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2.5px solid currentColor; border-right-color: transparent;
+  animation: voice-spin .8s linear infinite;
+}
+@keyframes voice-spin { to { transform: rotate(360deg); } }
+.voice-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.voice-bars { display: flex; align-items: center; gap: 2px; height: 26px; cursor: pointer; touch-action: none; }
+.voice-bars i { flex: 1; min-height: 3px; border-radius: 2px; background: var(--voice-bar); transition: background .15s; }
+.voice-bars i.on { background: var(--voice-bar-on); }
+.voice-bubble.loading .voice-bars i { animation: voice-wait 1.2s ease-in-out infinite; }
+.voice-bubble.loading .voice-bars i:nth-child(odd) { animation-delay: .3s; }
+@keyframes voice-wait { 50% { opacity: .35; } }
+.voice-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.voice-tools { display: flex; gap: 4px; }
+.voice-rate[aria-expanded="true"] { background: var(--voice-bar-on); color: var(--voice-btn-ink); }
+.voice-text { margin: 0 2px 2px 6px; font-size: var(--t-sm); line-height: 1.45; overflow-wrap: anywhere; }
+.voice-time { font-size: var(--t-xs); color: var(--voice-time); font-variant-numeric: tabular-nums; }
+.voice-rate {
+  min-width: 36px; min-height: 24px; padding: 0 7px;
+  border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--voice-bar); color: var(--voice-bar-on);
+  font-size: var(--t-xs); font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.voice-rate:hover { filter: brightness(1.08); }
+.voice-rate:focus-visible { outline: 2px solid var(--voice-bar-on); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .rec-dot, .voice-bars i { transition: none; }
+  .send-btn.mic-btn.recording, .voice-spin, .voice-bubble.loading .voice-bars i { animation: none; }
 }

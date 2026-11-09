@@ -64,10 +64,12 @@ export function RecipeCard({ recipe: r, focus }: { recipe: Recipe; focus?: "ingr
           <span className="fact-badge">{t(DIFFICULTY_KEYS[r.difficulty])}</span>
         )}
         {r.calories != null && <span className="fact-badge">{t("recipeKcal", { n: r.calories })}</span>}
-        {r.source_url && (
+        {r.source_url ? (
           <ExternalLink href={r.source_url} className="act src">
             {t("recipeSource", { s: r.source })}
           </ExternalLink>
+        ) : (
+          <p className="recipe-home">{t("recipeHome")}</p>
         )}
       </footer>
     </section>

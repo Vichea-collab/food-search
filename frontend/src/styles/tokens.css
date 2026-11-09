@@ -26,7 +26,7 @@
   --gap: 16px;
   --bubble: 18px;
   --small: 10px;
-  --thread-max: 780px;
+  --thread-max: 1040px;
   --side-w: 340px;
 
   --safe-top: max(env(safe-area-inset-top), var(--tg-safe-area-inset-top, 0px));

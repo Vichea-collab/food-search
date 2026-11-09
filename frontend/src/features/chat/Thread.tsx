@@ -15,12 +15,14 @@ export function Thread({
   scroll,
   onSuggestion,
   onPickDish,
+  onChooseVoice,
 }: {
   messages: Message[];
   busy: boolean;
   scroll: ScrollRequest | null;
   onSuggestion: (q: string) => void;
-  onPickDish: (id: string, name: string) => void;
+  onPickDish: (id: string, name: string, photoId?: string | null) => void;
+  onChooseVoice: (id: number, text: string, mode: "text" | "voice") => void;
 }) {
   const { t, lang } = useI18n();
   const ref = useRef<HTMLElement>(null);
@@ -64,7 +66,7 @@ export function Thread({
                 else items.current.delete(m.id);
               }}
             >
-              <MessageView message={m} onSuggestion={onSuggestion} onPickDish={onPickDish} />
+              <MessageView message={m} onSuggestion={onSuggestion} onPickDish={onPickDish} onChooseVoice={onChooseVoice} />
             </div>
           ))}
         </div>
