@@ -1,0 +1,118 @@
+,Small CNN,EfficientNet-B0,CLIP zero-shot
+Apple pie,0.212,0.616,0.556
+Baby back ribs,0.676,0.848,0.804
+Baklava,0.64,0.904,0.812
+Beef carpaccio,0.804,0.924,0.864
+Beef tartare,0.66,0.856,0.68
+Beet salad,0.556,0.772,0.688
+Beignets,0.772,0.908,0.852
+Bibimbap,0.832,0.944,0.888
+Bread pudding,0.296,0.64,0.672
+Breakfast burrito,0.22,0.796,0.752
+Bruschetta,0.52,0.776,0.796
+Caesar salad,0.736,0.928,0.904
+Cannoli,0.624,0.948,0.876
+Caprese salad,0.624,0.896,0.78
+Carrot cake,0.7,0.86,0.852
+Ceviche,0.408,0.728,0.608
+Cheesecake,0.456,0.736,0.744
+Cheese plate,0.556,0.908,0.896
+Chicken curry,0.496,0.792,0.536
+Chicken quesadilla,0.648,0.864,0.824
+Chicken wings,0.732,0.932,0.9
+Chocolate cake,0.588,0.768,0.708
+Chocolate mousse,0.372,0.756,0.676
+Churros,0.72,0.908,0.832
+Clam chowder,0.756,0.928,0.9
+Club sandwich,0.728,0.916,0.9
+Crab cakes,0.468,0.816,0.84
+Crème brûlée,0.812,0.936,0.896
+Croque madame,0.772,0.904,0.852
+Cup cakes,0.66,0.928,0.8
+Deviled eggs,0.82,0.952,0.904
+Donuts,0.476,0.884,0.896
+Dumplings,0.832,0.896,0.892
+Edamame,0.972,0.996,0.996
+Eggs Benedict,0.792,0.908,0.9
+Escargots,0.76,0.904,0.832
+Falafel,0.552,0.82,0.732
+Filet mignon,0.444,0.732,0.548
+Fish and chips,0.684,0.924,0.936
+Foie gras,0.312,0.684,0.72
+French fries,0.832,0.96,0.888
+French onion soup,0.724,0.864,0.852
+French toast,0.52,0.832,0.832
+Fried calamari,0.672,0.88,0.832
+Fried rice,0.66,0.912,0.848
+Frozen yogurt,0.712,0.984,0.868
+Garlic bread,0.584,0.772,0.832
+Gnocchi,0.44,0.824,0.62
+Greek salad,0.684,0.884,0.856
+Grilled cheese sandwich,0.556,0.844,0.74
+Grilled salmon,0.372,0.804,0.72
+Guacamole,0.82,0.944,0.872
+Gyoza,0.632,0.908,0.828
+Hamburger,0.54,0.84,0.788
+Hot and sour soup,0.888,0.952,0.88
+Hot dog,0.508,0.896,0.9
+Huevos rancheros,0.316,0.764,0.744
+Hummus,0.356,0.808,0.808
+Ice cream,0.356,0.772,0.684
+Lasagna,0.496,0.76,0.656
+Lobster bisque,0.84,0.86,0.852
+Lobster roll sandwich,0.7,0.944,0.872
+Macaroni and cheese,0.652,0.84,0.748
+Macarons,0.816,0.972,0.96
+Miso soup,0.82,0.948,0.852
+Mussels,0.828,0.932,0.916
+Nachos,0.544,0.876,0.848
+Omelette,0.356,0.752,0.864
+Onion rings,0.72,0.952,0.896
+Oysters,0.868,0.952,0.968
+Pad thai,0.812,0.96,0.892
+Paella,0.612,0.88,0.868
+Pancakes,0.7,0.896,0.88
+Panna cotta,0.496,0.804,0.84
+Peking duck,0.612,0.86,0.844
+Pho,0.88,0.964,0.856
+Pizza,0.7,0.94,0.956
+Pork chop,0.284,0.604,0.764
+Poutine,0.76,0.908,0.94
+Prime rib,0.748,0.852,0.756
+Pulled pork sandwich,0.564,0.892,0.816
+Ramen,0.616,0.86,0.772
+Ravioli,0.316,0.684,0.644
+Red velvet cake,0.808,0.916,0.864
+Risotto,0.46,0.792,0.764
+Samosa,0.484,0.812,0.852
+Sashimi,0.764,0.936,0.94
+Scallops,0.532,0.764,0.724
+Seaweed salad,0.832,0.924,0.936
+Shrimp and grits,0.552,0.832,0.82
+Spaghetti bolognese,0.9,0.96,0.908
+Spaghetti carbonara,0.892,0.944,0.956
+Spring rolls,0.612,0.892,0.776
+Steak,0.304,0.564,0.568
+Strawberry shortcake,0.74,0.848,0.756
+Sushi,0.652,0.872,0.908
+Tacos,0.496,0.812,0.844
+Takoyaki,0.624,0.944,0.808
+Tiramisu,0.596,0.844,0.72
+Tuna tartare,0.4,0.724,0.648
+Waffles,0.656,0.912,0.852
+Raw shrimp salad (plea bongkea),0.75,0.9166666666666666,0.6666666666666666
+Khor (caramelised braised pork),0.7,0.9,0.15
+Beef stew (sach ko kho),0.4,0.7333333333333333,0.6
+Stir-fried ginger (cha kney),1.0,0.9166666666666666,0.5
+Salted crab (kdam prai),0.8421052631578947,1.0,0.10526315789473684
+Khmer curry (kari),1.0,0.8461538461538461,0.6153846153846154
+Lok lak,0.8125,1.0,0.0
+Num banh chok,0.8125,0.875,0.1875
+Beef salad (plea sach ko),0.6428571428571429,1.0,0.5
+Prahok ktiss,0.8,1.0,0.0
+Samlor korko,0.7857142857142857,0.8571428571428571,0.0
+Sour soup (samlor machu),0.625,0.9375,0.0625
+Sngao ngam ngov (soup with pickled lime),0.6666666666666666,0.7142857142857143,0.09523809523809523
+Vegetable soup (samlor proher),0.6428571428571429,0.7857142857142857,0.5714285714285714
+Kanh (minced beef salad),0.8333333333333334,0.6666666666666666,0.5
+Steamed fish with soy sauce,1.0,1.0,1.0

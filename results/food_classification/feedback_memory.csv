@@ -1,0 +1,6 @@
+case,photos,top-1 before,top-1 after,fixed,broken,answered from memory
+"corrected photo, sent again by the same person",1807,0.14499169894853348,0.8334255672385169,1244,0,1464
+"corrected photo, sent again by someone else",1807,0.14499169894853348,0.5877144438295517,800,0,937
+other people's new photos (B),12742,0.8604614660178935,0.8606184272484696,2,0,2
+"other people's new photos (B), with joke corrections",12742,0.8604614660178935,0.8574792026369487,2,40,42
+"dropped rule: + similar photos if 2 people agree (≥ 0.60), B",12742,0.8604614660178935,0.8358970334327421,41,354,480

@@ -64,12 +64,12 @@
   "name": "Ceviche"
  },
  {
-  "id": "cheese_plate",
-  "name": "Cheese plate"
- },
- {
   "id": "cheesecake",
   "name": "Cheesecake"
+ },
+ {
+  "id": "cheese_plate",
+  "name": "Cheese plate"
  },
  {
   "id": "chicken_curry",
@@ -402,5 +402,100 @@
  {
   "id": "waffles",
   "name": "Waffles"
+ },
+ {
+  "id": "kh_shrimp_salad",
+  "name": "Raw shrimp salad (plea bongkea)",
+  "name_kh": "ភ្លាបង្គា",
+  "search": "plea bongkea shrimp salad"
+ },
+ {
+  "id": "kh_khor",
+  "name": "Khor (caramelised braised pork)",
+  "name_kh": "ខ",
+  "search": "khmer food braised pork"
+ },
+ {
+  "id": "kh_beef_stew",
+  "name": "Beef stew (sach ko kho)",
+  "name_kh": "សាច់គោខ",
+  "search": "beef stew kho"
+ },
+ {
+  "id": "kh_cha_kney",
+  "name": "Stir-fried ginger (cha kney)",
+  "name_kh": "ឆាខ្ញី",
+  "search": "khmer food stir fry ginger"
+ },
+ {
+  "id": "kh_salted_crab",
+  "name": "Salted crab (kdam prai)",
+  "name_kh": "ក្តាមប្រៃ",
+  "search": "kdam prai salted crab"
+ },
+ {
+  "id": "kh_kari",
+  "name": "Khmer curry (kari)",
+  "name_kh": "ការី",
+  "search": "khmer curry kari"
+ },
+ {
+  "id": "kh_lok_lak",
+  "name": "Lok lak",
+  "name_kh": "ឡុកឡាក់",
+  "search": "lok lak"
+ },
+ {
+  "id": "kh_num_banh_chok",
+  "name": "Num banh chok",
+  "name_kh": "នំបញ្ចុក",
+  "search": "num banh chok"
+ },
+ {
+  "id": "kh_beef_salad",
+  "name": "Beef salad (plea sach ko)",
+  "name_kh": "ភ្លាសាច់គោ",
+  "search": "plea sach ko beef salad"
+ },
+ {
+  "id": "kh_prahok_ktiss",
+  "name": "Prahok ktiss",
+  "name_kh": "ប្រហុកខ្ទិះ",
+  "search": "prahok"
+ },
+ {
+  "id": "kh_samlor_korko",
+  "name": "Samlor korko",
+  "name_kh": "សម្លកកូរ",
+  "search": "khmer soup samlor korko"
+ },
+ {
+  "id": "kh_samlor_machu",
+  "name": "Sour soup (samlor machu)",
+  "name_kh": "សម្លម្ជូរ",
+  "search": "សម្លម្ជូរ"
+ },
+ {
+  "id": "kh_sngao_ngam_ngov",
+  "name": "Sngao ngam ngov (soup with pickled lime)",
+  "name_kh": "ស្ងោរញាំញូវ",
+  "search": "ស្ងោរញាំញូវ"
+ },
+ {
+  "id": "kh_samlor_proher",
+  "name": "Vegetable soup (samlor proher)",
+  "name_kh": "សម្លប្រហើរ",
+  "search": "samlor proher vegetable soup"
+ },
+ {
+  "id": "kh_kanh",
+  "name": "Kanh (minced beef salad)",
+  "search": "kanh beef salad"
+ },
+ {
+  "id": "kh_steamed_fish_soy",
+  "name": "Steamed fish with soy sauce",
+  "name_kh": "ត្រីចំហុយទឹកស៊ីអ៊ីវ",
+  "search": "steamed fish soy sauce"
  }
 ]

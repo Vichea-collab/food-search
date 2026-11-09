@@ -1,0 +1,17 @@
+,Small CNN,EfficientNet-B0,CLIP zero-shot
+Raw shrimp salad (plea bongkea) (12),0.75,0.9166666666666666,0.6666666666666666
+Khor (caramelised braised pork) (20),0.7,0.9,0.15
+Beef stew (sach ko kho) (15),0.4,0.7333333333333333,0.6
+Stir-fried ginger (cha kney) (12),1.0,0.9166666666666666,0.5
+Salted crab (kdam prai) (19),0.8421052631578947,1.0,0.10526315789473684
+Khmer curry (kari) (13),1.0,0.8461538461538461,0.6153846153846154
+Lok lak (16),0.8125,1.0,0.0
+Num banh chok (16),0.8125,0.875,0.1875
+Beef salad (plea sach ko) (14),0.6428571428571429,1.0,0.5
+Prahok ktiss (15),0.8,1.0,0.0
+Samlor korko (14),0.7857142857142857,0.8571428571428571,0.0
+Sour soup (samlor machu) (16),0.625,0.9375,0.0625
+Sngao ngam ngov (soup with pickled lime) (21),0.6666666666666666,0.7142857142857143,0.09523809523809523
+Vegetable soup (samlor proher) (14),0.6428571428571429,0.7857142857142857,0.5714285714285714
+Kanh (minced beef salad) (6),0.8333333333333334,0.6666666666666666,0.5
+Steamed fish with soy sauce (10),1.0,1.0,1.0

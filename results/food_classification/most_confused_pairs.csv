@@ -1,0 +1,16 @@
+true dish,predicted as,photos,share of true dish
+Steak,Filet mignon,37,15%
+Filet mignon,Steak,29,12%
+Pork chop,Filet mignon,24,10%
+Steak,Prime rib,23,9%
+Chocolate cake,Chocolate mousse,23,9%
+Chocolate mousse,Chocolate cake,21,8%
+Tuna tartare,Beef tartare,20,8%
+Prime rib,Steak,19,8%
+Ramen,Pho,18,7%
+Bread pudding,Apple pie,17,7%
+Apple pie,Bread pudding,17,7%
+Pork chop,Steak,16,6%
+Ice cream,Frozen yogurt,16,6%
+Dumplings,Gyoza,16,6%
+Risotto,Fried rice,15,6%
