@@ -74,7 +74,7 @@ export function DataTab() {
         </section>
         <section className="demo-card">
           <h2 className="demo-card-title">Places per area</h2>
-          <p className="demo-card-sub">Number of places in each Phnom Penh khan, city or province</p>
+          <p className="demo-card-sub">Number of places across Phnom Penh's 14 khans (districts)</p>
           <HBars rows={data.areas} total={n} />
         </section>
         <div className="demo-stack">

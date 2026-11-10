@@ -16,6 +16,10 @@ from pathlib import Path
 from urllib.parse import unquote
 
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,7 +58,7 @@ def guess_dish(name: str):
 
 
 def kh_city_sitemaps() -> list:
-    r = requests.get(INDEX_URL, headers=HEADERS, timeout=30)
+    r = robots.get(INDEX_URL, headers=HEADERS, timeout=30)
     r.raise_for_status()
     urls = re.findall(r"<loc>([^<]+)</loc>", r.text)
     return sorted(u for u in urls if re.search(r"/sitemap/kh/[a-z-]+/en/merchant-info-\d+\.xml$", u))
@@ -67,10 +71,8 @@ def scrape_grabfood_merchants() -> list:
     for n, sm in enumerate(sitemaps):
         city_slug = re.search(r"/kh/([a-z-]+)/en/", sm).group(1)
         area = city_name(city_slug)
-        if n:
-            time.sleep(PAUSE_S)
         try:
-            r = requests.get(sm, headers=HEADERS, timeout=60)
+            r = robots.get(sm, headers=HEADERS, timeout=60, min_pause=PAUSE_S)
             r.raise_for_status()
         except requests.RequestException as exc:
             print(f"  skip {sm}: {exc}")

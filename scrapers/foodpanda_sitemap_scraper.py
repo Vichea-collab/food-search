@@ -12,6 +12,10 @@ import logging
 from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 logger = logging.getLogger(__name__)
 
@@ -259,7 +263,8 @@ def parse_slug(slug: str) -> tuple[str, str, str, str, str, str]:
     tags = ["restaurant", "foodpanda", "delivery", "takeaway"]
     s_lower = slug_str.lower()
     for cat in ["coffee", "cafe", "tea", "bubble_tea", "pizza", "burger", "bakery", "noodles", "bbq", "seafood", "vegetarian"]:
-        if cat.replace("_", "-") in s_lower or cat in s_lower:
+        # a whole word of the address: "kuy-teav" is not "tea" (QA 10 Nov: 35 noodle shops were tagged tea)
+        if re.search(rf"(?<![a-z]){re.escape(cat.replace('_', '-'))}(?![a-z])", s_lower):
             tags.append(cat)
 
     return name, area, price, dish_en, dish_kh, ";".join(dict.fromkeys(tags))
@@ -267,7 +272,7 @@ def parse_slug(slug: str) -> tuple[str, str, str, str, str, str]:
 def scrape_foodpanda_restaurants(max_items: int = 1500) -> list[dict]:
     headers = {"User-Agent": "Mozilla/5.0"}
     print(f"Fetching Foodpanda Cambodia sitemap: {SITEMAP_URL}")
-    r = requests.get(SITEMAP_URL, headers=headers, timeout=25)
+    r = robots.get(SITEMAP_URL, headers=headers, timeout=25)
     soup = BeautifulSoup(r.content, "xml")
     
     urls = soup.find_all("url")

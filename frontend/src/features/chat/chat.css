@@ -753,7 +753,15 @@
 
 /* voice: the microphone (in the send button's place), the recording bar, the "text or voice?" buttons, and voice
    messages drawn as in Telegram: a round play button, the waveform and the time */
-.send-btn.mic-btn { cursor: pointer; }
+.send-btn.mic-btn {
+  cursor: pointer; touch-action: none;                 /* holding it never scrolls the page */
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  transition: transform .15s ease;
+}
+.send-btn.mic-btn.holding { transform: scale(1.25); }   /* as in Telegram: the button grows under the finger */
+.composer-recording .rec-time { flex: none; font-variant-numeric: tabular-nums; font-weight: 600; }
+.composer-recording.holding .rec-slide { flex: 1; text-align: center; color: var(--muted); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; transition: opacity .1s; }
 .send-btn.mic-btn.recording { background: var(--warn); color: #fff; animation: rec-pulse 1.4s ease-in-out infinite; }
 @keyframes rec-pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--warn) 22%, transparent); } }
 .composer-recording { border-left-color: var(--warn); }

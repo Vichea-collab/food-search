@@ -1,7 +1,7 @@
 """
 Foodpanda Cambodia detail scraper: the real menu, rating, hours, phone and coordinates of each restaurant.
 Reads data/scraped/foodpanda_places.csv (the sitemap scraper's list), opens each public restaurant page once
-(robots.txt allows /restaurant/ pages) and reads what the page itself contains:
+(robots.txt is checked before each page: scrapers/robots.py) and reads what the page itself contains:
   - schema.org JSON-LD: address, coordinates, opening hours, cuisines, price range, delivery methods
   - the page's own data blob: rating, review count, phone, and every menu item (category, name, description, price)
 Nothing is guessed: a field the page does not give stays empty. Output: one JSON object per line in
@@ -13,6 +13,7 @@ data/scraped/foodpanda_details.jsonl. The run is resumable (done pages are skipp
 """
 import argparse
 import json
+import random
 import re
 import sys
 import time
@@ -20,15 +21,22 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
 SRC = ROOT / "data/scraped/foodpanda_places.csv"
 OUT = ROOT / "data/scraped/foodpanda_details.jsonl"
 HEADERS = {"User-Agent": "Mozilla/5.0 (food-search course project)", "Accept-Language": "en"}
-PAUSE_S = 8              # Foodpanda answers 403 when pages are fetched fast: one page every 8 s
-BACKOFF_S = 300          # after a 403 wait 5 minutes; MAX_BLOCKS in a row = Foodpanda says stop: the run ends
-MAX_BLOCKS = 3
+PAUSE_S = 8              # Foodpanda answers 403 when pages are fetched fast: one page every 8 s to start with
+MAX_PAUSE_S = 45         # each 403 makes the pause 1.5x longer, up to this
+BACKOFF_S = 300          # after a 403 wait 5 minutes; each further 403 makes that wait 2x longer, up to MAX_BACKOFF_S
+MAX_BACKOFF_S = 1800     # (Foodpanda limits pages per hour: a short wait lets one page through and blocks again)
+CALM_PAGES = 25          # this many pages in a row without a 403: the waits go back down one step
+MAX_BLOCKS = 4           # MAX_BLOCKS 403s in a row = Foodpanda says stop: the run ends
 
 
 def _json_ld(html: str) -> dict:
@@ -85,6 +93,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=0, help="stop after this many new pages (0 = all)")
     ap.add_argument("--city", default="", help='only this city, e.g. "Phnom Penh" (its districts count as the city)')
+    ap.add_argument("--pause", type=float, default=PAUSE_S, help="seconds between pages to start with (grows after a 403)")
     args = ap.parse_args()
     places = pd.read_csv(SRC, dtype=str, keep_default_na=False)
     if args.city:
@@ -104,11 +113,13 @@ def main():
     print(f"{len(done)} done, {len(todo)} to fetch")
     sess = requests.Session()
     sess.headers.update(HEADERS)
-    blocks = 0
+    blocks, pause, n = 0, args.pause, 0
+    backoff, calm = BACKOFF_S, 0
     with open(OUT, "a", encoding="utf-8") as out:
-        for n, r in enumerate(todo, 1):
+        while n < len(todo):
+            r = todo[n]
             try:
-                resp = sess.get(r.source_url, timeout=(10, 30))
+                resp = robots.get(r.source_url, session=sess, timeout=(10, 30))
                 resp.encoding = "utf-8"
                 if resp.status_code == 404:
                     rec = {"id": r.id, "url": r.source_url, "gone": True}
@@ -117,22 +128,34 @@ def main():
                     rec = {"id": r.id, "url": r.source_url, **parse_page(resp.text)}
             except requests.RequestException as exc:
                 print(f"  {r.id}: {exc}")
-                if getattr(exc.response, "status_code", 0) == 403:
+                if isinstance(exc, robots.Disallowed) and robots.rules(r.source_url).disallow_all:
+                    # robots.txt could not be read (5xx / no answer), not a page it forbids: wait and retry this
+                    # page, instead of skipping every page until robots.txt is asked again
+                    print(f"  robots.txt unreadable: waiting {robots.RETRY_S // 60} minutes; retrying this page", flush=True)
+                    time.sleep(robots.RETRY_S)
+                elif getattr(exc.response, "status_code", 0) == 403:
                     blocks += 1
                     if blocks >= MAX_BLOCKS:
                         print(f"Foodpanda refused {MAX_BLOCKS} times in a row (403). Stopping; run again later to resume.")
                         return
-                    print(f"  403: waiting {BACKOFF_S // 60} minutes")
-                    time.sleep(BACKOFF_S)
+                    pause = min(pause * 1.5, MAX_PAUSE_S)
+                    print(f"  403 ({time.strftime('%H:%M')}, {n} new pages so far): waiting {backoff // 60} minutes, "
+                          f"then one page every ~{pause:.0f} s; retrying this page", flush=True)
+                    time.sleep(backoff)
+                    backoff, calm = min(backoff * 2, MAX_BACKOFF_S), 0
                 else:
+                    n += 1                                   # another error: skip the page (the next run retries it)
                     time.sleep(5)
                 continue
-            blocks = 0
+            n += 1
+            blocks, calm = 0, calm + 1
+            if calm >= CALM_PAGES and backoff > BACKOFF_S:
+                backoff, pause, calm = max(BACKOFF_S, backoff // 2), max(args.pause, pause / 1.5), 0
             out.write(json.dumps(rec, ensure_ascii=False) + "\n")
             out.flush()
             if n % 50 == 0 or n <= 3:
                 print(f"  {n}/{len(todo)} {rec.get('name')} - {len(rec.get('menu', []))} items, rating {rec.get('rating')}")
-            time.sleep(PAUSE_S)
+            time.sleep(pause * random.uniform(0.7, 1.3))   # not a fixed beat: evenly spaced requests look like a bot
 
 
 if __name__ == "__main__":

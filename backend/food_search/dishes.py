@@ -45,6 +45,7 @@ MODELS_DIR = ROOT / "models"
 MODEL_PATH = MODELS_DIR / "food101_efficientnet_b0.pt"
 CLASSES_PATH = MODELS_DIR / "food101_classes.json"
 RECIPES_PATH = DATA_DIR / "recipes.csv"
+KNOWLEDGE_PATH = DATA_DIR / "dish_knowledge.csv"   # what each dish is (Wikipedia or our own text), EN + KH
 SURE_AT = 0.50            # below this the app says "it might be ..." and offers the other guesses
 LOW_AT = 0.25             # below this it does not even act on the guess: "I can't tell", the guesses to pick from, a photo tip
 CLIP_TEMPLATES = ["a photo of {}, a type of food.", "a close-up photo of {}.", "a photo of a plate of {}.",
@@ -53,6 +54,7 @@ CLIP_TEMPLATES = ["a photo of {}, a type of food.", "a close-up photo of {}.", "
 DISHES = {}               # id -> display name ("pad_thai" -> "Pad thai")
 DISH_INFO = {}            # id -> {"name_kh": "ឡុកឡាក់", "search": "lok lak"} (Khmer dishes)
 RECIPES = {}              # id -> recipe dict
+KNOWLEDGE = {}            # id -> {about_en, about_kh, about_kh_by, source, source_url} (scrapers/dish_knowledge.py)
 _model = {}               # kind, label, model, transform, classes, text (CLIP)
 _name_re = None           # every dish name and alias, longest first
 _name_ids = {}            # lower-case name -> dish id
@@ -148,6 +150,9 @@ def init():
             for k in ("prep_minutes", "cook_minutes", "total_minutes", "servings", "calories_per_serving"):
                 r[k] = int(r[k]) if r[k] is not None else None       # read as float when a column has gaps
             RECIPES[r["dish_id"]] = r
+    KNOWLEDGE.clear()
+    if KNOWLEDGE_PATH.exists():
+        KNOWLEDGE.update({r["dish_id"]: r for r in pd.read_csv(KNOWLEDGE_PATH, dtype=str).fillna("").to_dict("records")})
     for dish_id, r in RECIPES.items():          # dishes with a recipe but no photo class (amok, kuy teav, ...)
         if dish_id not in DISHES:
             DISHES[dish_id] = r["dish_name"]
@@ -699,7 +704,9 @@ TEXT = {
            "unsure_low": "I can't tell what this is 🤔 My best guess is **{dish}**, but I'm only {p}% sure. "
                          "A closer, clearer photo in good light helps. Is it one of these?",
            "picked": "**{dish}**",
-           "about_yes": "Yes, I know **{dish}**!",
+           "about_yes": "Yes, I know **{dish}**!", "about_name": "**{dish}**",
+           "about_source": "Source: [Wikipedia]({url})",
+           "about_source_tr": "Source: [Wikipedia]({url})",
            "about_more": "I have its recipe and can find places in Cambodia that serve it.",
            "about_places": "I can find places in Cambodia that serve it.",
            "learned_you": "This looks like **{dish}**: you told me so for this photo before.",
@@ -753,7 +760,9 @@ TEXT = {
            "unsure_low": "ខ្ញុំមិនអាចកំណត់ថានេះជាអ្វីទេ 🤔 ការស្មានល្អបំផុតរបស់ខ្ញុំគឺ **{dish}** ប៉ុន្តែប្រាកដត្រឹមតែ {p}% ប៉ុណ្ណោះ។ "
                          "រូបថតជិតៗ ច្បាស់ និងមានពន្លឺល្អនឹងជួយបាន។ តើជាមួយក្នុងចំណោមទាំងនេះទេ?",
            "picked": "**{dish}**",
-           "about_yes": "បាទ ខ្ញុំស្គាល់ **{dish}**!",
+           "about_yes": "បាទ ខ្ញុំស្គាល់ **{dish}**!", "about_name": "**{dish}**",
+           "about_source": "ប្រភព៖ [Wikipedia]({url})",
+           "about_source_tr": "ប្រភព៖ [Wikipedia]({url}) (បកប្រែដោយ AI)",
            "about_more": "ខ្ញុំមានរូបមន្តរបស់វា ហើយអាចរកកន្លែងនៅកម្ពុជាដែលលក់វាបាន។",
            "about_places": "ខ្ញុំអាចរកកន្លែងនៅកម្ពុជាដែលលក់វាបាន។",
            "learned_you": "នេះមើលទៅដូចជា **{dish}**៖ អ្នកធ្លាប់ប្រាប់ខ្ញុំអំពីរូបថតនេះពីមុនមក។",
@@ -874,6 +883,14 @@ CALORIES_RE = re.compile(r"\b(calories?|kcal|nutrition|healthy)\b|កាឡូ�
 OTHER_RE = re.compile(r"\b(instead|substitut\w*|replace|without|swap|vegetarian|vegan|spicy|oven|air ?fryer|grill|"
                       r"fry|bake|store|keep|freeze|reheat|leftovers?|ahead|kids|easy|hard|difficult|serve with|"
                       r"pair|side dish|origin)\b", re.I)
+# about the dish itself, not its recipe: answered from its description (data/dish_knowledge.csv) and recipe
+KNOW_RE = re.compile(r"\b(tastes?|tasted|tasting|flavou?rs?|sweet|sour|salty|bitter|healthy|history|historical|"
+                     r"origins?|originat\w*|mean|means|meaning|national dish|traditional|famous|popular|well known|"
+                     r"eaten (for|with|at|in)|eat it with|when do (people|cambodians|khmer people|you) eat|"
+                     r"difference between|different from|similar to|halal|kind of (food|dish)|type of (food|dish))\b|"
+                     r"ប្រវត្តិ|រសជាតិ|ហឹរ|ផ្អែម|ជូរ|ប្រៃ|ល្អសម្រាប់សុខភាព|មានន័យ|ល្បី", re.I)
+# "where does amok come from?" has "where" but is no place question
+ORIGIN_RE = re.compile(r"\bwhere\b.*\b(come|comes|came)\s+from\b|\boriginat\w*|មកពីណា|កើតចេញពី|មកពីប្រទេសណា", re.I)
 ASKS_ME_RE = re.compile(r"\b(can|could|should|do|may) (i|we|you)\b", re.I)    # "can I ...", "should we ..."
 REFERS_RE = re.compile(r"\b(it|this|that|they|them|this dish|that dish|the dish|the recipe)\b|វា|នេះ|នោះ", re.I)
 PLACE_RE = re.compile(r"\b(near|nearby|where|open|deliver|delivery|restaurant|restaurants|shop|place|places|buy|eat out|"
@@ -892,14 +909,20 @@ def recipe_intent(text, has_dish=False):
     """What a recipe question asks, or None when it is not one (then the normal place search answers).
     has_dish: a dish is in focus (just recognised from a photo, or named in the message). Without one it is never a
     recipe question ("how do I make a reservation?")."""
-    if not has_dish or not text or PLACE_RE.search(text):   # "where can I buy pizza", "pizza open now": a place search
+    if not has_dish or not text:
+        return None
+    if ORIGIN_RE.search(text):                   # "where does amok come from?": about the dish, not a place
+        return "other"
+    if PLACE_RE.search(text):                    # "where can I buy pizza", "pizza open now": a place search
         return None
     for kind, rx in (("time", TIME_RE), ("ingredients", INGREDIENTS_RE), ("servings", SERVINGS_RE),
                      ("calories", CALORIES_RE), ("steps", STEPS_RE)):
         if rx.search(text):
             return kind
-    # "can I use chicken instead?", "is it spicy?", "can I make lok lak without fish sauce?": about the dish's recipe
-    if OTHER_RE.search(text) and (REFERS_RE.search(text) or find_dish(text) or ASKS_ME_RE.search(text)):
+    # "can I use chicken instead?", "is it spicy?", "can I make lok lak without fish sauce?", "what does lok lak taste
+    # like?", "is kuy teav healthy?": the AI answers from the dish's description and recipe
+    if (OTHER_RE.search(text) or KNOW_RE.search(text)) and (REFERS_RE.search(text) or find_dish(text)
+                                                            or ASKS_ME_RE.search(text)):
         return "other"
     return None
 
@@ -911,20 +934,39 @@ ABOUT_DISH_RE = re.compile(r"^\s*(?:(?:do|did)\s+(?:you|u|ya)\s+know|have\s+you\
                            r"ស្គាល់.{0,30}(?:ទេ|អត់|ដែរ)|ប្រាប់(?:ខ្ញុំ)?(?:ពី|អំពី)", re.I)
 
 
+BARE_FILLER_RE = re.compile(r"\b(the|a|an|please|pls|plz|dish|food|ok|okay|hmm+|um+|so)\b|ម្ហូប|សូម|ចុះ|វិញ", re.I)
+# words that may stay around the dish in "do you know about pizza?", "what's kuy teav like?"
+ABOUT_FILLER = {"the", "a", "an", "about", "of", "really", "actually", "exactly", "like", "called", "dish", "food",
+                "please", "pls", "plz", "it", "this", "that", "one", "ok", "okay", "so", "hmm", "um", "s"}
+
+
 def about_intent(text) -> str | None:
-    """The dish a question asks about itself ("do u know amok?" -> 'kh_amok'), or None: a recipe question, a place
-    question ("what is the best amok place near me?") or no dish named."""
+    """The dish a message asks about itself, or None (a recipe question, a place question, no dish named):
+      "do u know amok?", "what is pad thai?", "អាម៉ុកជាអ្វី?"  -> what it is
+      "kuy teav", "គុយទាវ?"  (just the dish's name)            -> what it is, too: places only once asked for
+      "where can I eat kuy teav", "kuy teav near me", "cheap kuy teav", "kuy teav in BKK1" -> None (a place search)"""
     dish_id = find_dish(text)
-    if not dish_id or not ABOUT_DISH_RE.search(text or "") or PLACE_RE.search(text) or recipe_intent(text, True):
+    if not dish_id or PLACE_RE.search(text) or recipe_intent(text, True):
         return None
-    return dish_id
+    if ABOUT_DISH_RE.search(text or ""):
+        # other English words left = a place named after the dish: "do you know The Pizza Company?", "what is Burger
+        # King?" (QA 10 Nov: they were explained as pizza / hamburger). Khmer wording varies too much to check this way.
+        rest = _name_re.sub(" ", ABOUT_DISH_RE.sub(" ", text), count=1)
+        extra = [w for w in re.findall(r"[a-z0-9]+", rest.lower()) if w not in ABOUT_FILLER]
+        return None if extra else dish_id
+    rest = BARE_FILLER_RE.sub(" ", _name_re.sub(" ", text, count=1))
+    return dish_id if not re.search(r"[0-9A-Za-z\u1780-\u17ff]", rest) else None
 
 
-def about_answer(dish_id, lang="en") -> str:
-    """'Yes, I know **Amok**!' and what it is (our own Khmer recipes have a description), else what we can do with it."""
+def about_answer(dish_id, lang="en", question="") -> str:
+    """What the dish is: its name, the description (data/dish_knowledge.csv) and its source; nothing about places
+    until the user asks where to eat it. "do you know amok?" starts with "Yes"."""
     t = TEXT.get(lang, TEXT["en"])
+    asks_yes = re.search(r"\b(do|did)\s+(you|u|ya)\s+know|have\s+you\s+(ever\s+)?(heard|tried|eaten)|ស្គាល់", question or "", re.I)
+    lead = t["about_yes" if asks_yes else "about_name"].format(dish=dish_name(dish_id, lang))
     about = about_text(dish_id, lang) or t["about_more" if dish_id in RECIPES else "about_places"]
-    return f"{t['about_yes'].format(dish=dish_name(dish_id, lang))}\n\n{about}"
+    source = about_source(dish_id, lang)
+    return f"{lead}\n\n{about}" + (f"\n\n{source}" if source else "")
 
 
 WHERE_ONLY_RE = re.compile(r"^\s*(where|where's|any|is there|are there|find|show)\b|^\s*(near me|nearby|close by)\b|"
@@ -973,26 +1015,50 @@ def question_kind(question) -> str:
 
 
 def about_text(dish_id, lang="en") -> str:
-    """One line on what the dish is: the description of our own (Khmer) recipes; Food.com descriptions are users'
-    personal notes ("the pie I've made for years"), so they are not used here."""
+    """What the dish is, in the user's language: data/dish_knowledge.csv (Wikipedia's first sentences, or our own
+    text), else the description of our own (Khmer) recipe. Food.com descriptions are users' personal notes ("the pie
+    I've made for years"), so they are never used. Khmer falls back to English when there is no checked translation."""
+    k = KNOWLEDGE.get(dish_id) or {}
+    if lang == "kh" and k.get("about_kh"):
+        return k["about_kh"]
+    if k.get("about_en"):
+        return k["about_en"]
     r = RECIPES.get(dish_id) or {}
     if r.get("source", "").startswith("Klean Nham") and r.get("description"):
         return r["description"]
     return ""
 
 
-def recipe_prompt(question, r, lang) -> str:
+def about_source(dish_id, lang="en") -> str:
+    """'Source: [Wikipedia](…)' under a description from Wikipedia (its licence asks for it; machine-translated Khmer
+    says so). '' for our own text."""
+    k = KNOWLEDGE.get(dish_id) or {}
+    if k.get("source") != "Wikipedia" or not k.get("source_url"):
+        return ""
+    t = TEXT.get(lang, TEXT["en"])
+    translated = lang == "kh" and k.get("about_kh") and k.get("about_kh_by", "").startswith("machine")
+    return t["about_source_tr" if translated else "about_source"].format(url=k["source_url"])
+
+
+def recipe_prompt(question, r, lang, about="", dish="") -> str:
+    """The AI's sources for a free question about a dish: what it is (data/dish_knowledge.csv) and its recipe."""
+    parts = []
+    if about:
+        parts.append(f"ABOUT THE DISH ({dish}):\n{about}")
+    if r:
+        source = "Food.com" if r.get("source") == "Food.com" else "a typical Cambodian home recipe"
+        parts.append(
+            f"RECIPE ({source}): {r['recipe_title']} ({r['dish_name']})\n"
+            f"Prep: {r['prep_minutes']} min. Cook: {r['cook_minutes']} min. Total: {r['total_minutes']} min. "
+            f"Serves: {r.get('servings') or 'not given'}. Calories per serving: {r.get('calories_per_serving') or 'not given'}.\n"
+            "Ingredients:\n" + "\n".join(f"- {i}" for i in r["ingredients"]) + "\n"
+            "Steps:\n" + "\n".join(f"{n}. {s}" for n, s in enumerate(r["steps"], 1)))
     return (
-        "You answer a cooking question using ONLY the recipe below (from Food.com). "
+        "You answer a question about a dish using ONLY the text below (what the dish is, and its recipe). "
         f"Reply in {'Khmer' if lang == 'kh' else 'English'} in at most three short sentences, without lists. "
-        "If the recipe does not answer the question, say so in one sentence and give no guess. "
-        "Never invent amounts, times or ingredients.\n\n"
-        f"RECIPE: {r['recipe_title']} ({r['dish_name']})\n"
-        f"Prep: {r['prep_minutes']} min. Cook: {r['cook_minutes']} min. Total: {r['total_minutes']} min. "
-        f"Serves: {r.get('servings') or 'not given'}. Calories per serving: {r.get('calories_per_serving') or 'not given'}.\n"
-        "Ingredients:\n" + "\n".join(f"- {i}" for i in r["ingredients"]) + "\n"
-        "Steps:\n" + "\n".join(f"{n}. {s}" for n, s in enumerate(r["steps"], 1)) + "\n\n"
-        f"QUESTION: {question}"
+        "If it does not answer the question, say in one sentence that you don't have that information about this dish "
+        "yet, and give no guess. Never mention \"the text\" or \"the recipe below\". "
+        "Never invent facts, amounts, times or ingredients.\n\n" + "\n\n".join(parts) + f"\n\nQUESTION: {question}"
     )
 
 
@@ -1004,9 +1070,18 @@ def recipe_answer(question, dish_id, lang="en", model_id=None, full=False) -> di
     t = TEXT.get(lang, TEXT["en"])
     r = RECIPES.get(dish_id)
     facts = {"provider": "facts", "model": None, "label": None}
+    kind = recipe_intent(question, has_dish=True) or "steps"      # a button or a place word: show the recipe
+    about = about_text(dish_id, "en")                             # the model reads the English source text
+    if kind == "other" and (r or about):          # a free question ("is it spicy?", "where does it come from?")
+        try:
+            answer, m = complete(recipe_prompt(question, r, lang, about, dish_name(dish_id, "en")), model_id)
+            return {"text": as_sentences(answer), "provider": m["provider"], "model": m["id"], "label": m["label"],
+                    "focus": None}
+        except NoModelAnswered:                   # no AI: what the dish is, then the recipe card if there is one
+            if not r:
+                return {"text": about_answer(dish_id, lang), "focus": None, **facts}
     if not r:
         return {"text": t["no_recipe"].format(dish=dish_name(dish_id, lang)), "focus": None, **facts}
-    kind = recipe_intent(question, has_dish=True) or "steps"      # a button or a place word: show the recipe
     title, n_steps = r["recipe_title"], len(r["steps"])
     total = fmt_minutes(r["total_minutes"], lang)
     lists = ""
@@ -1030,11 +1105,6 @@ def recipe_answer(question, dish_id, lang="en", model_id=None, full=False) -> di
     elif kind == "steps":
         text = t["steps"].format(title=title, n=n_steps, total=total)
         lists = "\n" + "\n".join(f"{n}. {s}" for n, s in enumerate(r["steps"], 1))
-    else:                                         # a free question: the AI answers from this recipe only
-        try:
-            answer, m = complete(recipe_prompt(question, r, lang), model_id)
-            return {"text": as_sentences(answer), "provider": m["provider"], "model": m["id"], "label": m["label"],
-                    "focus": None}
-        except NoModelAnswered:
-            text = t["other"].format(title=title)
+    else:                                         # a free question no AI could answer (tried above)
+        text = t["other"].format(title=title)
     return {"text": text + (lists if full else ""), "focus": kind if kind in ("ingredients", "steps") else None, **facts}

@@ -25,7 +25,7 @@ class TestSystem:
 
     def test_config(self, client):
         c = client.get("/api/config").json()
-        assert c["places"] > 15000 and c["photo_search"] and c["dish_model"].startswith("EfficientNet")
+        assert c["places"] > 10000 and c["photo_search"] and c["dish_model"].startswith("EfficientNet")
         assert c["default_model"] in {m["id"] for m in c["models"]}
 
     def test_frontend_served(self, client):
@@ -78,14 +78,15 @@ class TestDishSearch:
         ("ឡុកឡាក់", r"lok ?lak|ឡុកឡាក់"), ("កាហ្វេ", r"coffee|cafe|កាហ្វេ"), ("ម្ហូបបួស", r"vegetarian|vegan|បួស"),
     ])
     def test_top_results_are_the_dish(self, chat, q, expect):
-        d = chat(q, **NO_AI)
+        """Asked as a place search: a dish's name alone now says what the dish is (TestDishQuestions)."""
+        d = chat(f"find {q}" if q.isascii() else f"រក{q}", **NO_AI)
         assert d["kind"] == "search" and d["results"]
         top = [p for p in d["results"][:5] if re.search(expect, names({"results": [p]}), re.I)]
         assert len(top) >= 3, (q, [p["name"] for p in d["results"][:5]])
 
     def test_named_place_shows_only_that_place(self, chat):
-        d = chat("9K Foods (Chhouk Meas) show me menu", **NO_AI)
-        assert [p["name"] for p in d["results"]] == ["9k Foods Chhouk Meas"] and d["results"][0]["menu"]
+        d = chat("Kentucky Fried Chicken (KFC) show me menu", **NO_AI)
+        assert [p["name"] for p in d["results"]] == ["Kentucky Fried Chicken (KFC)"] and d["results"][0]["menu"]
 
     def test_named_place_with_its_area_in_the_name(self, chat):
         """Found in Telegram (9 Nov): "Toul Sangke" became the area filter, so "Shayoo Bite Toul Sangke" no longer
@@ -110,7 +111,7 @@ class TestDishSearch:
     def test_dish_on_a_menu_is_found(self, chat):
         """Found on the website (9 Nov): "amok" listed seafood places without amok, while two places have "Fish Amok"
         on their menu. Menu dishes are now searched, and a menu match ranks above places that only sound similar."""
-        d = chat("amok", **NO_AI)
+        d = chat("where can I eat amok", **NO_AI)
         on_menu = [p["name"] for p in d["results"][:5] if any("amok" in m["name"].lower() for m in p["matched"])]
         assert len(on_menu) >= 2 and not re.search(r"salmon", names(d)), [p["name"] for p in d["results"][:5]]
 
@@ -118,23 +119,56 @@ class TestDishSearch:
         d = chat("lok lak in Sen Sok", **NO_AI)
         assert any("lok lak" in m["name"].lower() for p in d["results"] for m in p.get("matched") or [])
 
+    def test_category_is_never_a_data_source(self, chat):
+        """QA 10 Nov (B2): 74% of the cards showed "overture" or "foodpanda" (the place's first tag) as its category."""
+        d = chat("coffee in Toul Kork", **NO_AI)
+        kinds = {p["kind"].lower() for p in d["results"]}
+        assert d["results"] and not kinds & {"overture", "foodpanda", "grab", "grabfood", "openstreetmap", "osm",
+                                             "foodchow", "yellowpages", "canby", "wownow", "wikidata"}, kinds
+
 
 class TestDishQuestions:
     """4b. Questions about a dish itself (EN/KH)"""
 
     @pytest.mark.parametrize("q,dish", [("do u know amok?", "kh_amok"), ("what is pad thai?", "pad_thai"),
                                         ("tell me about lok lak", "kh_lok_lak"), ("អាម៉ុកជាអ្វី?", "kh_amok"),
-                                        ("តើអ្នកស្គាល់ឡុកឡាក់ទេ?", "kh_lok_lak")])
+                                        ("តើអ្នកស្គាល់ឡុកឡាក់ទេ?", "kh_lok_lak"), ("do you know about pizza?", "pizza"),
+                                        ("what is a hamburger?", "hamburger"), ("what's kuy teav like?", "kh_kuy_teav")])
     def test_what_the_dish_is_and_what_to_ask_next(self, chat, q, dish):
         d = chat(q, **NO_AI)
         assert d["kind"] == "dish" and d["dish"]["id"] == dish and not d["results"]
         assert d["answer"] and len(d["suggestions"]) == 3
 
-    @pytest.mark.parametrize("q", ["what is the best amok place?", "where can I eat amok near me", "amok",
-                                   "do you know Brown Coffee?"])
+    @pytest.mark.parametrize("q", ["what is the best amok place?", "where can I eat amok near me", "find amok",
+                                   "cheap kuy teav", "kuy teav in Toul Kork", "do you know Brown Coffee?",
+                                   # QA 10 Nov: a chain named after a dish was explained as the dish ("Hamburger")
+                                   "do you know The Pizza Company?", "do you know Burger King?", "what is Burger King?"])
     def test_place_questions_still_search(self, chat, q):
         d = chat(q, **NO_AI)
         assert d.get("kind") != "dish", d.get("answer")
+
+    @pytest.mark.parametrize("q,dish", [("kuy teav", "kh_kuy_teav"), ("គុយទាវ", "kh_kuy_teav"), ("pizza?", "pizza"),
+                                        ("lok lak", "kh_lok_lak")])
+    def test_a_dish_name_alone_says_what_it_is(self, chat, q, dish):
+        """Asked for on 9 Nov: "kuy teav" alone = what is it; places only once the user asks where to eat it."""
+        d = chat(q, **NO_AI)
+        assert d["kind"] == "dish" and d["dish"]["id"] == dish and not d["results"]
+        assert "Where can I eat it near me?" in d["suggestions"] or "ញ៉ាំនៅណា ជិតខ្ញុំ?" in d["suggestions"]
+
+    def test_description_comes_from_the_knowledge_data(self, chat):
+        d = chat("what is kuy teav?", **NO_AI)
+        assert "noodle soup" in d["answer"] and "wikipedia.org" in d["answer"]
+        kh = chat("គុយទាវជាអ្វី?", **NO_AI)
+        assert kh["lang"] == "kh" and re.search(r"[\u1780-\u17ff]{20}", kh["answer"].split("**")[-1])
+
+    def test_where_it_comes_from_is_not_a_place_search(self, chat):
+        d = chat("where does amok come from?", **NO_AI)       # no AI: what the dish is (the AI would answer it)
+        assert d["kind"] == "recipe" and d["dish"]["id"] == "kh_amok" and not d["results"]
+
+    @pytest.mark.network
+    def test_question_about_the_dish_answered_by_ai(self, chat):
+        d = chat("what does kuy teav taste like?")
+        assert d["kind"] == "recipe" and d["provider"] in ("gemini", "ollama") and d["answer"]
 
     def test_follow_up_after_a_dish_question(self, conversation):
         a = conversation(["do u know amok?", "How do I make it?"], model="none")
@@ -163,6 +197,18 @@ class TestFilters:
         d = chat("cheap kuy teav", **NO_AI)
         assert not re.search(r"mixue|kfc|carl", names(d)) and re.search(r"kuy|noodle|គុយទាវ", names(d))
         assert d.get("unverified_note")             # our data has no prices for them: said, not hidden
+
+    @pytest.mark.parametrize("q,dish", [("lok lak in Toul Kork", r"lok ?lak|ឡុកឡាក់"),
+                                        ("cheap kuy teav", r"kuy ?te|kuyteav|គុយទាវ|noodle|pho|មី")])
+    def test_a_filter_never_leaves_places_without_the_dish(self, chat, q, dish):
+        """QA 10 Nov (B1): no Toul Kork place sells lok lak, yet Carl's Jr. and Texas Chicken were listed; "cheap kuy
+        teav" listed 5 KOI Thé bubble tea shops. They were only close in meaning. Every place shown must name the dish
+        or have it on its menu; when none is left, the answer says so."""
+        d = chat(q, **NO_AI)
+        for p in d["results"]:
+            text = f"{p['name']} {p.get('dish') or ''} " + " ".join(m["name"] for m in p.get("menu") or [])
+            assert re.search(dish, text, re.I), p["name"]
+        assert d["results"] or d.get("no_match")
 
 
 class TestLocation:
@@ -215,7 +261,7 @@ class TestConversation:
         assert a[1]["kind"] == "search" and "fried rice" in names(a[1])
 
     def test_follow_up_with_they(self, conversation):
-        a = conversation(["coffee in Siem Reap", "do they have wifi?"])
+        a = conversation(["coffee in Daun Penh", "do they have wifi?"])
         assert a[1]["kind"] == "followup"
 
     def test_khmer_follow_up(self, conversation):
@@ -224,7 +270,7 @@ class TestConversation:
 
     def test_off_topic_during_a_conversation_is_declined(self, conversation):
         """Found by running food_search.ipynb section 10: "weather today" matched a place called "Today"."""
-        a = conversation(["coffee in Siem Reap", "what's the weather today?"])
+        a = conversation(["coffee in Daun Penh", "what's the weather today?"])
         assert a[1]["kind"] == "chat" and not a[1]["results"]
 
     def test_delivery_question_is_answered_yes_with_the_link(self, conversation):
@@ -233,8 +279,8 @@ class TestConversation:
         assert a[1]["kind"] == "followup" and a[1]["answer"].startswith("Yes, Shayoo Bite") and "Foodpanda" in a[1]["answer"]
 
     def test_detail_only_some_places_have(self, conversation):
-        """"can it deliver?" after 10 Brown Coffee branches: how many have it, those places, the rest in one line."""
-        a = conversation(["do you know Brown Coffee?", "can it deliver?"], model="none")
+        """"can it deliver?" after 9 Mixue branches: how many have it, those places, the rest in one line."""
+        a = conversation(["do you know Mixue?", "can it deliver?"], model="none")
         assert a[1]["kind"] == "followup" and re.match(r"(Only 1|\d+) of these \d+ places ha", a[1]["answer"])
         assert "The others (number" in a[1]["answer"]
 
@@ -279,7 +325,7 @@ class TestEdgeCases:
     def test_typos_find_the_dish(self, chat, q, expect):
         """The typo fix: 'carry' -> 'curry' (a food word wins over 'array'), 'chuk' -> 'chok' (the word before decides),
         'kuytiew' -> 'kuy tiew' (a dish written as one word); the embeddings search the corrected words too."""
-        d = chat(q, **NO_AI)
+        d = chat(f"find {q}", **NO_AI)
         top = [p for p in d["results"][:5] if re.search(expect, names({"results": [p]}), re.I)]
         assert len(top) >= 3, (q, [p["name"] for p in d["results"][:5]])
 
@@ -335,6 +381,109 @@ class TestCorrections:
         d = chat("/correction cancel", last_question="bai sach chrouk near Wat Phnom")
         assert "no correction" in d["answer"].lower()
         assert not chat("bai sach chrouk near Wat Phnom", **NO_AI).get("corrections")
+
+
+class TestTelegramLanguage:
+    """10c. Telegram: /language sets the bot to English, Khmer, or Auto (the language of each message)"""
+
+    KH = re.compile(r"[\u1780-\u17ff]")
+
+    @pytest.fixture()
+    def bot(self, client):
+        import asyncio
+        import shutil
+        from types import SimpleNamespace as NS
+        from food_search import bot_handlers as B
+        B.allow_request = lambda *a, **k: True
+        replies = []
+
+        def record(text, kw):
+            markup = kw.get("reply_markup")
+            rows = getattr(markup, "inline_keyboard", None) or []
+            replies.append({"text": text or "", "labels": [b.text for r in rows for b in r],
+                            "buttons": [b.callback_data for r in rows for b in r]})
+            return NS(message_id=len(replies), chat=NS(id=42))
+
+        class Msg:
+            def __init__(self, text=None, photo=None):
+                self.text, self.caption, self.document, self.chat, self.chat_id = text, None, None, NS(id=42), 42
+                self.photo = [NS(get_file=self._file)] if photo else None
+                self._src = photo
+
+            async def _file(self):
+                async def download(path):
+                    shutil.copy(self._src, path)
+                return NS(download_to_drive=download)
+
+            async def reply_text(self, text, **kw):
+                return record(text, kw)
+
+        class Bot:
+            commands = {}
+
+            async def send_chat_action(self, *a, **k):
+                pass
+
+            async def set_my_commands(self, commands, scope=None, **k):
+                Bot.commands[getattr(scope, "chat_id", None)] = [c.command for c in commands]
+
+            async def delete_my_commands(self, scope=None, **k):
+                Bot.commands.pop(getattr(scope, "chat_id", None), None)
+
+        ctx = NS(user_data={"model": "none"}, bot=Bot(), args=[])
+        user = NS(id=4343)
+        upd = lambda m: NS(message=m, effective_user=user, effective_chat=NS(id=42), effective_message=m,
+                           edited_message=None, callback_query=None)
+
+        async def tap(data):
+            async def answer(*a, **k):
+                pass
+
+            async def edit(text=None, **kw):
+                record(text, kw)
+            q = NS(data=data, message=Msg(), answer=answer, edit_message_text=edit, from_user=user)
+            return NS(callback_query=q, effective_user=user, effective_chat=NS(id=42), effective_message=q.message)
+
+        run = asyncio.run
+        yield NS(ctx=ctx, replies=replies, commands=Bot.commands,
+                 say=lambda t: run(B.text_handler(upd(Msg(text=t)), ctx)),
+                 command=lambda t: (setattr(ctx, "args", t.split()[1:]), run(B.language_cmd(upd(Msg(text=t)), ctx))),
+                 tap=lambda d: run((B.language_callback if d.startswith("lang:") else B.dish_callback)(run(tap(d)), ctx)),
+                 photo=lambda p: run(B.photo_handler(upd(Msg(photo=p)), ctx)))
+
+    def test_language_command_offers_three_choices(self, bot):
+        bot.command("/language")
+        assert bot.replies[-1]["buttons"] == ["lang:auto", "lang:en", "lang:kh"]
+        assert bot.replies[-1]["labels"][0].startswith("✓")              # Auto is the default
+
+    def test_khmer_chosen_answers_khmer_even_to_english(self, bot):
+        bot.tap("lang:kh")
+        assert self.KH.search(bot.replies[-1]["text"]) and bot.ctx.user_data["lang"] == "kh"
+        assert "language" in bot.commands[42]                         # this chat's / menu is now in Khmer
+        bot.say("pizza near CADT")
+        assert bot.replies[-1]["text"].startswith("នេះជាអ្វីដែលខ្ញុំរកឃើញ")
+        bot.say("kuy teav")                                            # the dish card and its buttons
+        assert self.KH.search(bot.replies[-1]["text"].split("\n")[-1]) and all(self.KH.search(x) for x in bot.replies[-1]["labels"])
+        bot.tap("recipe:kh_kuy_teav")                                  # the recipe too (it was always English)
+        assert bot.replies[-1]["text"].startswith("របៀបធ្វើ"), bot.replies[-1]["text"][:60]
+
+    def test_english_chosen_answers_english_even_to_khmer(self, bot):
+        bot.command("/language en")
+        bot.say("កាហ្វេនៅទួលគោក")
+        assert bot.replies[-1]["text"].startswith("Here's what I found")
+        bot.photo(LOK_LAK)
+        assert bot.replies[-1]["text"].startswith("This looks like")
+
+    def test_auto_follows_each_message(self, bot):
+        bot.command("/language kh")
+        bot.tap("lang:auto")
+        assert "lang" not in bot.ctx.user_data and 42 not in bot.commands   # back to Telegram's own menu language
+        bot.say("កាហ្វេនៅទួលគោក")
+        assert bot.replies[-1]["text"].startswith("នេះជាអ្វីដែលខ្ញុំរកឃើញ")
+        bot.say("coffee in Toul Kork")
+        assert bot.replies[-1]["text"].startswith("Here's what I found")
+        bot.say("របៀបធ្វើសម្លកកូរ")                                     # QA 10 Nov: a Khmer recipe question got English
+        assert bot.replies[-1]["text"].startswith("របៀបធ្វើ"), bot.replies[-1]["text"][:60]
 
 
 class TestTelegramCorrection:
@@ -432,7 +581,7 @@ class TestDemo:
 
     def test_data_overview(self, client):
         d = client.get("/api/demo/data").json()
-        assert d["total"] > 15000 and d["sources"]
+        assert d["total"] > 10000 and d["sources"]
 
     def test_photo_steps(self, client):
         d = client.post("/api/demo/photo", files={"photo": LOK_LAK.open("rb")}).json()
@@ -450,3 +599,29 @@ class TestPhoto:
     def test_not_a_photo(self, client):
         r = client.post("/api/photo", files={"photo": ("x.jpg", b"not an image")})
         assert r.status_code == 400
+
+
+class TestVoice:
+    """13. Voice: two Khmer voices (female Sreymom, male Piseth) read the Khmer and the English answers"""
+
+    def test_only_two_khmer_voices(self):
+        from food_search.config import VOICES
+        assert set(VOICES) == {"female", "male"} and all(v.startswith("km-KH-") for v in VOICES.values())
+
+    @pytest.mark.parametrize("text,said", [
+        ("Open until 10 pm, 45 minutes.", "Open until ten pm, forty-five minutes."),
+        ("Rated 4.5 (1,200 reviews)", "Rated four point five (one thousand two hundred reviews)"),
+        ("Open 7:00 to 21:30, $5.50.", "Open seven to twenty-one thirty, five dollars fifty."),
+        ("Call 012 345 678", "Call zero one two, three four five, six seven eight"),
+        ("បើកដល់ម៉ោង 10 យប់។", "បើកដល់ម៉ោង 10 យប់។"),            # after Khmer words the voice reads digits in Khmer
+    ])
+    def test_english_numbers_are_read_as_words(self, text, said):
+        from food_search import voice
+        assert voice.spoken_text(text) == said
+
+    @pytest.mark.network
+    @pytest.mark.parametrize("gender", ["female", "male"])
+    def test_each_voice_reads_khmer_and_english(self, gender):
+        from food_search import voice
+        for text in ("Here are 3 places for kuy teav near you.", "នេះគឺ Burrata Republic Pizza ។"):
+            assert len(voice.speak(text, None, gender)) > 5000

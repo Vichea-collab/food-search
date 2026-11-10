@@ -10,6 +10,10 @@ import logging
 from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +87,7 @@ def scrape_canby(html_content: str = None) -> list[dict]:
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        res = requests.get(CANBY_URL, headers=headers, timeout=20)
+        res = robots.get(CANBY_URL, headers=headers, timeout=20)
         # Use ISO-8859-1 decode with proper clean
         html_content = res.content.decode("iso-8859-1", errors="replace")
 

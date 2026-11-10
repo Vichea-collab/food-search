@@ -9,11 +9,14 @@ and conversational ordering/reservation instructions.
 
 import re
 import csv
-import time
 import logging
 from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +58,7 @@ def parse_detail_page(detail_url: str, session: requests.Session) -> dict:
         "open_hour": "", "close_hour": "", "description": "", "tags": []
     }
     try:
-        r = session.get(detail_url, headers=HEADERS, timeout=8)
+        r = robots.get(detail_url, session=session, headers=HEADERS, timeout=8, min_pause=0.3)
         if r.status_code != 200:
             return info
         soup = BeautifulSoup(r.text, "html.parser")
@@ -120,7 +123,7 @@ def scrape_yellowpages_nationwide(cities: list = None, pages_per_city: int = 1, 
             url = f"{BASE_URL}/category/Restaurants/{city_param}" if page == 1 else f"{BASE_URL}/category/Restaurants/{page}/{city_param}"
             print(f"Fetching {city_name} page {page}: {url}")
             try:
-                r = session.get(url, headers=HEADERS, timeout=12)
+                r = robots.get(url, session=session, headers=HEADERS, timeout=12)
                 if r.status_code != 200:
                     break
                 soup = BeautifulSoup(r.text, "html.parser")
@@ -148,7 +151,6 @@ def scrape_yellowpages_nationwide(cities: list = None, pages_per_city: int = 1, 
 
                     lat, lng, open_h, close_h, desc, website, detail_tags = "", "", "", "", "", "", []
                     if fetch_details and detail_url:
-                        time.sleep(0.3)
                         det = parse_detail_page(detail_url, session)
                         phone = phone or det["phone"]
                         website = det["website"]

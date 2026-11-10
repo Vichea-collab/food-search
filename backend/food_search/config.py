@@ -79,9 +79,7 @@ VOICE_ENABLED = get_secret("VOICE_ENABLED", "1") != "0"
 STT_MODEL = get_secret("STT_MODEL")                 # Gemini model that transcribes; empty = the first Gemini model of LLM_MODELS
 MAX_VOICE_SECONDS = 60
 MAX_VOICE_MB = 2
-VOICES = {                                           # edge-tts voices: language -> gender -> voice
-    "kh": {"female": get_secret("EDGE_VOICE_KH_FEMALE", "km-KH-SreymomNeural"),
-           "male": get_secret("EDGE_VOICE_KH_MALE", "km-KH-PisethNeural")},
-    "en": {"female": get_secret("EDGE_VOICE_EN_FEMALE", "en-US-JennyNeural"),
-           "male": get_secret("EDGE_VOICE_EN_MALE", "en-US-GuyNeural")},
+VOICES = {                                           # edge-tts voices: two Khmer voices that read Khmer and English
+    "female": get_secret("EDGE_VOICE_FEMALE") or get_secret("EDGE_VOICE_KH_FEMALE", "km-KH-SreymomNeural"),
+    "male": get_secret("EDGE_VOICE_MALE") or get_secret("EDGE_VOICE_KH_MALE", "km-KH-PisethNeural"),
 }

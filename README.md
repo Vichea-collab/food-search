@@ -1,7 +1,9 @@
 # ឃ្លានញ៉ាំ (Klean Nham) – Cambodian food search (RAG chatbot)
 
 Ask for a dish, a place or a time in English or Khmer, and get places in Phnom Penh. Hybrid search (BM25 + multilingual
-embeddings) retrieves places from our list; an AI model (Gemini, or Ollama) writes a short answer using only those rows.
+embeddings) retrieves places from our list, including the dishes on their menus; an AI model (Gemini, or Ollama) writes
+a short answer using only those rows. A dish's name alone ("kuy teav", "គុយទាវ") or "what is amok?" says what the dish
+is; places come once the user asks where to eat it ("where can I eat kuy teav?", "kuy teav near me").
 Available as a website, a Telegram Mini App and a Telegram bot, plus a "How it works" demo page.
 
 ```
@@ -77,6 +79,12 @@ dishes), shows its recipe (prep / cook / total time, ingredients, steps) and the
 2. **Recipes**: `data/recipes.csv` is built by `python scrapers/recipes_foodcom.py` (needs `pip install pyarrow`;
    downloads ~450 MB of Food.com recipes into `data/raw/foodcom/`). 99 of the 101 dishes have a recipe; Food.com has
    no proper sashimi or takoyaki recipe, and the app says so.
+2b. **What a dish is**: `data/dish_knowledge.csv` (built by `python scrapers/dish_knowledge.py`): for each of the
+   155 dishes, the first sentences of its Wikipedia article (104 dishes; CC BY-SA, so the app shows the source link) or
+   our own one-line text, in English and Khmer. The Khmer is a machine translation (Gemini), checked by the script for
+   Thai letters, English words and left-out sentences, and marked as translated in the app; a person should read it
+   through. Questions like "is it spicy?" or "where does amok come from?" are answered by the AI from this text and
+   the recipe only.
 3. **Learning from users**: when an answer is wrong, the user taps **`/correction`** (Telegram menu, or the `/`
    command menu in the web chat) and then just types the right answer: the next message is the correction, no second
    `/correction` needed (“cancel” skips it). In one go also works: `/correction amok`. Or tap the right dish under
@@ -133,7 +141,7 @@ or new search) always uses the default model when it is available; the chosen mo
 
 ```bash
 venv/bin/pip install pytest
-venv/bin/python -m pytest tests -q                  # 106 end-to-end tests (~1 min; Gemini and OpenStreetMap need internet)
+venv/bin/python -m pytest tests -q                  # 130 end-to-end tests (~1–2 min; Gemini and OpenStreetMap need internet)
 venv/bin/python -m pytest tests -q -m "not network" # offline ones only
 ```
 

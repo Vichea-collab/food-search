@@ -1,0 +1,10 @@
+# Klean Nham - https://kleannham.luchtithvichea.com
+# Search engines may list the chat page and the "How it works" page (/demo).
+# The API answers questions live (every call can use AI quota), so crawlers stay out of it and its docs.
+# The Disallow lines come first: some crawlers use the first rule that matches.
+User-agent: *
+Disallow: /api/
+Disallow: /docs
+Disallow: /redoc
+Disallow: /openapi.json
+Allow: /

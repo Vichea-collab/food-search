@@ -11,6 +11,10 @@ import logging
 from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +47,7 @@ CATEGORY_MAP_KH = {
 
 def scrape_grabfood_categories() -> list[dict]:
     print(f"Fetching GrabFood Cambodia home: {HOME_EN}")
-    r = requests.get(HOME_EN, headers=HEADERS, timeout=15)
+    r = robots.get(HOME_EN, headers=HEADERS, timeout=15)
     soup = BeautifulSoup(r.text, "html.parser")
     
     # Extract Next.js data

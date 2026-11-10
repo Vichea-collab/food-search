@@ -169,6 +169,27 @@ def num(x, digits=2):
     return None if x is None or pd.isna(x) else round(float(x), digits)
 
 
+# tags that say where a row came from or how it is sold, not what the place is (QA 10 Nov: 11,017 of 14,842 cards
+# showed "overture" or "foodpanda" as the place's category, others "lunch" or "takeaway")
+SOURCE_TAGS = {"overture", "foodpanda", "grab", "grabfood", "openstreetmap", "osm", "foodchow", "yellowpages",
+               "yellowpages-cambodia", "canby", "canby-publications", "wownow", "wikidata", "telegram"}
+SERVICE_TAGS = {"lunch", "dinner", "breakfast", "brunch", "takeaway", "take away", "delivery", "dine-in", "dine in",
+                "pickup", "order", "direct", "open", "now"}
+
+GENERIC_KIND = {k: {"en": "restaurant", "kh": "ភោជនីយដ្ឋាន"} for k in ("restaurant", "ភោជនីយដ្ឋាន")}
+
+
+def place_kind(tags, lang="en") -> str:
+    """What the place is, from its tags ("foodpanda;lunch;takeaway;juice;ភេសជ្ជៈ" -> "juice", in Khmer "ភេសជ្ជៈ"):
+    no data source or service tag; a tag in the reader's language first; the plain "restaurant" only if nothing else."""
+    tags = [t.strip().replace("_", " ") for t in str(tags or "").split(";")]
+    tags = [t for t in tags if t and t.lower() not in SOURCE_TAGS | SERVICE_TAGS]
+    in_lang = [t for t in tags if bool(search.KHMER_RE.search(t)) == (lang == "kh")]
+    ranked = [t for t in in_lang + tags if t.lower() not in GENERIC_KIND] + tags
+    kind = ranked[0] if ranked else ""
+    return GENERIC_KIND[kind.lower()][lang] if kind.lower() in GENERIC_KIND else kind
+
+
 def place_json(r, lang, hour_now) -> dict:
     """One result row for the UI. Unknown values are null (the UI leaves them out), never guessed."""
     name_val = r["name"] if isinstance(r, (pd.Series, dict)) else getattr(r, "name", "")
@@ -203,10 +224,10 @@ def place_json(r, lang, hour_now) -> dict:
             if isinstance(items, list):
                 is_kh = lang == "kh"
                 for it in items:
-                    name_dish = it.get("name_kh" if is_kh else "name_en") or it.get("name_en") or it.get("name_kh") or ""
+                    name_dish = it.get("name_kh" if is_kh else "name_en") or it.get("name_en") or it.get("name_kh") or it.get("name") or ""
                     menu_list.append({
                         "name": name_dish,
-                        "name_en": it.get("name_en", ""),
+                        "name_en": it.get("name_en") or it.get("name", ""),
                         "name_kh": it.get("name_kh", ""),
                         "description": it.get("description", ""),
                         "price_usd": float(it.get("price_usd") or 0),      # 0 = the source gave no price
@@ -219,7 +240,7 @@ def place_json(r, lang, hour_now) -> dict:
         "id": id_val,
         "name": name_val,
         "dish": dish_display.replace(";", ",").replace("_", " "),
-        "kind": str(tags_val or "").split(";")[0].strip().replace("_", " "),
+        "kind": place_kind(tags_val, lang),
         "area": area_val or "",
         "city": city_val,
         "price_usd": num(price_val),
@@ -412,7 +433,7 @@ async def answer_chat(body: ChatRequest, request: Request):
                 "suggestions": dishes.suggestions(dish_id, lang, skip=(kind,) if kind in ("steps", "time") else ())}
     about = dishes.about_intent(query)
     if about:                                    # "do u know amok?": the dish itself, then what to ask next
-        return {"kind": "dish", "query": query, "lang": lang, "answer": dishes.about_answer(about, lang),
+        return {"kind": "dish", "query": query, "lang": lang, "answer": dishes.about_answer(about, lang, query),
                 "provider": "facts", "model": None, "model_label": None, "dish": dishes.dish_json(about),
                 "recipe": None, "results": [], "filters": {}, "origin": None, "no_match": None,
                 "suggestions": dishes.suggestions(about, lang)}
@@ -861,7 +882,7 @@ npm run build</pre>
 
 def create_app(lifespan=None) -> FastAPI:
     app = FastAPI(title="Food search API", version="2.0", lifespan=lifespan,
-                  description="Hybrid search (BM25 + embeddings) over places across Cambodia, "
+                  description="Hybrid search (BM25 + embeddings) over places in Phnom Penh, "
                               "with an AI answer written only from the retrieved rows.")
 
     @app.middleware("http")

@@ -60,6 +60,16 @@ DISHES = {
     "kh_kanh":            ("Kanh (minced beef salad)", "", "kanh beef salad", ["kh-food-image-v2/kanh"]),
     "kh_steamed_fish_soy": ("Steamed fish with soy sauce", "ត្រីចំហុយទឹកស៊ីអ៊ីវ", "steamed fish soy sauce",
                             ["kh-food-image-v2/*steamed-fish*"]),
+    "kh_amok_trey":       ("Fish amok (amok trey)", "អាម៉ុកត្រី", "amok trey fish amok", ["harvested/kh_amok_trey"]),
+    "kh_kuy_teav":        ("Kuy teav noodle soup", "គុយទាវ", "kuy teav noodle soup", ["harvested/kh_kuy_teav"]),
+    "kh_bai_sach_chrouk": ("Bai sach chrouk (pork rice)", "បាយសាច់ជ្រូក", "bai sach chrouk pork rice", ["harvested/kh_bai_sach_chrouk"]),
+    "kh_lort_cha":        ("Lort cha (fried pin noodles)", "លតឆា", "lort cha fried noodles", ["harvested/kh_lort_cha"]),
+    "kh_bok_lhong":       ("Bok lhong (papaya salad)", "បុកល្ហុង", "bok lhong papaya salad", ["harvested/kh_bok_lhong"]),
+    "kh_num_pang":        ("Num pang (khmer baguette)", "នំប៉័ងប៉ាតេ", "num pang pate sandwich", ["harvested/kh_num_pang"]),
+    "kh_sach_ko_ang":     ("Sach ko ang (beef skewers)", "សាច់គោអាំង", "sach ko ang beef skewers", ["harvested/kh_sach_ko_ang"]),
+    "kh_banh_chhev":      ("Banh chhev (crispy crepe)", "បាញ់ឆែវ", "banh chhev crispy crepe", ["harvested/kh_banh_chhev"]),
+    "kh_borbor":          ("Borbor (rice porridge)", "បបរ", "borbor rice porridge congee", ["harvested/kh_borbor"]),
+    "kh_chha_kdao":       ("Chha kdao (holy basil stir fry)", "ឆាក្តៅ", "chha kdao stir fry", ["harvested/kh_chha_kdao"]),
 }
 
 
@@ -76,9 +86,13 @@ def download():
 
 
 def class_dirs(pattern: str) -> list:
-    """'khfood-v2/04' -> that folder in every split. '*steamed-fish*': the one folder whose name is not ASCII
-    (the Khmer name ត្រីចំហុយទឹកស៊ីអ៊ីវ, garbled by the zip)."""
+    """'khfood-v2/04' -> that folder in every split. 'harvested/kh_amok_trey' -> direct folder."""
+    if pattern.startswith("harvested/"):
+        p = KH / pattern
+        return [p] if p.is_dir() else []
     ds, cls = pattern.split("/", 1)
+    if not (KH / ds).is_dir():
+        return []
     splits = [d for d in (KH / ds).iterdir() if d.is_dir()]
     if cls == "*steamed-fish*":
         return [c for s in splits for c in s.iterdir() if c.is_dir() and not c.name.isascii()]

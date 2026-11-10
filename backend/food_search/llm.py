@@ -20,8 +20,8 @@ NO_MATCH = {
     "kh": "សូមអភ័យទោស មិនមានហាងណាត្រូវនឹងការស្វែងរករបស់អ្នកទេ។ សូមសាកល្បងម្ហូបផ្សេង។",
 }
 NO_MATCH_IN = {
-    "en": "Sorry, our list has nothing like that in {place} yet. Try another dish, or ask without the place to search all of Cambodia.",
-    "kh": "សូមអភ័យទោស បញ្ជីរបស់យើងមិនទាន់មានហាងបែបនេះនៅ{place}ទេ។ សូមសាកល្បងម្ហូបផ្សេង ឬសួរដោយមិនដាក់ទីកន្លែង។",
+    "en": "Sorry, our list has nothing like that in {place} yet. Try another dish, or ask without the district to search all of Phnom Penh.",
+    "kh": "សូមអភ័យទោស បញ្ជីរបស់យើងមិនទាន់មានហាងបែបនេះនៅ{place}ទេ។ សូមសាកល្បងម្ហូបផ្សេង ឬសួរដោយមិនដាក់ខណ្ឌ។",
 }
 
 
@@ -689,7 +689,7 @@ def place_facts(n, r, hour_now) -> str:
             import json as _json
             items = _json.loads(menu_raw)
             if isinstance(items, list):
-                menu_str = ", ".join(f"{it.get('name_en')} (${float(it.get('price_usd', 0)):.2f})" for it in items)
+                menu_str = ", ".join(f"{it.get('name_en') or it.get('name')} (${float(it.get('price_usd', 0)):.2f})" for it in items[:8])
         except Exception:
             menu_str = ""
     return (f"{n}. name: {name_val} | food: {food} | type: {kinds} | area: {area_val or NOT_IN_DATA}"
@@ -826,7 +826,7 @@ def menu_items(r) -> list:
         items = json.loads(raw) if isinstance(raw, str) and raw.strip().startswith("[") else []
     except ValueError:
         return []
-    return [it for it in items if isinstance(it, dict) and (it.get("name_en") or it.get("name_kh"))]
+    return [it for it in items if isinstance(it, dict) and (it.get("name_en") or it.get("name_kh") or it.get("name"))]
 
 
 def field_value(r, field, lang, hour_now) -> str:
@@ -869,7 +869,7 @@ def field_value(r, field, lang, hour_now) -> str:
 
 
 def menu_line(item, lang) -> str:
-    name = (item.get("name_kh") if lang == "kh" else "") or item.get("name_en") or item.get("name_kh")
+    name = (item.get("name_kh") if lang == "kh" else "") or item.get("name_en") or item.get("name_kh") or item.get("name")
     price = item.get("price_usd")
     return f"{name} — {fmt_price(price)}" if price not in (None, "") else str(name)
 
@@ -1150,25 +1150,25 @@ def answer_followup(message, history, places, numbers=None, model_id=None) -> di
 
 CHAT_REPLIES = {    # greetings, thanks and "who are you?" need no AI: instant, always the same, never off-topic
     "en": {"hello": "Hi! 👋 What would you like to eat? Tell me a dish, an area or a time, e.g. “kuy teav near me” "
-                    "or “pizza in Siem Reap”.",
+                    "or “pizza in Toul Kork”.",
            "thanks": "You're welcome! 😊 Anything else you'd like to find?",
            "hungry": "Let's fix that! 🍜 Do you feel like noodles (kuy teav), rice (bai sach chrouk), Khmer BBQ, pizza "
                      "or coffee? Tell me one, and add “near me” to see what's close.",
            "bye": "Bye! Enjoy your meal 🍜",
-           "refuse": "I can only help you find food and places to eat in Cambodia 🍜. Try “kuy teav near me” or "
-                     "“pizza in Siem Reap”.",
+           "refuse": "I can only help you find food and places to eat in Phnom Penh 🍜. Try “kuy teav near me” or "
+                     "“pizza in Toul Kork”.",
            "ok": "Great! Ask me anything about these places, or tell me what else you'd like to eat.",
-           "about": "I'm Klean Nham, a food guide for Cambodia 🍜. I search our list of {n:,} places: ask for a dish, "
-                    "an area or a time (“coffee near me”, “pizza in Siem Reap”, “bbq under $5”), then keep asking "
+           "about": "I'm Klean Nham, a food guide for Phnom Penh 🍜. I search our list of {n:,} places: ask for a dish, "
+                    "an area or a time (“coffee near me”, “pizza in Toul Kork”, “bbq under $5”), then keep asking "
                     "about the places I show: opening hours, menu, phone, distance, or “compare 1 and 2”."},
     "kh": {"hello": "សួស្តី! 👋 តើអ្នកចង់ញ៉ាំអ្វី? ប្រាប់ខ្ញុំពីម្ហូប តំបន់ ឬម៉ោង ឧ. “គុយទាវ ជិតខ្ញុំ”។",
            "thanks": "មិនអីទេ! 😊 ចង់រកអ្វីទៀតទេ?",
            "hungry": "តោះរកម្ហូប! 🍜 ចង់ញ៉ាំគុយទាវ បាយសាច់ជ្រូក សាច់អាំង ភីហ្សា ឬកាហ្វេ? ប្រាប់ខ្ញុំមួយ ហើយថែម “ជិតខ្ញុំ” "
                      "ដើម្បីមើលហាងនៅជិត។",
            "bye": "លាហើយ! ញ៉ាំឲ្យឆ្ងាញ់ 🍜",
-           "refuse": "ខ្ញុំអាចជួយតែស្វែងរកម្ហូប និងកន្លែងញ៉ាំនៅកម្ពុជាប៉ុណ្ណោះ 🍜។ សាកសួរ “គុយទាវ ជិតខ្ញុំ”។",
+           "refuse": "ខ្ញុំអាចជួយតែស្វែងរកម្ហូប និងកន្លែងញ៉ាំនៅភ្នំពេញប៉ុណ្ណោះ 🍜។ សាកសួរ “គុយទាវ ជិតខ្ញុំ”។",
            "ok": "បាទ! សួរខ្ញុំអំពីហាងទាំងនេះ ឬប្រាប់ថាចង់ញ៉ាំអ្វីទៀត។",
-           "about": "ខ្ញុំជា ឃ្លានញ៉ាំ ជំនួយការស្វែងរកម្ហូបនៅកម្ពុជា 🍜។ ខ្ញុំស្វែងរកក្នុងបញ្ជីហាង {n:,} កន្លែង៖ "
+           "about": "ខ្ញុំជា ឃ្លានញ៉ាំ ជំនួយការស្វែងរកម្ហូបនៅភ្នំពេញ 🍜។ ខ្ញុំស្វែងរកក្នុងបញ្ជីហាង {n:,} កន្លែង៖ "
                     "សួររកម្ហូប តំបន់ ឬម៉ោង (“កាហ្វេ ជិតខ្ញុំ”) រួចសួរបន្តអំពីហាង៖ ម៉ោងបើក ម៉ឺនុយ "
                     "លេខទូរស័ព្ទ ចម្ងាយ ឬ “ប្រៀបធៀប 1 និង 2”។"},
 }
@@ -1189,7 +1189,7 @@ def chat_reply(message, history=None, model_id=None) -> dict:
         return {"text": CHAT_REPLIES[lang][kind].format(n=place_count()), "provider": "facts", "model": None, "label": None}
     prompt = (
         "You are ឃ្លានញ៉ាំ (Klean Nham), a friendly food guide chatbot for Cambodia. You find places to eat "
-        "from a list of real places across Cambodia, in English or Khmer.\n"
+        "from a list of real places in Phnom Penh, in English or Khmer.\n"
         f"Reply to the new message in {'Khmer' if lang == 'kh' else 'English'} in one or two short sentences. Do not "
         "recommend or name any place.\n"
         "If the message is not about food or places to eat (weather, news, homework, poems…), say kindly that you only "

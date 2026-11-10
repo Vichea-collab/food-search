@@ -10,6 +10,10 @@ import logging
 from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +28,7 @@ def clean_text(s: str) -> str:
 
 def scrape_foodchow() -> list[dict]:
     print(f"Fetching FoodChow Phnom Penh: {URL}")
-    r = requests.get(URL, headers=HEADERS, timeout=15)
+    r = robots.get(URL, headers=HEADERS, timeout=15)
     soup = BeautifulSoup(r.text, "html.parser")
     rows = []
     seen_names = set()

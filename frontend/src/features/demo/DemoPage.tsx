@@ -33,7 +33,7 @@ export function DemoPage() {
   useEffect(() => {
     document.title = "Klean Nham – how it works";
     api.config().then(setConfig).catch(() => {});
-    return () => { document.title = "Klean Nham – Cambodia food guide"; };
+    return () => { document.title = "Klean Nham – Phnom Penh food guide"; };
   }, []);
 
   const select = (id: TabId) => setParams(id === "ask" ? {} : { tab: id }, { replace: true });

@@ -52,6 +52,29 @@ Every scraper and pipeline component outputs this exact column specification:
 
 ---
 
+## 🤖 Polite crawling (robots.txt)
+
+Every scraper that downloads web pages goes through `scrapers/robots.py` (`robots.get(url, ...)` instead of
+`requests.get`). Before the first page of a site it reads that site's `robots.txt`, then:
+
+- a page that `robots.txt` disallows is **not downloaded** (it is skipped like a failed download);
+- the site's `Crawl-delay` / `Request-rate` is kept between two requests (GrabFood asks for 2 s), on top of each
+  scraper's own pause;
+- a missing `robots.txt` (404, 403) means no rules; one that cannot be read (5xx, no answer) blocks the site and is
+  asked again after 10 minutes (the rules of RFC 9309, the robots.txt standard).
+
+Checked on 2026-11-10, every page the scrapers use is allowed: Foodpanda (sitemap and `/restaurant/` pages), GrabFood
+(2 s crawl delay), Grab's sitemap host, Cambodia Yellow Pages, FoodChow, Canby (no robots.txt) and Telegram's public
+channel pages (no robots.txt). Check any address with `python scrapers/robots.py <url>`.
+
+Wikipedia, Wikidata and OpenStreetMap Overpass are used through their official APIs, not crawled. Their
+`robots.txt` is meant for crawlers (it disallows the API paths), so those scripts follow the APIs' usage policies
+instead: a named User-Agent and few requests (one query each for Wikidata and Overpass; Wikipedia summaries one
+per second, waiting and retrying when the service says it is busy).
+
+The website itself has a `robots.txt` too (`frontend/public/robots.txt`): search engines may list `/` and `/demo`,
+and stay out of `/api/` and the API docs.
+
 ## 🚀 CLI Commands
 
 ### 1. Run all scrapers nationwide & update the dataset

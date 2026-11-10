@@ -7,11 +7,14 @@ promotions, image URLs, and ordering links with deep pagination.
 
 import re
 import csv
-import time
 import logging
 from pathlib import Path
 from bs4 import BeautifulSoup
 import requests
+try:                               # scrapers/robots.py: obey robots.txt and the site's crawl delay
+    from scrapers import robots
+except ImportError:
+    import robots
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +106,7 @@ def scrape_wownow_telegram(max_pages: int = 5, limit_deals: int = 100) -> list[d
     for page in range(max_pages):
         url = f"{CHANNEL_URL}?before={before_id}" if before_id else CHANNEL_URL
         print(f"Fetching WOWNOW Telegram page {page + 1}: {url}")
-        res = requests.get(url, headers=headers, timeout=15)
+        res = robots.get(url, headers=headers, timeout=15, min_pause=0.5)
         soup = BeautifulSoup(res.text, "html.parser")
         wraps = soup.select(".tgme_widget_message_wrap")
         if not wraps:
@@ -195,7 +198,6 @@ def scrape_wownow_telegram(max_pages: int = 5, limit_deals: int = 100) -> list[d
         
         if len(rows) >= limit_deals:
             break
-        time.sleep(0.5)
 
     return rows
 

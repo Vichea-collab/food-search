@@ -1,12 +1,16 @@
-import { useEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent,
+         type PointerEvent as ReactPointerEvent } from "react";
 import { Icon, type IconName } from "../../components/Icon";
 import { useI18n } from "../../i18n/I18nContext";
 import type { StringKey } from "../../i18n/strings";
+import { haptic } from "../../lib/telegram";
 import { useMediaQuery } from "../../lib/useMediaQuery";
 import { startRecording, voiceSupported, type Recording } from "../../lib/voice";
 import type { ModelOption } from "../../lib/types";
 
 const MAX_HEIGHT = 132;
+const HOLD_MS = 300;            // pressed longer than this = "hold to talk": letting go sends
+const CANCEL_SLIDE_PX = 100;    // sliding this far left while holding cancels the recording
 
 /** The commands of the "/" menu, as in the Telegram bot's menu. */
 type CommandName = "correction" | "new" | "photo";
@@ -79,6 +83,10 @@ export function Composer({
   const [rec, setRec] = useState<{ level: number; seconds: number } | null>(null);
   const [micError, setMicError] = useState(false);
   const recording = useRef<Recording | null>(null);
+  const micToken = useRef(0);                          // bumped by a cancel: a microphone still opening is closed
+  const press = useRef<{ x: number; at: number; sendOnUp: boolean } | null>(null);
+  const [holding, setHolding] = useState(false);       // the finger (or mouse) is down on the microphone
+  const [slide, setSlide] = useState(0);               // how far it moved left, in px
   const canSpeak = voiceOn && voiceSupported();
 
   const commands = COMMANDS.filter((c) => c.name !== "photo" || photoSearch);
@@ -112,24 +120,67 @@ export function Composer({
     const wav = await current?.stop();
     if (wav) onVoice(wav);
   };
-  const toggleMic = async () => {
-    if (recording.current) return void finishRecording();
-    if (busy) return;
+  /** Starts recording. A cancel (or slide away) while the microphone is still being opened stops it at once. */
+  const beginRecording = async () => {
+    if (busy || recording.current) return;
     setMicError(false);
+    const token = ++micToken.current;
     try {
       const r = await startRecording();
+      if (token !== micToken.current) return r.cancel();             // cancelled while the microphone was opening
       recording.current = r;
       r.onLevel((level) => setRec((s) => (s ? { ...s, level } : s)));
       r.onLimit(() => void finishRecording());                       // the maximum length: send what was said
-      setRec({ level: 0, seconds: 0 });
+      setRec((s) => s ?? { level: 0, seconds: 0 });
     } catch {
-      setMicError(true);                                               // blocked, or no microphone
+      if (token === micToken.current) setMicError(true);            // blocked, or no microphone
     }
   };
+  const toggleMic = () => (recording.current ? void finishRecording() : void beginRecording());
   const cancelMic = () => {
+    micToken.current++;
+    press.current = null;
+    setHolding(false);
+    setSlide(0);
     recording.current?.cancel();
     recording.current = null;
     setRec(null);
+  };
+
+  // As in Telegram: hold the microphone to talk and let go to send; slide left to cancel. A quick tap instead keeps
+  // recording until the next tap (also the way for keyboards and screen readers, through click).
+  const onMicDown = (e: ReactPointerEvent<HTMLButtonElement>) => {
+    if (e.button !== 0 || (busy && !recording.current)) return;
+    e.preventDefault();                                                // no text selection or long-press menu
+    if (recording.current) {                                           // recording after a tap: this tap sends
+      press.current = { x: e.clientX, at: Date.now(), sendOnUp: true };
+      return;
+    }
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch { /* the finger is still tracked on the button */ }
+    press.current = { x: e.clientX, at: Date.now(), sendOnUp: false };
+    setSlide(0);
+    setHolding(true);
+    haptic("tap");
+    void beginRecording();
+  };
+  const onMicMove = (e: ReactPointerEvent<HTMLButtonElement>) => {
+    const p = press.current;
+    if (!p || p.sendOnUp) return;
+    const left = Math.max(0, p.x - e.clientX);
+    setSlide(left);
+    if (left > CANCEL_SLIDE_PX) {
+      cancelMic();
+      haptic("error");
+    }
+  };
+  const onMicUp = () => {
+    const p = press.current;
+    press.current = null;
+    setHolding(false);
+    setSlide(0);
+    if (!p) return;
+    if (p.sendOnUp || Date.now() - p.at >= HOLD_MS) void finishRecording();   // a hold: let go = send
+    // a quick tap: keep recording; the next tap sends (if the microphone is still opening, it starts that way)
   };
   useEffect(() => { if (correcting) box.current?.focus(); }, [correcting]);   // ready for the right answer
   useEffect(() => { setActive(0); }, [typed, menuOpen]);
@@ -252,10 +303,19 @@ export function Composer({
         </div>
       )}
       {rec && (
-        <div className="composer-correcting composer-recording" role="status">
+        <div className={`composer-correcting composer-recording${holding ? " holding" : ""}`} role="status">
           <span className="rec-dot" style={{ transform: `scale(${1 + rec.level * 0.8})` }} aria-hidden="true" />
-          <p>{t("recording")} · {Math.floor(rec.seconds / 60)}:{String(rec.seconds % 60).padStart(2, "0")}</p>
-          <button type="button" onClick={cancelMic}>{t("micCancel")}</button>
+          <p className="rec-time">{Math.floor(rec.seconds / 60)}:{String(rec.seconds % 60).padStart(2, "0")}</p>
+          {holding ? (                                  /* the hint follows the finger and fades as it nears "cancel" */
+            <p className="rec-slide" style={{ transform: `translateX(${-slide}px)`, opacity: 1 - slide / (CANCEL_SLIDE_PX * 1.4) }}>
+              ‹ {t("slideCancel")}
+            </p>
+          ) : (
+            <>
+              <p>{t("recording")}</p>
+              <button type="button" onClick={cancelMic}>{t("micCancel")}</button>
+            </>
+          )}
         </div>
       )}
       {micError && !rec && (
@@ -351,10 +411,14 @@ export function Composer({
           </div>
         )}
         {canSpeak && !photo && !text.trim() ? (    /* as in Telegram: an empty box shows the microphone where "send" goes */
-          <button type="button" className={`send-btn mic-btn${rec ? " recording" : ""}`}
+          <button type="button" className={`send-btn mic-btn${rec ? " recording" : ""}${holding ? " holding" : ""}`}
                   aria-label={rec ? t("micStop") : t("mic")} title={rec ? t("micStop") : t("mic")}
-                  aria-pressed={!!rec} disabled={busy && !rec} onClick={() => void toggleMic()}>
-            <Icon name={rec ? "send" : "mic"} />
+                  aria-pressed={!!rec} disabled={busy && !rec}
+                  onPointerDown={onMicDown} onPointerMove={onMicMove} onPointerUp={onMicUp}
+                  onPointerCancel={() => holding && cancelMic()}           // e.g. the page scrolled away under the finger
+                  onContextMenu={(e) => e.preventDefault()}
+                  onClick={(e) => e.detail === 0 && toggleMic()}>         {/* keyboard / screen reader: tap to start, again to send */}
+            <Icon name={rec && !holding ? "send" : "mic"} />
           </button>
         ) : (
           <button type="submit" className="send-btn" aria-label={t("send")} disabled={busy || (!photo && !text.trim())}>
