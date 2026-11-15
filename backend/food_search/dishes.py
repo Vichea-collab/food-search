@@ -987,13 +987,19 @@ def resolve_reference(text, dish_id) -> str:
 
 
 SUGGESTIONS = {   # the follow-up questions offered under a recognised dish (answered by /api/chat with the dish in focus)
-    "en": {"steps": "How do I make it?", "time": "How long does it take to cook?", "places": "Where can I eat it near me?"},
-    "kh": {"steps": "ធ្វើម៉េច?", "time": "ប្រើពេលប៉ុន្មាននាទី?", "places": "ញ៉ាំនៅណា ជិតខ្ញុំ?"},
+    "en": {"steps": "How do I make it?", "time": "How long does it take to cook?", "places": "Where can I eat it near me?",
+           "about": "What is it?"},
+    "kh": {"steps": "ធ្វើម៉េច?", "time": "ប្រើពេលប៉ុន្មាននាទី?", "places": "ញ៉ាំនៅណា ជិតខ្ញុំ?", "about": "ម្ហូបនេះជាអ្វី?"},
 }
 
 
-def suggestions(dish_id, lang="en", skip=()) -> list:
+def suggestions(dish_id, lang="en", skip=(), card=False) -> list:
+    """card=True: the answer already shows the recipe card (steps, times, ingredients), so "how do I make it?" and "how
+    long does it take?" would ask for what is on screen (found 15 Nov: each answer suggested the other). It offers what
+    the card does not say instead: what the dish is, and where to eat it."""
     words = SUGGESTIONS.get(lang, SUGGESTIONS["en"])
+    if card:
+        return [words[k] for k in ("about", "places")]
     keys = (["steps", "time"] if dish_id in RECIPES else []) + ["places"]
     return [words[k] for k in keys if k not in skip]
 

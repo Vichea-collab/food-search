@@ -303,6 +303,17 @@ class TestRecipes:
         assert d["kind"] == "recipe" and d["dish"]["id"] == dish and d["recipe"], d.get("kind")
         assert d.get("focus") == focus
 
+    @pytest.mark.parametrize("q", ["how do I make lok lak?", "how long does pad thai take?", "របៀបធ្វើភីហ្សា",
+                                   "what are the ingredients for pho?"])
+    def test_recipe_card_does_not_suggest_what_it_shows(self, chat, q):
+        """15 Nov: under a recipe card (steps, times, ingredients) the chips offered "How do I make it?" / "How long does
+        it take?": the same thing again. They offer what the card does not say: what it is, and where to eat it."""
+        d = chat(q, **NO_AI)
+        assert d["recipe"]
+        shown = ("How do I make it?", "How long does it take to cook?", "ធ្វើម៉េច?", "ប្រើពេលប៉ុន្មាននាទី?")
+        assert not [x for x in d["suggestions"] if x in shown], d["suggestions"]
+        assert len(d["suggestions"]) == 2
+
     def test_cooking_time_is_from_the_recipe(self, chat):
         d = chat("how long does pad thai take?", **NO_AI)
         assert re.search(r"\d+ (min|h)", d["answer"])

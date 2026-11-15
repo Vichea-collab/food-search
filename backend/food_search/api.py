@@ -430,7 +430,7 @@ async def answer_chat(body: ChatRequest, request: Request):
         return {"kind": "recipe", "query": query, "lang": lang, "answer": out["text"], "provider": out["provider"],
                 "model": out["model"], "model_label": out["label"], "dish": dishes.dish_json(dish_id),
                 "recipe": dishes.recipe_json(dish_id), "focus": out["focus"], "results": [], "filters": {},
-                "suggestions": dishes.suggestions(dish_id, lang, skip=(kind,) if kind in ("steps", "time") else ())}
+                "suggestions": dishes.suggestions(dish_id, lang, card=bool(dishes.recipe_json(dish_id)))}
     about = dishes.about_intent(query)
     if about:                                    # "do u know amok?": the dish itself, then what to ask next
         return {"kind": "dish", "query": query, "lang": lang, "answer": dishes.about_answer(about, lang, query),
@@ -512,7 +512,7 @@ def dish_reply(dish, lang, question="", user_loc=None, model=None, no_location=F
         out = dishes.recipe_answer(question, dish["id"], lang, model)
         return {**base, "answer": f"{lead}\n\n{out['text']}", "provider": out["provider"], "model": out["model"],
                 "recipe": dishes.recipe_json(dish["id"]), "focus": out["focus"],
-                "suggestions": dishes.suggestions(dish["id"], lang, skip=(dishes.recipe_intent(question, True),))}
+                "suggestions": dishes.suggestions(dish["id"], lang, card=True)}
     query = dishes.resolve_reference(question, dish["id"])
     if not dishes.find_dish(query) and dishes.search_words(dish["id"]).lower() not in query.lower():
         query = f"{dishes.search_words(dish['id'])} {question}"         # a photo's question is about the dish
