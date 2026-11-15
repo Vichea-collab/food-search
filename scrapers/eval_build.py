@@ -28,7 +28,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 EVAL = ROOT / "data" / "eval"
-POOL_DEPTH = 20
+POOL_DEPTH = 30
 NEAR_KM = 3.0
 
 # question, kind, words that make a place "that dish" (any of them), optional landmark for "near"
@@ -95,21 +95,50 @@ QUESTIONS = [
 ]
 
 
-def place_text(r) -> str:
-    """What a place says about itself (no search scores): name, category, tags, menu dishes."""
-    menu = ""
+try:                               # 100+ more questions live in scrapers/eval_questions_extra.py
+    from scrapers.eval_questions_extra import EXTRA
+except ImportError:
+    from eval_questions_extra import EXTRA
+QUESTIONS = QUESTIONS + EXTRA
+
+
+# Questions about a specific dish need STRONG evidence: the dish in the place's name or on its real menu. Tags and
+# categories (dish_en, dish_kh, tags) are part of what the search itself indexes, and some are guessed from the name
+# or a category ("Yaya Udon" was labelled kuy teav because its category text said so), so they do not prove a dish.
+# Questions about a kind of venue (coffee, pizza, bbq, sushi, bubble tea) and meaning-only questions also accept the
+# category, which for those comes from the map data (Overture / OSM category).
+DISH_WORDS = ["kuy teav", "kuytiew", "គុយទាវ", "lok lak", "ឡុកឡាក់", "amok", "bai sach", "បាយសាច់", "banh chok", "banh chuk",
+              "នំបញ្ចុក", "fried rice", "បាយឆា", "carry noodle", "noodles in"]
+
+
+def needs_strong(query: str, kind: str) -> bool:
+    return kind != "meaning" and any(w in query.lower() for w in DISH_WORDS)
+
+
+def menu_names(r) -> str:
+    """Dish names on the place's real menu (menus now hold only scraped ones: data/restaurants.csv `menu_source`)."""
     if isinstance(r.get("menu"), str) and r["menu"].startswith("["):
         try:
-            menu = " ".join(f"{m.get('name_en') or ''} {m.get('name_kh') or ''}" for m in json.loads(r["menu"]))
+            return " ".join(f"{m.get('name_en') or m.get('name') or ''} {m.get('name_kh') or ''}" for m in json.loads(r["menu"])).lower()
         except ValueError:
             pass
-    return " ".join(str(r.get(c) or "") for c in ("name", "dish_en", "dish_kh", "tags")).replace(";", " ").lower() + " " + menu.lower()
+    return ""
+
+
+def strong_text(r) -> str:
+    """What proves a place sells the dish: its name and its real menu."""
+    return f"{r.get('name') or ''} {menu_names(r)}".lower()
+
+
+def weak_text(r) -> str:
+    """Category text: dish_en, dish_kh, tags (also searched by the app, partly guessed)."""
+    return " ".join(str(r.get(c) or "") for c in ("dish_en", "dish_kh", "tags")).replace(";", " ").lower()
 
 
 def build(rejudge=False):
     old = pd.DataFrame()
-    if (EVAL / "judgments.csv").exists() and not rejudge:
-        old = pd.read_csv(EVAL / "judgments.csv")
+    if (EVAL / "judgments.csv").exists():
+        old = pd.read_csv(EVAL / "judgments.csv")           # its places stay in the pool; its labels only count if not rejudging
         if "rule_label" not in old:
             old["rule_label"] = old["label"]
     sys.path.insert(0, str(ROOT / "backend"))
@@ -123,7 +152,7 @@ def build(rejudge=False):
         _, flt = S.parse_query_filters(query)
         spot = S.geocode_place(landmark) if landmark else None
         before = old[old["query"] == query] if len(old) else pd.DataFrame()
-        pool = list(before["id"]) if len(before) else []
+        pool = [i for i in before["id"] if i in df.index] if len(before) else []
         # the hybrid search as the app runs it: with the landmark found on the map ("near CADT" -> distances)
         for fn in (lambda q: S.bm25_search(q, POOL_DEPTH), lambda q: S.embedding_search(q, POOL_DEPTH),
                    lambda q: S.hybrid_search(q, POOL_DEPTH, user_loc=spot)):
@@ -131,8 +160,11 @@ def build(rejudge=False):
         relevant = []
         for pid in pool:
             r = df.loc[pid]
-            text = place_text(r)
-            hit = next((w for w in words if w in text), None)
+            hit = next((w for w in words if w in strong_text(r)), None)
+            evidence = "name/menu" if hit else "none"
+            if not hit and not needs_strong(query, kind):
+                hit = next((w for w in words if w in weak_text(r)), None)
+                evidence = "category/tags only" if hit else "none"
             where_ok, where = True, ""
             if flt.get("area"):
                 where_ok = r["area_key"] == S.normalize_text(flt["area"])
@@ -145,13 +177,13 @@ def build(rejudge=False):
                 where_ok = km <= NEAR_KM
                 where = f"{km:.1f} km from {landmark}"
             rule_label = int(bool(hit) and where_ok)
-            reason = (f"has '{hit}'" if hit else "dish words not in its name/category/tags/menu") + (f"; {where}" if where else "")
+            reason = (f"has '{hit}' ({evidence})" if hit else "dish words not in its name/menu" + ("" if needs_strong(query, kind) else "/category")) + (f"; {where}" if where else "")
             label = rule_label
             prev = before[before["id"] == pid] if len(before) else pd.DataFrame()
-            if len(prev) and int(prev["label"].iloc[0]) != int(prev["rule_label"].iloc[0]):
+            if len(prev) and not rejudge and int(prev["label"].iloc[0]) != int(prev["rule_label"].iloc[0]):
                 label, reason = int(prev["label"].iloc[0]), "checked by hand"      # a person's label wins
             judgments.append({"query": query, "id": pid, "label": label, "rule_label": rule_label, "name": r["name"],
-                              "dish": r["dish_en"], "area": r["area"], "reason": reason})
+                              "dish": r["dish_en"], "area": r["area"], "evidence": evidence, "reason": reason})
             if label:
                 relevant.append(pid)
         rows.append({"query": query, "relevant_ids": ";".join(relevant), "lang": "kh" if S.detect_lang(query) == "kh" else "en",
