@@ -9,6 +9,7 @@ A place is moved out when
   2. its name ENDS with another city ("... Poi Pet", "... Chbar Mon"). Foodpanda puts the location last; a city in the
      middle is a dish style ("Kuy Teav Poipet St 253" is a noodle style sold in Phnom Penh). Checked on the 565 known
      places: 17 hits, 0 wrong. It finds only about a fifth of the others, so some are still left in the dataset.
+     (A name ending in "Siem" alone, 42 places, may be a truncated Siem Reap but cannot be checked: left in.)
 Moved places go to data/raw/non_phnom_penh_places.csv (with the reason), so nothing is lost.
 
   venv/bin/python scrapers/remove_non_phnom_penh.py                  # dry run
@@ -27,7 +28,8 @@ MAIN = ROOT / "data/restaurants.csv"
 DETAILS = ROOT / "data/scraped/foodpanda_details.jsonl"
 OUT = ROOT / "data/raw/non_phnom_penh_places.csv"
 CITY = (r"(poi ?pet|siem ?reap|bavet|sihanouk(?:ville)?|kampot|battambang|kampong ?cham|kampong ?speu|takeo|kep|"
-        r"ta ?kh?mao?u?|ta ?khmau|chbar ?mon|odongk|svay ?rieng|kratie|pursat|koh ?kong)")
+        r"ta ?kh?mao?u?|ta ?khmau|chbar ?mon|odongk|svay ?rieng|kratie|pursat|koh ?kong|"
+        r"banteay ?meanchey|kamp?ong ?th[ou]m)")      # last two added 15 Nov: 13 + 7 names; 1 of 1 known checked
 
 
 def end_city(name: str):

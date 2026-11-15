@@ -66,8 +66,38 @@ So `hybrid_search` leaves distance-ordered results alone.
 
 **Caveats.** (1) The labels are word rules (name or real menu), and the reranker reads the same name, category, tags and
 menu text, so part of the gain may be agreement with the rules; the human labels (`docs/labelling-guide.md`) are the real
-test, run `scrapers/eval_run.py --queries data/eval/queries_human.csv --tag human --rerank BAAI/bge-reranker-v2-m3`.
+test, see "Second opinion" below (labels by Claude); real human labels are still to come.
 (2) Top-N and the blend weight were compared on the same questions; the options differ by less than 0.01, so this is
 not a tuned knob. (3) The feature is OFF by default: set `RERANK_MODEL=BAAI/bge-reranker-v2-m3` in `.env` and restart
 (the first search downloads and loads the model). If the model cannot load, search silently keeps the hybrid order.
+
+### Second opinion: labels that do not come from word rules (15 Nov 2026)
+
+The word rules and the reranker read the same text, so the gain above could be partly agreement with the rules. A second
+label set was made without the rules: `scrapers/eval_sheet.py --single 0.5 --rerank ...` pools the top 5 of BM25, the
+embeddings, the hybrid **and the reranked hybrid** (so a reranked result is never "unlabelled = wrong") for a stratified half of the
+questions (81 questions, 1,121 places, shuffled, no method names, no rule labels), and **Claude labelled every place by
+reading the row** against `docs/labelling-guide.md` (`data/eval/labelling/single_labelled_by_claude.csv`). This is one AI
+labeller, not two people: it checks the rules' blind spots but is not human agreement (that needs the A/B sheets).
+
+* Agreement with the word rules: 89.8%, Cohen's kappa 0.77 (substantial). The rules over-accept: in 89 places they said
+  relevant on category/tags alone and the row did not support it; in 25 they missed a relevant place.
+* Scores on 79 questions that have a relevant place (14,541 places), `results/eval_results_llm.csv`:
+
+| | P@5 | MRR | nDCG@5 (95% CI) |
+|---|---|---|---|
+| BM25 + fuzzy | 0.719 | 0.839 | 0.763 (0.70-0.83) |
+| Embeddings only | 0.476 | 0.612 | 0.500 (0.41-0.59) |
+| Hybrid without the filters | 0.699 | 0.802 | 0.735 (0.65-0.81) |
+| Hybrid | 0.843 | 0.928 | 0.883 (0.82-0.93) |
+| **Hybrid + reranker** | **0.878** | **0.943** | **0.913** (0.86-0.96) |
+
+  Paired gain of the reranker: **+0.031, 95% interval [+0.002, +0.063]** (better on 15 questions, worse on 5, tied on 59).
+  On the word-rule labels (160 questions, same data): +0.038 [+0.020, +0.059]. The two label sets agree on the size and
+  direction; the interval on the second one only just clears zero, so read it as consistent, not proven.
+* The ranking of the other methods and the weak spots are the same on both label sets (embeddings alone 0.08-0.09 on Khmer
+  dishes, hybrid without filters 0.35 on area questions).
+
+**Status.** The reranker is switched on for the live site (`RERANK_MODEL` in `.env`, 15 Nov): first search after a
+restart about 4 s (loads the model), then about 0.25-0.45 s for the searches that use it.
 

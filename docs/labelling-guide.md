@@ -33,3 +33,10 @@ fill `final` (1 or 0), run the command again, then score the search on the human
 
 The report should give both: the scores on the word-rule labels (`results/eval_results.csv`) and on the human labels
 (`results/eval_results_human.csv`), and the kappa between the two of you.
+
+## Already labelled by Claude (for comparison)
+
+Claude labelled `data/eval/labelling/single.csv` (81 questions, a different sheet: its pool also holds the reranker's top 5)
+using this same guide: `single_labelled_by_claude.csv`, scored in `results/eval_results_llm.csv`. It is one AI labeller,
+not people. Your labels are still needed to measure human agreement, and to check the AI labels on the 508 shared places.
+

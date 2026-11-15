@@ -1,0 +1,80 @@
+query,relevant_ids,lang,kind
+bbq in Chamkar Mon,overture-bd04a6a3-bc5;osm-n5108632522;overture-f30d144b-f1b;overture-64ae73b5-335;osm-n5231024221;osm-w252226918;overture-8206509e-e66;osm-n5516539890;overture-e4ac5179-731;osm-n3294028967;overture-466c52ba-a4d;overture-93b87aaa-6ea;overture-5328328b-b78,en,area
+bbq in Sen Sok,overture-64de5083-9c6;fp-r17n;overture-df4fdcd8-338;overture-b4bef85a-a1e;overture-1f5583a7-2ad;overture-821c3fe5-9a2;overture-2a0792ee-13d;fp-mlgl;overture-f06688e0-6a3;overture-6b409f66-336;overture-88ae7d3e-a0a;overture-ffe8d6d7-803,en,area
+bbq near Russian Market,overture-64ae73b5-335;overture-466c52ba-a4d;overture-5328328b-b78;overture-93b87aaa-6ea;overture-e4ac5179-731;overture-bd04a6a3-bc5;overture-8206509e-e66,en,near
+beef skewers,overture-da4b133b-a68;fp-u1a7;overture-0f46578a-7a7;overture-1432bfe2-45d;overture-a60b9fc5-bd4;osm-n5155109505;overture-7cca4b2d-13e;fp-ncxx;fp-crbp,en,dish
+boat noodle,overture-86a01616-9df;osm-n4826352222;osm-n3259319861;overture-3de8ceff-634;overture-c6d7da05-ac4;overture-85cf2f1c-d14;overture-d221df29-5db,en,dish
+breakfast,overture-bc11b687-bc0;osm-n7041723486;overture-de4faf27-676;overture-650306bb-02c;osm-n7041424186;overture-9692a951-b3f;overture-06980dab-04d;osm-w1353104960;overture-9afb38a9-f4f;overture-4adffa12-d1e;overture-41226cad-614,en,meaning
+bubble tae,fp-dpzt;overture-ba573570-398;fp-wq2e;fp-d7lo;fp-nx36;overture-6e5d2f2d-7b4;fp-he7b;fp-djlq;overture-f058a3ec-063,en,typo
+bubble tea,fp-djlq;overture-bf33cc21-a43;overture-2ca62233-668;fp-ck34;fp-t9d7;osm-n2903663264;overture-e0bbad3b-ee4;overture-c5f916a3-4e6;fp-dpzt;overture-577c174a-4e6;overture-bdb57b00-a60;overture-85820d43-102;overture-69919566-e73;overture-ba573570-398,en,dish
+bubble tea in Daun Penh,osm-n9457158517;overture-6c8b97b3-4c7;overture-4e358dfb-7d9;overture-abe614e8-e52;osm-n3339068574;osm-n13374664143;overture-77107c55-bbe;overture-acaad297-e22;osm-n13723804779;overture-17ef1df1-09c,en,area
+bubble tea in Sen Sok,fp-xfaq;fp-rs1w;overture-69919566-e73;overture-c8d6f787-31a;overture-c4fc787d-4fd;overture-3a664ebb-1d3;overture-a745eb53-d47;overture-2a21038a-89c,en,area
+burger,osm-n4248090417;fp-ed95;overture-ed15fff2-496;fp-j3rp;fp-e4sz;overture-7db2eefa-600;fp-h3ey;osm-n9756103717;fp-swae;osm-n4686164289;fp-gkru;fp-lrwd;osm-n5155092337,en,dish
+burger in Daun Penh,osm-n4333913049;osm-n4261092293;osm-n6274404485;overture-c5ffb101-d3c;overture-df74f9d8-bfc;osm-n5615195881,en,area
+burger king,overture-9a05f836-373;overture-bba05fe3-03a;overture-2840a62a-a22;overture-cbf607eb-cbf,en,named
+burgr,fp-swae;fp-j3rp;osm-n11133823268;fp-ed95;fp-tz73;fp-e4sz;overture-7db2eefa-600;overture-ed15fff2-496;fp-lrwd;osm-n9756103717;fp-gkru;osm-n4686164289;osm-n4248090417;fp-h3ey,en,typo
+cake shop,overture-823c10c4-f45;overture-f64b88db-c9a;overture-a232fe3f-e59;overture-5816720f-c02;overture-9b88b2be-60c;overture-e089caf8-bda;overture-697af537-c4d,en,dish
+carls jr,fp-ed95;fp-ftsz;fp-lrwd;fp-h3ey;overture-ee9b4f3f-36a;fp-tz73,en,named
+carry noodle,fp-cct6;fp-kx1s;osm-n4846915921;fp-z3q0;fp-mwm0;fp-c5kf;fp-nulq;fp-dgjr,en,typo
+chatime,fp-g7vq;osm-n2903663264;overture-55f102d1-a58;overture-ebcca45c-5aa;overture-b159a9c0-4d9,en,named
+coffee in BKK1,osm-n3735544235;overture-8b4a0dc2-639;overture-b9f0fb1b-3d1;osm-n6544148586;osm-n7007786649;overture-8924863c-e2e;osm-w228762897;overture-00741017-425;osm-n6066403485;canby-0047;osm-n6145422543;osm-n10722547490;osm-n5397391621;osm-n3143192651,en,area
+coffee in Chroy Changvar,overture-2f7899f0-cf9;overture-3007614e-cdd;osm-n4948357697;osm-n7057614908;overture-38059cac-964;overture-697dc88f-184;overture-171cd5ce-0d0;osm-n14028384922;overture-abc3dd7b-483;osm-n2302075190;overture-7167aac9-8de,en,area
+coffee in Toul Kork,overture-7ac4ad3d-cfa;overture-b4049edb-97b;overture-a304199b-403;osm-n5631817622;overture-63b2eacb-a3f;overture-dfb25a35-102;osm-n5620110511;overture-c5176e8b-ac2;osm-n4055818739;osm-n4790803821;overture-f6961bfc-ffb;overture-d0c84b99-aa4;overture-7d8ac7af-6ee;osm-n12529237555;overture-fc6dbdc6-d92;osm-n5190426730;overture-0ed77d87-c29,en,area
+coffee near CADT,overture-7d374ffe-e1d;overture-38e4b92e-9d3;fp-qw0c;overture-6b75ebfd-597,en,near
+coffee near Royal Palace,fp-hf7i;overture-d53f26eb-5ef;overture-5f21a03a-cb7;osm-n5181120221;overture-0804e397-e6d;osm-n6300689285;osm-n6319125400;overture-5ff929aa-15c;overture-5707ac54-0f3;overture-b3e3e56b-78e,en,near
+costa coffee,overture-59b7d44f-814;overture-2c98a35b-d35;osm-w264060087;canby-0039,en,named
+crab,overture-a0b92e8f-695;overture-acd7c379-153;fp-bttq;fp-tmvg;osm-n11304253315;fp-j0t2;overture-e3f02b19-600;fp-i366,en,dish
+croissant,overture-e365879d-2eb;overture-093fc8e7-5f2;fp-dguu;fp-jh6q;overture-0e2da6d9-66b;fp-au54;overture-8960707f-d3e,en,dish
+fine dining,canby-0063;fp-vov3;overture-851bd1a1-af1,en,meaning
+grilled meat,overture-54c2f8af-50f;overture-88ae7d3e-a0a;fp-nk0n;fp-exns;overture-f5023030-cf5;overture-2e21de36-f57;overture-a82c00f6-2bd;fp-b2r7;fp-hpkg;overture-f90f9fed-caa;overture-9cfaf18f-e35;overture-ed77e27b-955;fp-crbp,en,meaning
+halal food,fp-q4sg;fp-dgky;fp-t0q7;fp-nphs;fp-dl9p;canby-0117;overture-7925beaf-6d2;overture-e5583f16-527;overture-20af4b46-05b;overture-2cd77c57-421;fp-qz4m;fp-dsmf;fp-m35s,en,dish
+hot pot,osm-n4820433424;fp-dvdt;fp-zsq5;osm-n5622505579;fp-f04k;overture-946f5102-b19;osm-n6337621789;fp-hijn;overture-1efe4eb6-461,en,meaning
+ice cream,overture-6eb40a90-ed5;overture-815c0111-1c7;osm-n4452682229;overture-93c64637-8ae;overture-9b492106-b91;osm-n5177940121;canby-0040;overture-8e05d7a3-60c;overture-ff03165e-be9;osm-n6340996317;osm-n5452419785,en,dish
+indian food,osm-n11690026809;canby-0072;overture-3e7c3ae7-1e4;osm-n4066072840;canby-0077;canby-0068;osm-n3803370775;yp-0007;overture-7da99c94-3b5;osm-n5861166287;yp-0005;canby-0069;osm-n1056975074,en,dish
+khmer bbq,overture-dc830ff3-d12;osm-n4323134689;fp-kyvr;fp-nd92;fp-ezuj;fp-uz00;fp-r6fp,en,dish
+kofee,overture-9733ca22-444;osm-n11273530615;overture-ee3bc71c-1a7;overture-b9437e4b-254;overture-90d6d2ad-fda;overture-48f27e0f-5e5;osm-n5330994121;osm-n13607375002,en,typo
+koi the,osm-n7094983325;fp-lqne;fp-iqhr;fp-wibi;fp-wz1w;fp-z1gd;overture-efd5efa9-1ea,en,named
+kuy teav,fp-dgjj;fp-yzc6;osm-n5676879680;fp-q6m6;fp-vppa;fp-j0jj;overture-8b91580a-7a2;osm-n5615195872;osm-n5271783722;fp-oh95;overture-ee9351c8-d78;overture-8d82ddd8-fd9,en,dish
+lok lak,overture-0fcfa98c-8c8;overture-1c39bbab-e7f;fp-hree;fp-zwv0;overture-4840660b-a81;osm-n4528981520,en,dish
+lucky burger,overture-2ee06e8d-f98;overture-e440d597-483;overture-8c796497-450;overture-c7cd2832-df4;osm-n2989429897;overture-3060f688-c1c;osm-n6215398985;canby-0058;overture-e8250321-58a;overture-262b4732-979;overture-73515f76-9bd,en,named
+nom bang chok,fp-dgjr;fp-n1cr;fp-gudw;fp-z14z;fp-hors;fp-q7vt;fp-mwm0;fp-evd1;fp-z3q0;fp-pe7l,en,typo
+noodles in Mean Chey,fp-r4h7;fp-j3n0;fp-bs9r;fp-agde;fp-otxi;fp-kd8a;fp-dpg4;overture-3de8ceff-634,en,area
+num banh chok,fp-evd1;fp-gjbw;fp-pe7l;fp-xo0o;fp-w0lj;fp-io9k;fp-n1cr;fp-lt25;fp-z14z;fp-r7dn,en,dish
+num banh chuk,fp-syic;fp-n1cr;fp-evd1;fp-lt25;fp-pe7l;fp-w0lj;fp-g0nt,en,typo
+pasta,canby-0091;overture-db0d32f4-a4e;overture-61fd3168-7b9;overture-d978444a-ee8;canby-0095;fp-cy24;osm-n4466850490;overture-fa59bd3e-ef6;fp-snzf;osm-n4695128891;overture-2eed9cb6-5a1;overture-05b1b7cb-351;fp-qoye;overture-c8f083a1-4e9,en,dish
+piza,fp-txsh;fp-jvs1;fp-wh1s;overture-9d23228f-421;fp-z1ov;overture-6eab88ac-07b;osm-n4108937189;overture-d88fa302-ff3;fp-gwmv;overture-8ae2f5ce-2d5;osm-n2381472245;osm-n6297483185;fp-cljs;osm-n11245872438;fp-fxab,en,typo
+pizza,fp-txsh;osm-n4108937189;osm-n11245872438;fp-jvs1;fp-fxab;overture-8ae2f5ce-2d5;fp-z1ov;fp-wh1s;osm-n6297483185;overture-d88fa302-ff3;overture-9d23228f-421;overture-6eab88ac-07b;fp-cljs;overture-9fe8d674-93c,en,dish
+pizza company,overture-103e074d-a84;overture-9d23228f-421;osm-n5909426877;canby-0098;overture-771a50f9-025;overture-b0fbe9d3-d4e;osm-n2982762055;overture-06e425ab-47d;osm-n5036655823,en,named
+pizza in BKK1,osm-n11109302810;overture-c99076df-761;overture-103e074d-a84;osm-n11245872438;osm-n6048459185;osm-n2664693148;osm-n6319115793,en,area
+pizza near Aeon Mall 1,overture-32332bdf-7d5;overture-ffd653eb-af4;osm-n8898325139;osm-n11245872438;canby-0092;overture-1994a6b3-00b;overture-568f6371-e47;osm-n2664693148,en,near
+pizza near Central Market,osm-n6297483185;overture-4992cfb8-212;overture-0daf86da-dbd;overture-f213759f-2ec;overture-61256006-fa5;osm-n4714590890;osm-n6337600419;osm-n8198118417;fp-ogiv;osm-n3339077512,en,near
+prahok,overture-81207d68-226;fp-fx5n,en,dish
+ramen,canby-0108;fp-kwfo;osm-n8148004049,en,dish
+ramen in BKK1,canby-0108;overture-8323b12c-39c;osm-n8148004049;overture-d7fd85f4-4a0,en,area
+rooftop,overture-13c60423-8fc;canby-0026;overture-c05a3861-caa;overture-1ff3f055-e31;overture-2a2d5306-455;overture-05c5be03-71c;overture-4359d4e7-a07;overture-c74f011b-b21;overture-52a09b52-2a6;overture-da8394c0-c81;overture-f5010f88-9ea,en,meaning
+salad,overture-ff1d242a-e42;fp-k4ed;fp-i5kw;fp-q3x2;overture-b2dce823-95e;osm-n5179793123;overture-8bf56876-37e;overture-37371b4a-334;fp-lzv6;fp-w1wq;fp-mkjh;overture-33dad485-b89;overture-0f7ed734-454,en,dish
+smoothie,overture-1830e376-492;fp-mlv2;overture-9e2308ed-ea5;overture-a273de3b-9a7;fp-jioq;overture-8e9c6d40-543;fp-l44a;overture-b1004256-dcf;fp-hcwl;fp-y0yq;fp-yw46,en,dish
+something cold,osm-n4599013890;osm-n4599751336;overture-187cdb75-0df;osm-n4599014089;canby-0053,en,meaning
+sour soup,fp-simy,en,dish
+spicy food,fp-k4ed;fp-twy8;overture-c3873a3e-fbf;fp-e5lo;fp-rrs5;fp-raeq;osm-n5158222225;fp-q1ex;fp-pr75;overture-26e7efbd-26f;fp-gslo;fp-e8nt;fp-i66x;osm-n5542106606;fp-w8wn;overture-71890451-448;fp-mkjh,en,meaning
+swensens,overture-5c16b791-b32;overture-ab6ff9f7-14c;osm-n6340996317,en,named
+thai food,osm-n5301698600;osm-n5155205917;canby-0013;canby-0122;osm-n1765757937;osm-n7152690785;osm-n6933988185;osm-w1371013927;osm-n6714978623;osm-n2699940102;osm-n10718130810;osm-n11109089805;overture-2105aade-714,en,dish
+tous les jours,osm-n2384018211;overture-8fec6d99-e26;overture-e0efdf6c-070,en,named
+tube coffee,osm-n6066360895;fp-f2u1;fp-bze6;fp-o8ti;overture-fabd2523-626;overture-e339c2cc-5c9;fp-hmwi;overture-1a93781b-9bb,en,named
+vegan restaurant,osm-n10173034518;canby-0124;osm-n5239207923;overture-5f9c2ac0-820;overture-d87942aa-e96;osm-n5314235621;overture-125cd02a-158;overture-96ebba47-755;overture-8b741a10-dda;overture-127e3b9e-c49;overture-a57a301c-d2a;osm-n12638267301,en,dish
+vegetarian food,overture-d8301b9c-0be;overture-e139d2f5-1a2;overture-21573739-3af;overture-de2d7a82-431;overture-d87942aa-e96;overture-08bedca8-789;overture-a57a301c-d2a;osm-n5239207923;overture-125cd02a-158;overture-17da4080-967,en,meaning
+vietnamese food,osm-n12632576901;osm-n4623240689;osm-n7200765663;fp-bprb;overture-90d79aa6-a26;osm-n14000191801;canby-0126;osm-n1057065029;osm-n4728816021;osm-n5149058724;overture-e6fcf5bd-427,en,dish
+ការ៉េម,fp-rr4j;osm-n5452419785;overture-12e57a38-bc4;osm-n5177940121;osm-n6340996317;overture-93c64637-8ae;overture-ff03165e-be9;overture-8e05d7a3-60c;overture-9b492106-b91;osm-n4701597261;overture-8de4c05e-a1d,kh,dish_kh
+កាហ្វេ,osm-n13081328657;osm-n2749419343;overture-3007614e-cdd;osm-n10055267517;osm-n12320026480;osm-n6041103985;osm-n4055818739;fp-tgye;foodchow-0004;osm-n5676879680;osm-n13451864488;osm-n13081328682;osm-n10918239005;overture-7167aac9-8de;osm-n4978772827,kh,dish_kh
+កាហ្វេ នៅសែនសុខ,overture-fbac5b95-987;overture-346a8150-c7b;overture-b05ccb81-0bf;osm-n13647309771;osm-n13049357727;overture-356ce68b-054;osm-n5053753419;osm-n13607375002;overture-7f99bec5-59b;overture-37748123-c6e;overture-6a24a463-9ea;osm-n4805191822;overture-7a509a42-285;overture-5a42b4c2-a9f,kh,area
+គុយទាវ,fp-dgjj;fp-q6m6;overture-e7060e43-7c8;fp-yzc6;fp-jarx;fp-it0w;fp-hof7;fp-aacj;fp-oh95;fp-bs9r;fp-vppa,kh,dish_kh
+តែគុជ,fp-g9ox;overture-f934242b-ea6;overture-69919566-e73;overture-c5f916a3-4e6;fp-vjt3;overture-2ca62233-668;fp-s946;fp-xlmb;overture-e0bbad3b-ee4;fp-v1sh;fp-sbkt,kh,dish_kh
+ត្រីអាំង,fp-edyn,kh,dish_kh
+ទឹកក្រូច,fp-se82;overture-c5ccbb9b-c73;overture-8618ce8e-dc5;fp-hcwl;overture-e6efd454-243;fp-evrc,kh,dish_kh
+នំខេក,overture-5816720f-c02;overture-e4bbb030-647;overture-4e0f2708-ed2;overture-35212086-c45;overture-d2096842-c94;overture-3e422552-073;overture-1c3c33cb-e7e;overture-461c7ef5-bcf;overture-0089a480-37f,kh,dish_kh
+បាយសាច់ជ្រូក,overture-3444dca9-2f1;overture-b84e2214-80c;osm-n6711766386;overture-ba1132bb-c75;overture-9d27a6ce-09c;osm-n11273530625;overture-92c0e324-f27;overture-784d798a-0a7,kh,dish_kh
+ប៊ឺហ្គឺ,fp-oweg;fp-zjx7;osm-n4248090417;fp-lrwd;osm-n11133823268;fp-k9wd;overture-7db2eefa-600;osm-n4686164289;fp-dovy;fp-h3ey;osm-n9756103717;fp-j33r;overture-ed15fff2-496,kh,dish_kh
+ភីហ្សា,overture-1cc60709-a69;overture-9d23228f-421;overture-c3efe20d-a3f;osm-n2664693148;osm-n4108937189;fp-cljs;fp-fxab;fp-z1ov;overture-e844ba84-076;overture-7123a860-74f;osm-n11245872438;overture-42ab89b1-45f,kh,dish_kh
+ម្ហូបចិន,osm-n4685754665;osm-n4267559789;fp-jy2m;osm-n14157151784;osm-n4267529891;osm-n4120199267;osm-w1307951874;osm-n5909426878;osm-n5909426897;osm-n5583543873;osm-n6342993107,kh,dish_kh
+ម្ហូបថៃ,osm-n10718130810;osm-n6714978623;osm-n5016748925;osm-n7152690785;osm-n1765757937;osm-n4745719251;osm-n2699940102;osm-n5301698600;osm-n6933988185;osm-n5155205917;osm-n1057006302,kh,dish_kh
+ស៊ុបឆ្នាំងដី,fp-h40q;fp-jysq;fp-e4n7;fp-ywql;fp-tt2x;fp-icjk;fp-on4f;fp-hijn;fp-xvpy;fp-om02,kh,dish_kh

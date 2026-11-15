@@ -9,9 +9,14 @@ Two labellers, A and B. 40 questions are labelled by both (to measure agreement,
 split between them, so each person labels ~100 questions (~1,000 places, about 2-3 hours).
 
   venv/bin/python scrapers/eval_sheet.py            # writes data/eval/labelling/annotator_A.csv and annotator_B.csv
+  venv/bin/python scrapers/eval_sheet.py --single 0.5 --rerank BAAI/bge-reranker-v2-m3
+                                                    # ONE sheet for a stratified half of the questions, whose pool also
+                                                    # holds the reranker's top 5 (so a reranked result is never
+                                                    # "unlabelled = not relevant"): data/eval/labelling/single.csv
 Each labeller fills the `label` column: 1 = relevant, 0 = not (see docs/labelling-guide.md), then
   venv/bin/python scrapers/eval_agree.py data/eval/labelling/annotator_A.csv data/eval/labelling/annotator_B.csv
 """
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -27,11 +32,17 @@ SOURCES = {"overture", "foodpanda", "openstreetmap", "grab", "canby", "yellowpag
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--single", type=float, default=0, help="one sheet for this share of the questions (stratified by kind)")
+    ap.add_argument("--rerank", default="", help="also pool the top 5 of the hybrid + this cross-encoder")
+    args = ap.parse_args()
     from food_search import search as S
     S.init()
     df = S.df.set_index("id", drop=False)
     q = pd.read_csv(ROOT / "data/eval/queries.csv", dtype=str)
     rng = np.random.default_rng(42)
+    if args.single:
+        q = q.groupby("kind", group_keys=False).sample(frac=args.single, random_state=42).reset_index(drop=True)
     lm = {}
 
     def landmark(text):
@@ -46,8 +57,16 @@ def main():
     for text, kind in zip(q["query"], q["kind"]):
         spot = landmark(text)
         ids = []
-        for fn in (lambda t: S.bm25_search(t, 5), lambda t: S.embedding_search(t, 5),
-                   lambda t: S.hybrid_search(t, 5, user_loc=spot)):
+        fns = [lambda t: S.bm25_search(t, 5), lambda t: S.embedding_search(t, 5), lambda t: S.hybrid_search(t, 5, user_loc=spot)]
+        if args.rerank:
+            def reranked(t):
+                S.RERANK_MODEL = args.rerank
+                try:
+                    return S.hybrid_search(t, 5, user_loc=spot)
+                finally:
+                    S.RERANK_MODEL = ""
+            fns.append(reranked)
+        for fn in fns:
             ids += [i for i in fn(text)["id"] if i not in ids]
         ids = list(rng.permutation(ids))
         for pid in ids:
@@ -65,6 +84,11 @@ def main():
             rows.append({"query": text, "id": pid, "name": r["name"], "khan": r["area"], "category": r["dish_en"],
                          "tags": tags, "menu": menu, "km_from_landmark": km, "link": r["page_url"], "label": "", "notes": ""})
     sheet = pd.DataFrame(rows)
+    if args.single:
+        OUT.mkdir(parents=True, exist_ok=True)
+        sheet.assign(shared="single").to_csv(OUT / "single.csv", index=False)
+        print(f"single.csv: {sheet['query'].nunique()} questions, {len(sheet)} places")
+        return
     queries = list(dict.fromkeys(sheet["query"]))
     order = list(rng.permutation(queries))
     common, rest = order[:COMMON], order[COMMON:]

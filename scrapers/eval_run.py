@@ -43,6 +43,7 @@ def main():
     args = ap.parse_args()
     sfx = f"_{args.tag}" if args.tag else ""
     S.init()
+    S.RERANK_MODEL = ""          # RERANK_MODEL in .env switches the reranker on for the app: the baselines must not use it
     q = pd.read_csv(args.queries, dtype={"relevant_ids": str})
     q["relevant"] = q["relevant_ids"].fillna("").str.split(";").map(lambda x: {i for i in x if i})
     known = set(S.df["id"])

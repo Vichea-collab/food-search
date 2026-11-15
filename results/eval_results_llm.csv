@@ -1,0 +1,6 @@
+,P@5,Recall@5,MRR,nDCG@5
+BM25 + fuzzy,0.719,0.438,0.839,0.763
+Embeddings,0.476,0.251,0.612,0.5
+Hybrid (no filters),0.699,0.409,0.802,0.735
+Hybrid,0.843,0.496,0.928,0.883
+Hybrid + reranker,0.878,0.522,0.943,0.913
