@@ -328,6 +328,17 @@ def menu_names(menu) -> str:
     return " ".join(menu_names_list(menu))
 
 
+def khmer_has(key: str, text: str) -> bool:
+    """key in text, but not as a subscript letter: "មី" (noodle) is inside "ថ្មី" (new), after the coeng sign ្, where it is
+    not a word of its own. It had added kuy teav words to ~540 unrelated places (a cafe called "... ថ្មី")."""
+    i = text.find(key)
+    while i >= 0:
+        if i == 0 or text[i - 1] != "\u17d2":
+            return True
+        i = text.find(key, i + 1)
+    return False
+
+
 def clean_df(raw: pd.DataFrame) -> pd.DataFrame:
     raw = raw.copy()
     if "image_url" not in raw.columns and "image_path" in raw.columns:
@@ -391,7 +402,7 @@ def clean_df(raw: pd.DataFrame) -> pd.DataFrame:
         for c in FOOD_CONCEPTS:
             matched = False
             for k in c["kh"]:
-                if k in combined:
+                if khmer_has(k, combined):
                     matched = True
                     break
             if not matched:
@@ -1018,7 +1029,9 @@ def named_place_mask(query_text, names, full_text=None) -> np.ndarray:
              and len("".join(t for t in ws & query_words if t not in food and t not in GENERIC_NAME_WORDS)) >= 3]
     # Chain / brand query without a bare flagship row ("Tube Coffee", "Texas Chicken", "The Pizza Company")
     distinctive_query = {t for t in query_words if t not in food and t not in GENERIC_NAME_WORDS and len(t) >= 3}
-    if distinctive_query and not named:
+    # a typo corrected into a food word ("num banh chuk" -> "chok") is a dish, not a brand: "chuk" is not in the food words
+    corrected = set(tokenize(fix_typos(query_text))) - set(tokenize(query_text)) if query_text else set()
+    if distinctive_query and not named and not (corrected & food):
         clean_q = {t for t in query_words if t not in {"in", "at", "near", "menu", "on", "the", "of", "and"}}
         if clean_q and any(clean_q <= ws for ws in name_words):
             named.append(clean_q)
