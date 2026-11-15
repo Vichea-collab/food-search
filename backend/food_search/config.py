@@ -61,6 +61,8 @@ DISTANCE_WEIGHT = 0.15    # bonus for nearby places (only when a location is giv
 NEAR_POOL = 40            # "near me": the closest of the (up to) 40 most relevant places are shown first
 EMBED_CANDIDATES = 5000   # places scored by embeddings per query: all of them for datasets up to this size
 MIN_EMBED_SIM = 0.45      # no keyword hit and cosine below this = "not a match" (chosen for MiniLM)
+RERANK_MODEL = get_secret("RERANK_MODEL")   # cross-encoder that re-orders the best places, e.g. BAAI/bge-reranker-v2-m3 (2.2 GB); empty = off
+RERANK_TOP = 10           # how many of the best places the reranker puts in order (the rest keep their order)
 TYPO_CUTOFF = 75          # rapidfuzz score needed to auto-correct a query word
 FUZZY_MIN = 0.70          # minimum fuzzy score for the typo fallback
 CHEAP_MAX_USD = 3.0       # what "cheap" means

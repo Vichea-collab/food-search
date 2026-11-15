@@ -5,6 +5,7 @@ can look better or worse than it is).
 
   venv/bin/python scrapers/eval_run.py            # prints the tables, writes results/eval_results.csv,
                                                   # results/eval_by_kind.csv, results/eval_per_query.csv
+  venv/bin/python scrapers/eval_run.py --rerank BAAI/bge-reranker-v2-m3   # adds a "Hybrid + reranker" row
   venv/bin/python scrapers/eval_run.py --queries data/eval/queries_human.csv --tag human
                                                   # the human-labelled set: writes results/eval_results_human.csv ...
 """
@@ -38,6 +39,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--queries", default=str(ROOT / "data/eval/queries.csv"))
     ap.add_argument("--tag", default="", help="suffix for the result files, e.g. human -> eval_results_human.csv")
+    ap.add_argument("--rerank", default="", help="also score the hybrid with this cross-encoder, e.g. BAAI/bge-reranker-v2-m3")
     args = ap.parse_args()
     sfx = f"_{args.tag}" if args.tag else ""
     S.init()
@@ -61,6 +63,14 @@ def main():
         "Hybrid (no filters)": lambda t: S.hybrid_search(t, K, use_query_filters=False)["id"].tolist(),
         "Hybrid": lambda t: S.hybrid_search(t, K, user_loc=landmark(t))["id"].tolist(),
     }
+    if args.rerank:
+        def reranked(t):
+            S.RERANK_MODEL = args.rerank
+            try:
+                return S.hybrid_search(t, K, user_loc=landmark(t))["id"].tolist()
+            finally:
+                S.RERANK_MODEL = ""
+        methods["Hybrid + reranker"] = reranked
     rows = []
     for name, fn in methods.items():
         for text, rel, kind in zip(q["query"], q["relevant"], q["kind"]):

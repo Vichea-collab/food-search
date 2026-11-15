@@ -137,6 +137,10 @@ then add it to `.env`, e.g. as the second model so it answers whenever Gemini is
 Users can also pick it in the model menu (web) or with `/model` (Telegram). Deciding what a message needs (follow-up
 or new search) always uses the default model when it is available; the chosen model writes the answer.
 
+**Better ranking (optional):** a cross-encoder re-orders the 10 best places for each question
+(nDCG@5 0.885 → 0.923 on 160 questions, see `docs/embedding-experiments.md`). It is off by default; set
+`RERANK_MODEL=BAAI/bge-reranker-v2-m3` in `.env` (2.2 GB download once, about 0.2 s more per search, not used for "near me").
+
 ## Tests
 
 ```bash

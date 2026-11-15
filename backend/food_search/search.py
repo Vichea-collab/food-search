@@ -1047,6 +1047,28 @@ MIN_BM25_SHARE = 0.15      # a keyword match counts when it scores at least 15% 
 # reordered "pizza" and "coffee" towards places that have a Foodpanda menu (measured on data/eval, 9 Nov).
 
 
+_reranker = None
+
+
+def load_reranker():
+    """The cross-encoder (loaded on first use): it reads the question and one place together."""
+    global _reranker
+    if _reranker is None:
+        from sentence_transformers import CrossEncoder
+        _reranker = CrossEncoder(RERANK_MODEL, device=DEVICE, max_length=256)
+    return _reranker
+
+
+def rerank_head(text, out, n) -> pd.DataFrame:
+    """Put the first n rows of `out` in the order the cross-encoder gives, the rest keep theirs. Measured on 160
+    questions (docs/embedding-experiments.md): nDCG@5 0.885 -> 0.927 for n = 10, about 0.2 s per question."""
+    head = out.head(n)
+    docs = [f'{r["name"]}. {r["dish_en"]} {r["dish_kh"]}. {str(r["tags"]).replace(";", ", ")}. {r["area"]}. '
+            f'{menu_names(r["menu"])[:150]}' for _, r in head.iterrows()]
+    scores = load_reranker().predict([(text, d) for d in docs], batch_size=32, show_progress_bar=False)
+    return pd.concat([head.iloc[np.argsort(-np.asarray(scores), kind="stable")], out.iloc[n:]])
+
+
 def hybrid_search(query, k=TOP_K, user_loc=None, weight=None, filters=None,
                   use_query_filters=True, now=None) -> pd.DataFrame:
     """BM25 + embeddings + rating + distance, after filters. user_loc = (lat, lng)."""
@@ -1106,6 +1128,13 @@ def hybrid_search(query, k=TOP_K, user_loc=None, weight=None, filters=None,
     if flt.get("near") and user_loc and len(out):      # "near me" / "near X": closest of the clearly relevant places first
         pool = out[out["final"] >= 0.7 * out["final"].iloc[0]].head(NEAR_POOL)
         out = pool.sort_values("distance_km", kind="stable")
+    if RERANK_MODEL and text and len(out) > 1 and not flt.get("near"):    # optional: a cross-encoder orders the best
+        # places; not for "near me" / "near X": those promise the closest first (it scored higher on them, but a
+        # relevance order breaks that promise: tests/test_chatbot.py::test_near_me_with_location_sorts_by_distance)
+        try:
+            out = rerank_head(text, out, max(RERANK_TOP, k))
+        except Exception as e:                           # model missing or offline: keep the hybrid order
+            log.warning("reranker failed (%s): continuing without it", e)
     out = out.head(k).reset_index(drop=True)
     out.attrs.update(filters=flt, method=method, query_text=text, unverified=unverified)
     return out

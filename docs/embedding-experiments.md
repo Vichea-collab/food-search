@@ -24,8 +24,9 @@ MiniLM at 0.45. 47 questions are few: the 95% interval on a mean is about +-0.07
 Embeddings alone (no BM25), nDCG@5: MiniLM 0.49, e5-base 0.50 (plain), bge-m3 0.51 (plain).
 
 **Findings.**
-1. **No change adopted.** No model or fusion tried beats the current MiniLM + min-max hybrid, and a MiniLM + bge-m3
-   ensemble only ties it (0.91) at three times the cost.
+1. **No embedding or fusion change adopted.** No model or fusion tried beats the current MiniLM + min-max hybrid, and a
+   MiniLM + bge-m3 ensemble only ties it (0.91) at three times the cost. The one idea that does help is a reranker
+   (section below).
 2. **The query expansion does the Khmer work.** `expand_query` adds Khmer and English synonyms ("kuy teav" -> គុយទាវ,
    noodle, ramen...). For MiniLM this is worth about +0.10 nDCG, because MiniLM cannot read the Khmer itself.
    The Khmer-capable models do better *without* the expansion (it makes them return udon and ramen shops).
@@ -39,3 +40,34 @@ Embeddings alone (no BM25), nDCG@5: MiniLM 0.49, e5-base 0.50 (plain), bge-m3 0.
 
 **Not tried.** Fine-tuning an embedder on Khmer food data (would need labelled pairs); a cross-encoder reranker over
 the top 30 (next best idea); a larger question set (the limit on what can be measured).
+
+## Cross-encoder reranker (adopted as an opt-in feature, 15 Nov 2026)
+
+A cross-encoder reads the question and one place *together* instead of comparing two separate vectors.
+`BAAI/bge-reranker-v2-m3` (XLM-R based, reads Khmer, 2.2 GB) re-orders the hybrid's best places. Scored on the 160
+questions of `data/eval/queries.csv` (word-rule labels), 14,561 places:
+
+| | P@5 | MRR | nDCG@5 (95% CI) |
+|---|---|---|---|
+| Hybrid (current) | 0.859 | 0.930 | 0.885 (0.85-0.92) |
+| + reranker on the top 10 | 0.896 | 0.961 | **0.927** (0.90-0.96) |
+| + reranker on the top 20 / top 30 | 0.891 | 0.954 / 0.953 | 0.922 / 0.923 |
+| blended with the hybrid score (weight 0.3 / 0.6, top 10) | 0.875 / 0.890 | 0.948 / 0.966 | 0.904 / 0.923 |
+| **as shipped** (top 10, not for "near" questions) | 0.891 | 0.961 | **0.923** (0.89-0.95) |
+
+Paired bootstrap of the per-question difference: +0.042, 95% interval [+0.022, +0.064], so it is not luck. By kind
+(nDCG@5, hybrid -> reranked): meaning 0.79 -> 0.87, area 0.91 -> 0.98, dish 0.87 -> 0.91, typo 0.80 -> 0.85,
+dish_kh 0.91 -> 0.92, named 0.98 -> 0.98. Cost: about 0.2 s per question for the top 10 (0.7 s for 30) on an M3 Pro, and
+2.2 GB of memory. Top 10 is as good as top 30, so it is the default.
+
+**Why not for "near" questions.** It scored 1.00 against 0.93 there, but "near me" promises the closest place first and a
+relevance order breaks that promise (`test_near_me_with_location_sorts_by_distance` failed with the reranker on).
+So `hybrid_search` leaves distance-ordered results alone.
+
+**Caveats.** (1) The labels are word rules (name or real menu), and the reranker reads the same name, category, tags and
+menu text, so part of the gain may be agreement with the rules; the human labels (`docs/labelling-guide.md`) are the real
+test, run `scrapers/eval_run.py --queries data/eval/queries_human.csv --tag human --rerank BAAI/bge-reranker-v2-m3`.
+(2) Top-N and the blend weight were compared on the same questions; the options differ by less than 0.01, so this is
+not a tuned knob. (3) The feature is OFF by default: set `RERANK_MODEL=BAAI/bge-reranker-v2-m3` in `.env` and restart
+(the first search downloads and loads the model). If the model cannot load, search silently keeps the hybrid order.
+
