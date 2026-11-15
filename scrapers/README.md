@@ -98,3 +98,26 @@ and stay out of `/api/` and the API docs.
 ```bash
 ./venv/bin/python scrapers/normalize_and_merge.py
 ```
+
+## 🧹 Facts-only menus (13 Nov 2026)
+
+`menu` and `price_usd` hold only what a source says. `scrapers/remove_template_menus.py` removed 3,129 menus that
+`enrich_all_menus.py` / `enrich_street_food_menus.py` had given to places by pattern (the same Num Pang menu on 664
+unrelated cafes); those two scripts are now disabled. The column `menu_source` says where a menu comes from:
+`foodpanda` (the place's own page), `chain:<brand>` (the chain's own menu on its branches) or empty (no menu).
+What was removed is kept in `data/raw/removed_template_menus.csv`; the file before the cleanup is
+`data/raw/restaurants_backup_before_template_removal.csv`. Overture phones and street addresses are fetched into
+`data/scraped/overture_contacts.csv` (`overture_contacts.py`) but not added to the dataset until the team decides
+(`apply_overture_contacts.py --with-phones`): the proposal says no personal phone numbers or home addresses of
+private sellers.
+
+## 📍 Phnom Penh only (15 Nov 2026)
+
+Foodpanda's sitemap lists every city, and the sitemap scraper labelled a place "Phnom Penh" unless a khan was in its slug.
+Of 565 places whose Foodpanda page gives the city, 89 (16%) were in Sihanoukville, Poipet, Kampong Speu and other cities.
+`scrapers/remove_non_phnom_penh.py` moved 281 places out (89 by the page's city, 192 by a city at the end of the name:
+17 hits, 0 wrong on the known places); they are in `data/raw/non_phnom_penh_places.csv`. About a fifth of the wrong
+places can be told apart this way, so an estimated 140 are still in the data until the Foodpanda detail run (blocked by
+Foodpanda's rate limit at 675 of 2,705 pages) can finish. Places that have only a Foodpanda slug have no address and no
+coordinates (1,994 places), and are not geocoded from their name: a guessed position would give wrong "near me" distances.
+

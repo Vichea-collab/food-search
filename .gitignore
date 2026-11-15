@@ -17,3 +17,9 @@ tests/last_run.json
 # macOS folder files and local backups
 .DS_Store
 *.bak
+
+# local safety copies and personal contact data (never commit phone numbers of individual sellers)
+data/raw/restaurants_backup_before_template_removal.csv
+data/raw/restaurants_backup_before_foodpanda_merge.csv
+data/raw/restaurants_backup_before_city_filter.csv
+data/scraped/overture_contacts.csv

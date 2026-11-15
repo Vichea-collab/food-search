@@ -3,6 +3,12 @@ Script to enrich all Cambodian restaurants in data/restaurants.csv with complete
 Generates authentic itemized dish menus in English & Khmer with exact prices in USD and KHR.
 """
 
+import sys as _sys
+if "--i-understand-this-invents-data" not in _sys.argv:
+    raise SystemExit("Disabled on 13 Nov 2026: this script gives places menus and prices that no source says they have "
+                     "(see scrapers/remove_template_menus.py). Real menus come from scrapers/foodpanda_detail_scraper.py "
+                     "and scrapers/scrape_popular_brands.py.")
+
 import json
 import re
 from pathlib import Path

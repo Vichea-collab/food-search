@@ -11,6 +11,12 @@ Facts-first guarantee:
   - Enriches dish_en, dish_kh, and price_usd if missing.
 """
 
+import sys as _sys
+if "--i-understand-this-invents-data" not in _sys.argv:
+    raise SystemExit("Disabled on 13 Nov 2026: this script gives places menus and prices that no source says they have "
+                     "(see scrapers/remove_template_menus.py). Real menus come from scrapers/foodpanda_detail_scraper.py "
+                     "and scrapers/scrape_popular_brands.py.")
+
 import json
 import logging
 import re
