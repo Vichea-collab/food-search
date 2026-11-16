@@ -823,6 +823,72 @@ RECIPES = [
                 "Turn off heat, add chopped ma-om and crushed chillies, and serve steaming hot with rice."]),
 ]
 
+# Added 16 Nov 2026: Khmer photo classes (models/food101_classes.json) that had no recipe card, so "how do I make this?"
+# after a photo said "I don't have a recipe yet". Four are the SAME dish as a recipe above under another id (the photo
+# class vs the recipe list): copied, not rewritten. Three are new, in the same style as the others. "Kanh" is left out: the
+# only text we have is "a Cambodian minced beef salad", not enough to write a recipe without guessing.
+def same_dish(old_id, **fields):
+    return {**next(r for r in RECIPES if r["dish_id"] == old_id), **fields}
+
+
+RECIPES += [
+    same_dish("kh_amok", dish_id="kh_amok_trey", dish_name="Fish amok (amok trey)", dish_name_kh="អាម៉ុកត្រី",
+              search="amok trey fish amok", recipe_title="Fish amok (amok trey) (អាម៉ុកត្រី)"),
+    same_dish("kh_bok_lahong", dish_id="kh_bok_lhong", dish_name="Bok lhong (papaya salad)", dish_name_kh="បុកល្ហុង",
+              search="bok lhong papaya salad", recipe_title="Bok lhong (បុកល្ហុង)"),
+    same_dish("kh_num_pang_pate", dish_id="kh_num_pang", dish_name="Num pang (khmer baguette)",
+              dish_name_kh="នំប៉័ងប៉ាតេ", search="num pang pate sandwich", recipe_title="Num pang (នំប៉័ងប៉ាតេ)"),
+    same_dish("kh_sach_ko_ang_jakak", dish_id="kh_sach_ko_ang", dish_name="Sach ko ang (beef skewers)",
+              dish_name_kh="សាច់គោអាំង", search="sach ko ang beef skewers", recipe_title="Sach ko ang (សាច់គោអាំង)"),
+    dict(dish_id="kh_banh_chhev", dish_name="Banh chhev (crispy crepe)", dish_name_kh="បាញ់ឆែវ",
+         search="banh chhev crispy crepe", recipe_title="Banh chhev (បាញ់ឆែវ)",
+         description="Large crispy golden turmeric rice crepe filled with minced pork, shrimp, and bean sprouts. Eaten "
+                     "wrapped in lettuce and fresh herbs, dipped in sweet garlic fish sauce with crushed peanuts.",
+         prep=25, cook=25, servings=4,
+         ingredients=["Batter: 150 g rice flour, 1 tsp ground turmeric, ½ tsp salt, 1 tsp sugar, 250 ml coconut milk, 250 ml water",
+                      "200 g minced pork", "150 g peeled shrimp", "2 cloves garlic, minced", "1 small onion, sliced",
+                      "150 g bean sprouts", "1 tbsp fish sauce", "Vegetable oil, for the pan",
+                      "To serve: lettuce leaves, mint, basil, coriander and cucumber slices",
+                      "Dip: 3 tbsp fish sauce, 3 tbsp water, 2 tbsp sugar, 1 tbsp lime juice, 2 cloves garlic (minced), 1 red chilli (sliced), 1 tbsp crushed roasted peanuts"],
+         steps=["Whisk the rice flour, turmeric, salt and sugar with the coconut milk and water into a thin, smooth batter. Let it rest for 15 minutes.",
+                "Make the dip: stir the sugar, fish sauce, water and lime juice until the sugar dissolves, then add the garlic, chilli and peanuts.",
+                "Fry the garlic and onion in 1 tbsp oil, add the pork and cook until done, then add the shrimp until pink. Season with the fish sauce and set aside.",
+                "Heat a non-stick pan over medium-high heat with a little oil. Pour in a ladle of batter and swirl it into a thin layer.",
+                "Scatter some pork, shrimp and bean sprouts over one half, cover and cook for 1–2 minutes, then uncover and cook until the crepe is golden and crisp.",
+                "Fold the crepe over the filling and slide it onto a plate. Repeat with the rest of the batter.",
+                "Break the crepe into pieces, wrap them in lettuce with the herbs and dip in the sauce."]),
+    dict(dish_id="kh_borbor", dish_name="Borbor (rice porridge)", dish_name_kh="បបរ",
+         search="borbor rice porridge congee", recipe_title="Borbor (បបរ)",
+         description="Silky rice congee simmered with chicken or pork broth, served with shredded chicken or pork, "
+                     "crispy garlic, cilantro, bean sprouts and lime.",
+         prep=15, cook=70, servings=4,
+         ingredients=["200 g jasmine rice, rinsed", "2 litres water (or chicken stock)", "500 g bone-in chicken thighs or drumsticks",
+                      "3 cm ginger, sliced", "1 tsp salt", "1 tbsp fish sauce", "4 cloves garlic, thinly sliced", "2 tbsp vegetable oil",
+                      "To serve: spring onion, coriander, bean sprouts, lime wedges, ground black pepper",
+                      "Fried dough sticks (cha kway), optional"],
+         steps=["Bring the water to a boil with the ginger and chicken. Skim off the foam and simmer for 20 minutes, then lift out the chicken.",
+                "Add the rice to the broth and simmer on low heat for 40–50 minutes, stirring now and then, until the grains break down and the porridge is thick and silky. Add a little hot water if it gets too thick.",
+                "Shred the chicken meat, discarding the skin and bones.",
+                "Season the porridge with the salt and fish sauce.",
+                "Fry the garlic in the oil until golden, then drain.",
+                "Ladle the porridge into bowls and top with the chicken, fried garlic, spring onion, coriander, bean sprouts and pepper. Serve with lime and cha kway."]),
+    dict(dish_id="kh_chha_kdao", dish_name="Chha kdao (holy basil stir fry)", dish_name_kh="ឆាក្តៅ",
+         search="chha kdao stir fry", recipe_title="Chha kdao (ឆាក្តៅ)",
+         description="Fiery wok-tossed beef or chicken stir-fry with yellow lemongrass kroeung, bird's eye chillies, "
+                     "yardlong beans, green peppercorns and holy basil.",
+         prep=20, cook=10, servings=3,
+         ingredients=["400 g beef sirloin (or chicken), thinly sliced", "1½ tbsp oyster sauce",
+                      "Kroeung: " + ", ".join(KROEUNG_YELLOW), "3 tbsp vegetable oil", "150 g yardlong beans, cut into 4 cm pieces",
+                      "4 bird's eye chillies, lightly bruised", "1 tbsp fresh green peppercorns (optional)", "1 tbsp fish sauce",
+                      "1 tsp palm sugar", "2 tbsp water", "1 large handful holy basil leaves", "Steamed jasmine rice, to serve"],
+         steps=["Pound or blend the kroeung ingredients into a coarse paste.",
+                "Mix the sliced meat with the oyster sauce and leave it for 15 minutes.",
+                "Heat the oil in a wok over high heat and fry the kroeung paste for 1 minute until fragrant.",
+                "Add the meat and sear for 2–3 minutes, stirring, until it changes colour.",
+                "Add the beans, chillies, peppercorns, fish sauce, palm sugar and water, and toss for 2–3 minutes until the beans are just tender.",
+                "Add the basil, toss for 20 seconds until wilted and serve at once with rice."]),
+]
+
 # Dishes added 15 Nov 2026 from Wikipedia's own Cambodian articles. NO steps, times or amounts: the card lists only the
 # ingredients the article names, and links to the article (CC BY-SA 4.0). Nothing here is written from memory: if the
 # article does not say it, it is not here. (Wikipedia redirects other Khmer names, such as num kroch or num pao, to
