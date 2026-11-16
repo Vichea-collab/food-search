@@ -84,7 +84,7 @@ def spoken_summary(text, names=()) -> str:
     """The sentence to speak for an answer. A bare lead ('Here's what I found for ...') gets the first place names."""
     t = speakable(text)
     names = [str(n) for n in list(names)[:3] if n]
-    if names and len(t) < 90:
+    if names and len(t) < 170:
         t = speakable(f"{t} " + ", ".join(f"{i}. {n}" for i, n in enumerate(names, 1)))
     return t
 

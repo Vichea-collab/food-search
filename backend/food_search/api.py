@@ -50,7 +50,7 @@ from .llm import (followup_origin, CONTEXT_PLACES, delivery_platforms, DEFAULT_M
                   valid_model_id)
 from .search import (bm25_search, detect_lang, dish_keys, embedding_search, geocode_place, get_rows, haversine_km,
                      hybrid_search, image_search_available, is_open_at, matching_dishes, parse_query_filters,
-                     search_images_by_image)
+                     search_images_by_image, PLACE_NAMES_KH)
 
 log = logging.getLogger("food_search.web")
 
@@ -337,10 +337,11 @@ def next_questions(kind, query, lang, places=None, filters=None, hour=None, limi
     FIELD = {"deliver": "delivery", "rated": "rating", "cheap": "price_usd", "open": "open_hour", "closest": "distance_km"}
     get = lambda r, k: (r.get("phone") or r.get("phone_public") or None) if k == "phone" else r.get(FIELD[k])
     text = parse_query_filters(query)[0].strip() if query else ""
+    where = lambda name: PLACE_NAMES_KH.get(name, name) if kh else name          # a Khmer chip names the area in Khmer
     place = ("near me" if not kh else "ជិតខ្ញុំ") if f.get("near") == "me" else \
         (f"{'near' if not kh else 'ជិត'} {f['near']}" if f.get("near") else
-         f"{'in ' if not kh else ''}{f['area']}" if f.get("area") else
-         f"{'in ' if not kh else ''}{f['city']}" if f.get("city") else "")
+         f"{'in ' if not kh else ''}{where(f['area'])}" if f.get("area") else
+         f"{'in ' if not kh else ''}{where(f['city'])}" if f.get("city") else "")
     join = lambda *w: " ".join(x for x in w if x)
     out = []
     if kind == "search" and not rows:                               # nothing found: ask again with less
@@ -358,7 +359,8 @@ def next_questions(kind, query, lang, places=None, filters=None, hour=None, limi
             out.append(join(text, "near me" if not kh else "ជិតខ្ញុំ"))
         dish = dishes.find_dish(query or "")
         if dish and dish in dishes.RECIPES:                         # a dish was asked for: also how it is made
-            name = dishes.dish_name(dish, lang)
+            # the user's own word when it is that dish ("kuy teav"), not the catalogue name ("Kuy teav noodle soup")
+            name = text if (text and not kh and dishes.find_dish(text) == dish) else dishes.dish_name(dish, lang)
             out.append(f"របៀបធ្វើ {name}" if kh else f"How do I make {name}?")
     asked = {k for k, rx in ASKED_RE.items() if rx.search(query or "")}
     if kind == "search" and (f.get("max_price")):

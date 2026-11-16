@@ -51,10 +51,14 @@ LEAD_TEXT = {
     "en": {"found": "Here's what I found", "for": " for “{what}”", "in": " in {place}", "open_now": "open now",
            "open_late": "open late", "under": "under ${v}", "rated": "rated {v}+", "near_me": "closest first",
            "near": "closest to {name} first", "end": ".", "named": "Here it is: {name}.",
+           "count": "{n} places", "phones": "{k} with a phone number", "all_phones": "all with a phone number",
+           "closest": " The closest is {name}, {d} away.",
            "named_many": "I found {k} places called “{what}”:"},
     "kh": {"found": "នេះជាអ្វីដែលខ្ញុំរកឃើញ", "for": " សម្រាប់ “{what}”", "in": " នៅ{place}", "open_now": "កំពុងបើក",
            "open_late": "បើកយប់", "under": "ក្រោម ${v}", "rated": "ពិន្ទុ {v}+", "near_me": "ជិតខ្ញុំមុន",
            "near": "ជិត {name} មុន", "end": "។", "named": "នេះគឺ {name}។",
+           "count": "{n} កន្លែង", "phones": "{k} មានលេខទូរស័ព្ទ", "all_phones": "ទាំងអស់មានលេខទូរស័ព្ទ",
+           "closest": " ជិតបំផុតគឺ {name} ចម្ងាយ {d}។",
            "named_many": "ខ្ញុំរកឃើញ {k} កន្លែងឈ្មោះ “{what}”៖"},
 }
 
@@ -85,7 +89,19 @@ def search_lead(results, lang, near=None) -> str:
     if near:
         notes.append(W["near_me"] if near == "me" else W["near"].format(name=near))
     text = W["found"] + (W["for"].format(what=what) if what else "") + (W["in"].format(place=place) if place else "")
-    return text + "".join(", " + n for n in notes) + W["end"]
+    text += "".join(", " + n for n in notes)
+    # what the places can tell at a glance (16 Nov: the bare "Here's what I found for ..." said nothing about them)
+    n = len(results)
+    phone = (results["phone_public"].fillna("").astype(str).str.strip() if "phone_public" in results else pd.Series([], dtype=str))
+    k = int((phone.ne("") & phone.ne("nan")).sum())
+    facts = [W["count"].format(n=n)] + ([W["all_phones"] if k == n else W["phones"].format(k=k)] if k and n > 1 else [])
+    text += (": " if lang == "en" else "៖ ") + ", ".join(facts) + W["end"]
+    dist = results["distance_km"] if "distance_km" in results else None
+    if near and dist is not None and dist.notna().any():
+        i = dist.idxmin()
+        d = dist[i]
+        text += W["closest"].format(name=results.loc[i, "name"], d=f"{round(d * 100) * 10:.0f} m" if d < 1 else f"{d:.1f} km")
+    return text
 
 
 def fmt_price(p) -> str:

@@ -747,3 +747,23 @@ class TestAskNext:
             assert a.get("results") or a.get("answer") or a.get("no_match"), (first, chip, a.get("kind"))
             assert chip.lower() != first.lower()
             assert a.get("kind") != "search" or a["results"] or chip in ("Sushi",), (first, chip)
+
+    def test_khmer_chip_names_the_area_in_khmer(self):
+        from food_search.api import next_questions
+        q = next_questions("search", "កាហ្វេ ទួលគោក", "kh", [self.place()], {"area": "Toul Kork"})
+        assert q[0].startswith("កាហ្វេ បើកឥឡូវ") and not re.search(r"[A-Za-z]", q[0]), q
+
+    def test_recipe_chip_uses_the_users_own_word_for_the_dish(self):
+        from food_search.api import next_questions
+        q = next_questions("search", "kuy teav in BKK1", "en", [self.place()], {"area": "Boeng Keng Kang"}, limit=9)
+        assert "How do I make kuy teav?" in q and not [x for x in q if "noodle soup" in x], q
+
+    def test_the_lead_says_how_many_places_and_how_near(self, chat):
+        """16 Nov: "Here's what I found for ..." now also says how many places, how many have a phone, and the closest."""
+        a = chat("kuy teav in BKK1", model="none")
+        assert a["answer"] is None or a["answer"].startswith("Here's what I found")
+        b = chat("coffee near me", location={"lat": 11.5564, "lng": 104.9282})
+        text = b["answer"] or ""
+        assert re.search(r"\d+ places", text) and "The closest is" in text and " away." in text, text
+        k = chat("កាហ្វេ ជិតខ្ញុំ", location={"lat": 11.5564, "lng": 104.9282})
+        assert re.search(r"\d+ កន្លែង", k["answer"] or "") and "ជិតបំផុតគឺ" in k["answer"], k["answer"]
