@@ -682,3 +682,56 @@ class TestVoice:
         from food_search import voice
         for text in ("Here are 3 places for kuy teav near you.", "នេះគឺ Burrata Republic Pizza ។"):
             assert len(voice.speak(text, None, gender)) > 5000
+
+
+class TestAskNext:
+    """16. "Ask next": the questions offered under every answer, carrying on from what was asked"""
+
+    @staticmethod
+    def place(**kw):
+        return {"open_hour": None, "close_hour": None, "rating": None, "price_usd": None, "phone": None,
+                "delivery": [], "distance_km": None, **kw}
+
+    def test_only_what_the_shown_places_can_answer(self):
+        from food_search.api import next_questions
+        bare = [self.place(), self.place()]
+        assert next_questions("search", "coffee in BKK1", "en", bare, {"area": "Boeng Keng Kang"}) == ["coffee near me"]
+        rich = [self.place(rating=4.5, price_usd=3.0, open_hour=7, close_hour=21),
+                self.place(rating=4.0, price_usd=2.0, open_hour=8, close_hour=22)]
+        q = next_questions("search", "coffee in BKK1", "en", rich, {"area": "Boeng Keng Kang"})
+        assert q[0] == "coffee open now in Boeng Keng Kang" and "Which one has the best rating?" in q
+        assert next_questions("search", "coffee in BKK1", "en", rich, {"area": "Boeng Keng Kang"}, limit=9)[-1] != q[0]
+
+    def test_never_offers_what_was_just_asked(self):
+        from food_search.api import next_questions
+        rich = [self.place(rating=4.5, price_usd=3.0, open_hour=7, close_hour=21, phone="+85512345678", delivery=["grab"])] * 3
+        q = next_questions("followup", "which one is open now?", "en", rich, {}, limit=9)
+        assert "Which one is open now?" not in q and "Which one has the best rating?" in q
+        q = next_questions("followup", "which one is the cheapest?", "en", rich, {}, limit=9)
+        assert "Which one is the cheapest?" not in q
+        q = next_questions("search", "noodles open now", "en", rich, {"open_now": True}, limit=9)
+        assert not [x for x in q if "open now" in x]
+
+    def test_nothing_found_asks_again_with_less(self):
+        from food_search.api import next_questions
+        q = next_questions("search", "sushi under $1 in Kep", "en", [], {"max_price": 1, "city": "Kep"})
+        assert q[0] == "sushi" and len(q) == 3
+
+    def test_small_talk_offers_something_to_try_by_the_hour(self):
+        from food_search.api import next_questions
+        assert "Breakfast near me" in next_questions("chat", "hi", "en", hour=8)
+        assert "Food open late" in next_questions("chat", "hi", "en", hour=23)
+        assert all(re.search(r"[ក-៿]", x) for x in next_questions("chat", "សួស្តី", "kh", hour=12))
+
+    @pytest.mark.parametrize("first,lang", [("coffee in BKK1", "en"), ("noodles open now", "en"), ("pizza near CADT", "en"),
+                                            ("sushi under $1 in Kep", "en"), ("hi", "en"), ("កាហ្វេ ទួលគោក", "kh")])
+    def test_every_chip_leads_to_an_answer(self, conversation, first, lang):
+        """The chips are sent as the user's next message: each one must get an answer, never a dead end, and never
+        the same question again."""
+        chips = conversation([first], model="none")[0].get("suggestions") or []
+        assert chips, first
+        for chip in chips:
+            a = conversation([first, chip], model="none")[1]
+            assert a.get("results") or a.get("answer") or a.get("no_match"), (first, chip, a.get("kind"))
+            assert chip.lower() != first.lower()
+            assert a.get("kind") != "search" or a["results"] or chip in ("sushi",), (first, chip)

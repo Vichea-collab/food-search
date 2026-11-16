@@ -180,6 +180,7 @@ function Reply({ data, at, emotion, onPickDish, onAsk }: {
         </div>
         <Corrections items={data.corrections} />
         {results.length > 0 && !tabular && <PlaceList places={results} numbers={data.numbers} />}
+        <AskNext items={data.suggestions} onAsk={onAsk} />
         <Time at={at} model={byAi ? data.model_label : null} />
       </BotRow>
     );
@@ -207,6 +208,7 @@ function Reply({ data, at, emotion, onPickDish, onAsk }: {
       {data.unverified_note && <p className="note">{data.unverified_note}</p>}
       <Corrections items={data.corrections} />
       {results.length > 0 && <PlaceList places={results} />}
+      <AskNext items={data.suggestions} onAsk={onAsk} />
       <Time at={at} model={byAi ? data.model_label : null} />
     </BotRow>
   );

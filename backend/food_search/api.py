@@ -279,6 +279,99 @@ def places_json(results, lang, with_menu=False) -> list:
     return places
 
 
+# ======================= "Ask next": the questions offered under an answer =======================
+
+# what a chip asks about the places already shown (answered from the data, no new search): key -> [en, kh]
+ABOUT_SHOWN = {
+    "open": ("Which one is open now?", "ហាងមួយណាបើកឥឡូវ?"),
+    "rated": ("Which one has the best rating?", "ហាងមួយណាមានពិន្ទុល្អបំផុត?"),
+    "cheap": ("Which one is the cheapest?", "ហាងមួយណាថោកជាងគេ?"),
+    "phone": ("Which ones have a phone number?", "ហាងមួយណាមានលេខទូរស័ព្ទ?"),
+    "deliver": ("Which ones deliver?", "ហាងមួយណាដឹកជូន?"),
+    "closest": ("Which one is the closest?", "ហាងមួយណានៅជិតជាងគេ?"),
+}
+# words in a question that already ask one of them: not offered again
+ASKED_RE = {
+    "open": re.compile(r"\bopen|\bhours?\b|\bclose|បើក|ម៉ោង", re.I),
+    "rated": re.compile(r"\brat(ing|ed)|\bbest\b|\breview|ពិន្ទុ|ល្អបំផុត", re.I),
+    "cheap": re.compile(r"\bcheap|\bprice|\bexpensive|\bcost|ថោក|តម្លៃ", re.I),
+    "phone": re.compile(r"\bphone|\bcall\b|\bnumber\s+for|ទូរស័ព្ទ|ទូរសព្ទ", re.I),
+    "deliver": re.compile(r"\bdeliver|ដឹក", re.I),
+    "closest": re.compile(r"\bclos(e|est)|\bnear|\bfar\b|\bdistance|ជិត|ឆ្ងាយ", re.I),
+}
+# what to try when the user has not said what they want (a greeting, "I'm hungry"): by the time of day in Phnom Penh
+STARTERS = {
+    "morning": (["Breakfast near me", "Coffee open now", "Kuy teav near me"], ["អាហារពេលព្រឹក ជិតខ្ញុំ", "កាហ្វេ បើកឥឡូវ", "គុយទាវ ជិតខ្ញុំ"]),
+    "day": (["Khmer food open now", "Lunch near me", "Iced coffee near me"], ["ម្ហូបខ្មែរ បើកឥឡូវ", "បាយថ្ងៃត្រង់ ជិតខ្ញុំ", "កាហ្វេទឹកកក ជិតខ្ញុំ"]),
+    "evening": (["Dinner near me", "BBQ open now", "Bubble tea near me"], ["អាហារពេលល្ងាច ជិតខ្ញុំ", "សាច់អាំង បើកឥឡូវ", "តែគុជ ជិតខ្ញុំ"]),
+    "night": (["Food open late", "Noodles open now", "Coffee open now"], ["ហាងបើកយប់", "មី បើកឥឡូវ", "កាហ្វេ បើកឥឡូវ"]),
+}
+
+
+def _starters(lang, hour=None, skip="") -> list:
+    hour = datetime.now(TZ).hour if hour is None else hour
+    part = "morning" if 5 <= hour < 10 else "day" if 10 <= hour < 16 else "evening" if 16 <= hour < 21 else "night"
+    return [q for q in STARTERS[part][1 if lang == "kh" else 0] if q.lower() != skip.lower()]
+
+
+def _has(values) -> int:
+    return sum(1 for v in values if v is not None and v == v and v != [] and v != "")
+
+
+def next_questions(kind, query, lang, places=None, filters=None, hour=None, limit=3) -> list:
+    """The questions offered under an answer, so the user can carry on from what was just said (found 16 Nov: only
+    dish answers had any). Each is a whole question that works on its own, and only what the shown places can answer
+    (no "cheapest" when none has a price) and what was not just asked.
+      search   no results: the same without the filters that emptied it; results: narrow them (open now, near me),
+               ask about them (best rated, cheapest, delivery), or how to cook the dish when the query is one
+      followup what else the shown places can tell: open now, best rating, cheapest, delivery, closest
+      chat     something to try, for the time of day
+    places: result dicts (places_json) or, for a follow-up, the DataFrame shown; filters: parse_query_filters(...)[1]."""
+    kh = lang == "kh"
+    f = filters or {}
+    if kind == "chat":
+        return _starters(lang, hour)[:limit]
+    if places is None:
+        places = []
+    rows = places.to_dict("records") if hasattr(places, "to_dict") else places      # the rows shown last, or the cards
+    FIELD = {"deliver": "delivery", "rated": "rating", "cheap": "price_usd", "open": "open_hour", "closest": "distance_km"}
+    get = lambda r, k: (r.get("phone") or r.get("phone_public") or None) if k == "phone" else r.get(FIELD[k])
+    text = parse_query_filters(query)[0].strip() if query else ""
+    place = ("near me" if not kh else "ជិតខ្ញុំ") if f.get("near") == "me" else \
+        (f"{'near' if not kh else 'ជិត'} {f['near']}" if f.get("near") else
+         f"{'in ' if not kh else ''}{f['area']}" if f.get("area") else
+         f"{'in ' if not kh else ''}{f['city']}" if f.get("city") else "")
+    join = lambda *w: " ".join(x for x in w if x)
+    out = []
+    if kind == "search" and not rows:                               # nothing found: ask again with less
+        if text and (place or f.get("max_price") or f.get("min_rating") or f.get("open_now") or f.get("open_late")):
+            out.append(text)                                        # anywhere, any price, any hour
+        if text and (f.get("open_now") or f.get("open_late")) and place:
+            out.append(join(text, place))
+        out += _starters(lang, hour)
+        return list(dict.fromkeys(out))[:limit]
+    if kind == "search":
+        if text and not (f.get("open_now") or f.get("open_late")) and _has(get(r, "open") for r in rows) >= 2:
+            out.append(join(text, "open now" if not kh else "បើកឥឡូវ", place))
+        if text and f.get("near") != "me":
+            out.append(join(text, "near me" if not kh else "ជិតខ្ញុំ"))
+        dish = dishes.find_dish(query or "")
+        if dish and dish in dishes.RECIPES:                         # a dish was asked for: also how it is made
+            name = dishes.dish_name(dish, lang)
+            out.append(f"របៀបធ្វើ {name}" if kh else f"How do I make {name}?")
+    asked = {k for k, rx in ASKED_RE.items() if rx.search(query or "")}
+    if kind == "search" and (f.get("max_price")):
+        asked.add("cheap")
+    if kind == "search" and (f.get("min_rating")):
+        asked.add("rated")
+    for k in ("rated", "cheap", "phone", "deliver", "open", "closest"):
+        if k in asked or (kind == "search" and k in ("open", "closest")):
+            continue
+        if _has(get(r, k) for r in rows) >= (1 if k == "deliver" else 2):
+            out.append(ABOUT_SHOWN[k][1 if kh else 0])
+    return list(dict.fromkeys(out))[:limit]
+
+
 # ======================= request bodies (checked by FastAPI, documented at /docs) =======================
 
 class Location(BaseModel):
@@ -464,14 +557,16 @@ async def answer_chat(body: ChatRequest, request: Request):
         if plan["action"] == "chat":
             out = await asyncio.to_thread(chat_reply, query, history, model)
             return {"kind": "chat", "query": query, "lang": lang, "answer": out["text"], "provider": out["provider"],
-                    "model": out["model"], "model_label": out["label"], "results": [], "filters": {}}
+                    "model": out["model"], "model_label": out["label"], "results": [], "filters": {},
+                    "suggestions": next_questions("chat", query, lang)}
         if plan["action"] == "followup" and places is not None and len(places):    # about the shown places: no search
             out = await asyncio.to_thread(answer_followup, query, history, places, plan["places"], model)
             picked = places.iloc[[n - 1 for n in out["numbers"]]]
             return {"kind": "followup", "query": query, "lang": lang, "answer": out["text"], "provider": out["provider"],
                     "model": out["model"], "model_label": out["label"], "numbers": out["numbers"], "shape": out["shape"],
                     # an answer built from the data already says it: cards under it would repeat it
-                    "results": places_json(picked, lang) if out["provider"] != "facts" else [], "filters": {}}
+                    "results": places_json(picked, lang) if out["provider"] != "facts" else [], "filters": {},
+                    "suggestions": next_questions("followup", query, lang, places, parse_query_filters(body.last_query or "")[1])}
         search_query = plan["query"] or query
         rewritten = search_query.strip().lower() != query.strip().lower()
     if parse_query_filters(search_query)[1].get("near") == "me" and not user_loc and not body.no_location:
@@ -479,6 +574,7 @@ async def answer_chat(body: ChatRequest, request: Request):
         return {"query": query, "search_query": search_query, "lang": lang, "need_location": True}
     out = await asyncio.to_thread(answer_query, search_query, user_loc, model, RESULTS_PER_QUERY, True)
     results = out["results"]
+    cards = places_json(results, lang, with_menu="menu" in asked_fields(search_query))
     return {
         "kind": "search",
         "query": query,
@@ -492,7 +588,8 @@ async def answer_chat(body: ChatRequest, request: Request):
         "origin": out["origin"],
         "filters": {k: v for k, v in results.attrs.get("filters", {}).items() if k != "near"},
         "unverified_note": unverified_note(results, lang) or None,              # e.g. "under $5" with no prices in the data
-        "results": places_json(results, lang, with_menu="menu" in asked_fields(search_query)),
+        "results": cards,
+        "suggestions": next_questions("search", search_query, lang, cards, parse_query_filters(search_query)[1]),
     }
 
 
