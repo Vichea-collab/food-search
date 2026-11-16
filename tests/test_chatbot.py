@@ -695,7 +695,10 @@ class TestAskNext:
     def test_only_what_the_shown_places_can_answer(self):
         from food_search.api import next_questions
         bare = [self.place(), self.place()]
-        assert next_questions("search", "coffee in BKK1", "en", bare, {"area": "Boeng Keng Kang"}) == ["Coffee near me"]
+        assert next_questions("search", "coffee in BKK1", "en", bare, {"area": "Boeng Keng Kang"}) == [
+            "Coffee open now in Boeng Keng Kang", "Coffee near me"]        # no ratings, prices or phones to ask about
+        near = next_questions("search", "bubble tea near me", "en", bare, {"near": "me"})
+        assert near == ["Bubble tea open now near me"], near               # a near-me answer is never left without a next step
         rich = [self.place(rating=4.5, price_usd=3.0, open_hour=7, close_hour=21),
                 self.place(rating=4.0, price_usd=2.0, open_hour=8, close_hour=22)]
         q = next_questions("search", "coffee in BKK1", "en", rich, {"area": "Boeng Keng Kang"})

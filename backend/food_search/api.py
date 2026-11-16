@@ -351,7 +351,8 @@ def next_questions(kind, query, lang, places=None, filters=None, hour=None, limi
         out += _starters(lang, hour)
         return [q[:1].upper() + q[1:] for q in dict.fromkeys(out)][:limit]
     if kind == "search":
-        if text and not (f.get("open_now") or f.get("open_late")) and _has(get(r, "open") for r in rows) >= 2:
+        if text and not (f.get("open_now") or f.get("open_late")):      # never a dead end: 20 common foods, all found
+            # (checked 16 Nov: only 6% of places have hours, yet "X open now" returned results every time)
             out.append(join(text, "open now" if not kh else "បើកឥឡូវ", place))
         if text and f.get("near") != "me":
             out.append(join(text, "near me" if not kh else "ជិតខ្ញុំ"))
