@@ -575,7 +575,7 @@ async def answer_chat(body: ChatRequest, request: Request):
     if parse_query_filters(search_query)[1].get("near") == "me" and not user_loc and not body.no_location:
         # the UI asks for the location, then sends search_query again with direct=true
         return {"query": query, "search_query": search_query, "lang": lang, "need_location": True}
-    out = await asyncio.to_thread(answer_query, search_query, user_loc, model, RESULTS_PER_QUERY, True)
+    out = await asyncio.to_thread(answer_query, search_query, user_loc, model, RESULTS_PER_QUERY, True, lang)   # lang: the user's own words
     results = out["results"]
     cards = places_json(results, lang, with_menu="menu" in asked_fields(search_query))
     return {

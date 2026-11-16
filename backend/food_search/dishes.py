@@ -47,7 +47,8 @@ CLASSES_PATH = MODELS_DIR / "food101_classes.json"
 RECIPES_PATH = DATA_DIR / "recipes.csv"
 KNOWLEDGE_PATH = DATA_DIR / "dish_knowledge.csv"   # what each dish is (Wikipedia or our own text), EN + KH
 SURE_AT = 0.50            # below this the app says "it might be ..." and offers the other guesses
-LOW_AT = 0.25             # below this it does not even act on the guess: "I can't tell", the guesses to pick from, a photo tip
+LOW_AT = 0.35             # below this it does not act on the guess: "I can't tell", the guesses to tap, a photo tip. Measured 16 Nov
+                          # on 4,377 test photos: right 43% at 25-30%, 53% at 30-35%, 65% at 35-50%, 81% at 50-70%, 97% above 70%
 CLIP_TEMPLATES = ["a photo of {}, a type of food.", "a close-up photo of {}.", "a photo of a plate of {}.",
                   "{}, food photography."]      # the same sentences as food_classification.ipynb, section 5
 
