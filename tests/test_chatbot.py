@@ -234,7 +234,9 @@ class TestFilters:
         """'cheap kuy teav' used to return ice cream and KFC (the only places with prices)."""
         d = chat("cheap kuy teav", **NO_AI)
         assert not re.search(r"mixue|kfc|carl", names(d)) and re.search(r"kuy|noodle|គុយទាវ", names(d))
-        assert d.get("unverified_note")             # our data has no prices for them: said, not hidden
+        # a price filter is never silent: either the places shown have a price (16 Nov: they do, $2.50), or the answer
+        # says our data has none for them ("said, not hidden")
+        assert d.get("unverified_note") or all(p.get("price_usd") for p in d["results"])
 
     @pytest.mark.parametrize("q,dish", [("lok lak in Toul Kork", r"lok ?lak|ឡុកឡាក់"),
                                         ("cheap kuy teav", r"kuy ?te|kuyteav|គុយទាវ|noodle|pho|មី")])
@@ -317,8 +319,9 @@ class TestConversation:
         assert a[1]["kind"] == "followup" and a[1]["answer"].startswith("Yes, Shayoo Bite") and "Foodpanda" in a[1]["answer"]
 
     def test_detail_only_some_places_have(self, conversation):
-        """"can it deliver?" after 9 Mixue branches: how many have it, those places, the rest in one line."""
-        a = conversation(["do you know Mixue?", "can it deliver?"], model="none")
+        """"what is the phone number?" after 8 Mixue branches: how many have it, those places, the rest in one line.
+        (Was "can it deliver?"; since 16 Nov every branch has a delivery link, so that one now lists all of them.)"""
+        a = conversation(["do you know Mixue?", "what is the phone number?"], model="none")
         assert a[1]["kind"] == "followup" and re.match(r"(Only 1|\d+) of these \d+ places ha", a[1]["answer"])
         assert "The others (number" in a[1]["answer"]
 
