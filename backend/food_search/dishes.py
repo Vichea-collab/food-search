@@ -740,6 +740,9 @@ TEXT = {
            "steps": "How to make **{title}**: {n} steps, about {total} in total.",
            "servings": "**{title}** serves {n}.",
            "servings_unknown": "The recipe for {title} does not say how many it serves.",
+           "time_unknown": "I don't have cooking times for **{title}** (the source only lists its ingredients).",
+           "steps_none": "I don't have step-by-step instructions for **{title}** yet (the source only lists its "
+                         "ingredients). **{title}** needs {n} ingredients:",
            "calories": "**{title}** has about **{cal} calories** per serving.",
            "calories_unknown": "The recipe for {title} has no calorie information.",
            "other": "Here is the recipe for **{title}**.",
@@ -796,6 +799,9 @@ TEXT = {
            "steps": "របៀបធ្វើ **{title}**៖ {n} ជំហាន ប្រហែល {total} សរុប។",
            "servings": "**{title}** សម្រាប់ {n} នាក់។",
            "servings_unknown": "រូបមន្ត {title} មិនបានប្រាប់ថាសម្រាប់ប៉ុន្មាននាក់ទេ។",
+           "time_unknown": "ខ្ញុំមិនមានពេលវេលាចម្អិនសម្រាប់ **{title}** ទេ (ប្រភពមានតែគ្រឿងផ្សំប៉ុណ្ណោះ)។",
+           "steps_none": "ខ្ញុំមិនទាន់មានជំហានធ្វើសម្រាប់ **{title}** ទេ (ប្រភពមានតែគ្រឿងផ្សំប៉ុណ្ណោះ)។ "
+                         "**{title}** ត្រូវការគ្រឿងផ្សំ {n} មុខ៖",
            "calories": "**{title}** មានប្រហែល **{cal} កាឡូរី** ក្នុងមួយចំណែក។",
            "calories_unknown": "រូបមន្ត {title} មិនមានព័ត៌មានកាឡូរីទេ។",
            "other": "នេះជារូបមន្តសម្រាប់ **{title}**។",
@@ -871,12 +877,13 @@ def recipe_json(dish_id):
 
 STEPS_RE = re.compile(r"\b(recipes?|how (do|can|should|would|to) (i |you |we |one )?(make|cook|prepare|bake|do)|"
                       r"how (is|are) (it|this|that|they) (made|cooked|prepared)|steps?|method|instructions?|"
-                      r"teach me|show me how)\b|រូបមន្ត|របៀបធ្វើ|ធ្វើ(យ៉ាង|ដូច)ម្តេច|ធ្វើម៉េច|ចម្អិន(យ៉ាង)?ម៉េច", re.I)
+                      r"teach me|show me how)\b|រូបមន្ត|របៀបធ្វើ|របៀបចម្អិន|"
+                      r"(ធ្វើ(?!ដំណើរ|ការ)|ចម្អិន|ស្ល|ឆា|អាំង|ចៀន).{0,12}?(ម៉េច|ម្តេច|ម្ដេច)", re.I)   # "ធ្វើម្ហូបនេះយ៉ាងម៉េច?"
 TIME_RE = re.compile(r"\b(how long|how many (minutes|mins|hours)|how much time|(cook|cooking|prep|preparation|baking|"
                      r"total) time|takes? to (make|cook|prepare|bake)|(minutes|hours) to (make|cook|prepare|bake))\b|"
                      r"ប៉ុន្មាននាទី|ប៉ុន្មានម៉ោង|យូរប៉ុណ្ណា|យូរទេ|ប្រើពេល", re.I)
 INGREDIENTS_RE = re.compile(r"\b(ingredients?|what (do|will) (i|you|we) need|what('s| is) in (it|this|that|them)|"
-                            r"what goes in|shopping list|made (of|from|with))\b|គ្រឿងផ្សំ|ត្រូវការអ្វីខ្លះ", re.I)
+                            r"what goes in|shopping list|made (of|from|with))\b|គ្រឿងផ្សំ|(ត្រូវការ|ដាក់|ប្រើ|គ្រឿង).{0,10}?អ្វីខ្លះ", re.I)
 SERVINGS_RE = re.compile(r"\b(servings?|serves|how many (people|persons|portions|plates))\b|ប៉ុន្មាននាក់", re.I)
 CALORIES_RE = re.compile(r"\b(calories?|kcal|nutrition|healthy)\b|កាឡូរី", re.I)
 # a free question about the dish just shown ("can I use chicken instead?"): answered by the AI from the recipe
@@ -892,7 +899,7 @@ KNOW_RE = re.compile(r"\b(tastes?|tasted|tasting|flavou?rs?|sweet|sour|salty|bit
 # "where does amok come from?" has "where" but is no place question
 ORIGIN_RE = re.compile(r"\bwhere\b.*\b(come|comes|came)\s+from\b|\boriginat\w*|មកពីណា|កើតចេញពី|មកពីប្រទេសណា", re.I)
 ASKS_ME_RE = re.compile(r"\b(can|could|should|do|may) (i|we|you)\b", re.I)    # "can I ...", "should we ..."
-REFERS_RE = re.compile(r"\b(it|this|that|they|them|this dish|that dish|the dish|the recipe)\b|វា|នេះ|នោះ", re.I)
+REFERS_RE = re.compile(r"\b(it|this|that|they|them|this dish|that dish|the dish|the recipe)\b|វា|នេះ|នោះ|(ទេ|អត់|ឬទេ|ម៉េច|ម្តេច|ម្ដេច)\s*[?？]?\s*$", re.I)   # Khmer drops "it": "ហឹរទេ?" = "is it spicy?"
 PLACE_RE = re.compile(r"\b(near|nearby|where|open|deliver|delivery|restaurant|restaurants|shop|place|places|buy|eat out|"
                       r"order|price|cheap|cost|wait|queue|get there|drive|walk|reservation|book)\b|នៅណា|ជិត|ហាង|ទិញ|បើក", re.I)
 
@@ -956,6 +963,30 @@ def about_intent(text) -> str | None:
         return None if extra else dish_id
     rest = BARE_FILLER_RE.sub(" ", _name_re.sub(" ", text, count=1))
     return dish_id if not re.search(r"[0-9A-Za-z\u1780-\u17ff]", rest) else None
+
+
+# "what is this?", "what's it called?", "tell me about it", "នេះជាអ្វី?", "ម្ហូបនេះឈ្មោះអ្វី?" right after a photo
+NAME_Q_RE = re.compile(r"\b(name of (this|it|that)|(its|it's|this|the) name|called|what (food|dish) is (this|it|that)|"
+                       r"what (this|it|that) is)\b|"
+                       r"ឈ្មោះអ្វី|ហៅថាអ្វី|ហៅអ្វី|ម្ហូបអ្វី|ជាអ្វី|អ្វីគេ|អីគេ", re.I)
+FOCUS_FILLER = ABOUT_FILLER | {"is", "are", "what", "whats", "name", "kind", "type", "more", "me", "tell", "you", "can",
+                               "could", "please", "exactly", "dish", "food", "plate", "thing", "that", "its"}
+# Khmer words that may stand around "what is it": anything else ("លេខទូរស័ព្ទជាអ្វី?" = what is the phone number) is no
+KH_FOCUS_FILLER_RE = re.compile(r"តើ|នេះ|នោះ|ហ្នឹង|វា|ម្ហូប|មុខ|ឈ្មោះ|ហៅថា|ហៅ|ជា|អ្វី|អី|គេ|ទៅ|បាទ|ចាស|សូម|ប្រាប់|ខ្ញុំ|"
+                                r"ពី|អំពី|បន្តិច|[\s?？!។]")
+
+
+def about_focus(text, focus) -> str | None:
+    """The dish in focus (just recognised from a photo) when the message asks what it is, else None. Without this,
+    "what is this?" after a photo of lok lak became "what is lok lak" and ran a place search (QA 15 Nov)."""
+    if not focus or not text or find_dish(text) or PLACE_RE.search(text) or recipe_intent(text, True):
+        return None
+    if not (ABOUT_DISH_RE.search(text) or NAME_Q_RE.search(text)):
+        return None
+    rest = NAME_Q_RE.sub(" ", ABOUT_DISH_RE.sub(" ", text))
+    extra = [w for w in re.findall(r"[a-z0-9]+", rest.lower()) if w not in FOCUS_FILLER]
+    extra += re.findall(r"[\u1780-\u17ff]+", KH_FOCUS_FILLER_RE.sub("", text))
+    return None if extra else focus     # "what is the best one?" is about places, not the dish
 
 
 def about_answer(dish_id, lang="en", question="") -> str:
@@ -1052,19 +1083,22 @@ def recipe_prompt(question, r, lang, about="", dish="") -> str:
     if about:
         parts.append(f"ABOUT THE DISH ({dish}):\n{about}")
     if r:
-        source = "Food.com" if r.get("source") == "Food.com" else "a typical Cambodian home recipe"
+        source = {"Food.com": "Food.com", "Wikipedia": "Wikipedia"}.get(r.get("source"), "a typical Cambodian home recipe")
+        times = (f"Prep: {r['prep_minutes']} min. Cook: {r['cook_minutes']} min. Total: {r['total_minutes']} min. "
+                 if r.get("total_minutes") else "Times: not given. ")
         parts.append(
-            f"RECIPE ({source}): {r['recipe_title']} ({r['dish_name']})\n"
-            f"Prep: {r['prep_minutes']} min. Cook: {r['cook_minutes']} min. Total: {r['total_minutes']} min. "
+            f"RECIPE ({source}): {r['recipe_title']} ({r['dish_name']})\n{times}"
             f"Serves: {r.get('servings') or 'not given'}. Calories per serving: {r.get('calories_per_serving') or 'not given'}.\n"
             "Ingredients:\n" + "\n".join(f"- {i}" for i in r["ingredients"]) + "\n"
-            "Steps:\n" + "\n".join(f"{n}. {s}" for n, s in enumerate(r["steps"], 1)))
+            + ("Steps:\n" + "\n".join(f"{n}. {s}" for n, s in enumerate(r["steps"], 1)) if r["steps"]
+               else "Steps: not given."))
     return (
         "You answer a question about a dish using ONLY the text below (what the dish is, and its recipe). "
         f"Reply in {'Khmer' if lang == 'kh' else 'English'} in at most three short sentences, without lists. "
-        "If it does not answer the question, say in one sentence that you don't have that information about this dish "
-        "yet, and give no guess. Never mention \"the text\" or \"the recipe below\". "
-        "Never invent facts, amounts, times or ingredients.\n\n" + "\n\n".join(parts) + f"\n\nQUESTION: {question}"
+        "If it does not answer the question, answer from what is commonly known about this dish and start with "
+        "\"Usually\" (or \"ជាទូទៅ\" in Khmer); if it is not commonly known, say in one sentence that you don't have "
+        "that information yet. Never mention \"the text\" or \"the recipe below\". "
+        "Never invent amounts, times, prices or history.\n\n" + "\n\n".join(parts) + f"\n\nQUESTION: {question}"
     )
 
 
@@ -1091,7 +1125,9 @@ def recipe_answer(question, dish_id, lang="en", model_id=None, full=False) -> di
     title, n_steps = r["recipe_title"], len(r["steps"])
     total = fmt_minutes(r["total_minutes"], lang)
     lists = ""
-    if kind == "time":
+    if kind == "time" and not r["total_minutes"]:      # an ingredients-only recipe (Wikipedia): no times to give
+        text = t["time_unknown"].format(title=title)
+    elif kind == "time":
         cook = r["cook_minutes"] or 0
         text = (t["time"] if cook else t["time_no_cook"]).format(
             title=title, total=total, prep=fmt_minutes(r["prep_minutes"], lang), cook=fmt_minutes(cook, lang))
@@ -1108,6 +1144,10 @@ def recipe_answer(question, dish_id, lang="en", model_id=None, full=False) -> di
     elif kind == "calories":
         cal = r.get("calories_per_serving")
         text = t["calories"].format(title=title, cal=cal) if cal else t["calories_unknown"].format(title=title)
+    elif kind == "steps" and not n_steps:               # ingredients only: say so, show what there is
+        kind = "ingredients"
+        text = t["steps_none"].format(title=title, n=len(r["ingredients"]))
+        lists = "\n" + "\n".join(f"- {i}" for i in r["ingredients"])
     elif kind == "steps":
         text = t["steps"].format(title=title, n=n_steps, total=total)
         lists = "\n" + "\n".join(f"{n}. {s}" for n, s in enumerate(r["steps"], 1))

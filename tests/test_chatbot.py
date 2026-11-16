@@ -161,6 +161,37 @@ class TestDishQuestions:
         kh = chat("គុយទាវជាអ្វី?", **NO_AI)
         assert kh["lang"] == "kh" and re.search(r"[\u1780-\u17ff]{20}", kh["answer"].split("**")[-1])
 
+    @pytest.mark.parametrize("q", ["what is this?", "what is it?", "what's it called?", "tell me about it",
+                                   "can you tell me what this is?", "នេះជាអ្វី?", "ម្ហូបនេះឈ្មោះអ្វី?", "អីគេហ្នឹង?"])
+    def test_what_is_this_after_a_photo_is_the_dish(self, chat, q):
+        """QA 15 Nov: "what is this?" after a photo of lok lak became "what is lok lak" and listed 15 places."""
+        d = chat(q, dish_id="kh_lok_lak", **NO_AI)
+        assert d["kind"] == "dish" and d["dish"]["id"] == "kh_lok_lak" and not d["results"]
+
+    @pytest.mark.parametrize("q", ["what is the best one?", "លេខទូរស័ព្ទជាអ្វី?", "what is open now?"])
+    def test_other_what_questions_after_a_photo_are_not_the_dish(self, q):
+        from food_search import dishes
+        assert dishes.about_focus(q, "kh_lok_lak") is None
+
+    @pytest.mark.parametrize("q,kind", [("ធ្វើម្ហូបនេះយ៉ាងម៉េច?", "steps"), ("ចម្អិនវាម៉េច?", "steps"),
+                                        ("ត្រូវការគ្រឿងអ្វីខ្លះ?", "ingredients"), ("ហឹរទេ?", "other"),
+                                        ("រសជាតិយ៉ាងម៉េច?", "other"), ("ធ្វើដំណើរទៅម៉េច?", None)])
+    def test_khmer_recipe_questions_about_the_photo(self, q, kind):
+        """QA 15 Nov: "how do I make this?" in Khmer (words between ធ្វើ and ម៉េច) showed the description again."""
+        from food_search import dishes
+        assert dishes.recipe_intent(q, has_dish=True) == kind
+
+    def test_photo_place_question_in_khmer_is_answered_in_khmer(self, client):
+        """QA 15 Nov: a long English dish name ("sach ko ang beef skewers") + "ញ៉ាំនៅណា?" got an English lead."""
+        from food_search import api, dishes
+        d = api.dish_reply(dishes.dish_json("kh_sach_ko_ang", 0.9), "kh", "ញ៉ាំនៅណា?")
+        assert d["results"] and re.search(r"[ក-៿]{4}", d["answer"].split("\n\n")[-1])
+
+    def test_very_unsure_photo_shows_only_the_guesses(self, client):
+        from food_search import api, dishes
+        d = api.dish_reply(dishes.dish_json("kh_banh_chhev", 0.05, [{"id": "ravioli", "confidence": 0.04}]), "en")
+        assert "\n\n" not in d["answer"] and not d["suggestions"]
+
     def test_where_it_comes_from_is_not_a_place_search(self, chat):
         d = chat("where does amok come from?", **NO_AI)       # no AI: what the dish is (the AI would answer it)
         assert d["kind"] == "recipe" and d["dish"]["id"] == "kh_amok" and not d["results"]

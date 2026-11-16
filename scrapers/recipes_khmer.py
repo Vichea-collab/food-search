@@ -823,7 +823,62 @@ RECIPES = [
                 "Turn off heat, add chopped ma-om and crushed chillies, and serve steaming hot with rice."]),
 ]
 
-COLUMNS = ["dish_id", "dish_name", "dish_name_kh", "search", "recipe_title", "description", "ingredients", "steps",
+# Dishes added 15 Nov 2026 from Wikipedia's own Cambodian articles. NO steps, times or amounts: the card lists only the
+# ingredients the article names, and links to the article (CC BY-SA 4.0). Nothing here is written from memory: if the
+# article does not say it, it is not here. (Wikipedia redirects other Khmer names, such as num kroch or num pao, to
+# articles about the Chinese dish, which would describe the wrong thing, so those are left out.)
+WIKI = "https://en.wikipedia.org/wiki/"
+WIKI_RECIPES = [
+    dict(dish_id="kh_bai_pong_moan", dish_name="Bai pong moan (fried egg rice)", dish_name_kh="បាយពងមាន់",
+         search="bai pong moan fried egg rice", page="Bai_pong_moan",
+         ingredients=["Eggs, beaten or whole (fried)", "White rice", "Herbs, often added for flavour",
+                      "Salt, soy sauce or fish sauce, to flavour the eggs"]),
+    dict(dish_id="kh_chha_trob", dish_name="Chha trob (chargrilled eggplant with pork)", dish_name_kh="ឆាត្រប់",
+         search="chha trob dot trob eggplant pork", page="Chha_trob",
+         ingredients=["Chargrilled eggplants", "Minced pork", "Fermented soybeans", "Oyster sauce (or fish sauce)",
+                      "Spring onions, to garnish", "Steamed rice, to serve", "Coriander leaves, sometimes, to garnish"]),
+    dict(dish_id="kh_nataing", dish_name="Nataing (red pork curry dip)", dish_name_kh="ណាតាំង",
+         search="nataing pork coconut dip rice cracker", page="Nataing",
+         ingredients=["Ground pork", "Coconut milk", "Rice cakes (rice crust or rice crackers), to serve with"]),
+    dict(dish_id="kh_chek_ktis", dish_name="Chek ktis (banana in coconut milk)", dish_name_kh="ចេកខ្ទិះ",
+         search="chek ktis banana coconut milk tapioca dessert", page="Chek_ktis",
+         ingredients=["Bananas", "Tapioca pearls", "Coconut milk", "Palm sugar (modern versions: white sugar)", "Salt",
+                      "White sesame seeds (modern versions: black sesame and star anise)",
+                      "Dry-roasted split mung beans, to garnish"]),
+    dict(dish_id="kh_saraman", dish_name="Saraman curry (coconut beef curry)", dish_name_kh="ការីសារ៉ាម៉ាន់",
+         search="saraman curry beef coconut royal", page="Saraman_curry",
+         ingredients=["Beef", "Coconut milk", "Roasted grated coconut", "Tamarind juice", "Star anise", "Cumin seeds",
+                      "Cloves", "Coriander seeds and roots", "Cinnamon", "Cardamom", "Lemongrass", "Dried chillies",
+                      "Galangal", "Kaffir lime", "Shallots", "Garlic", "Peanuts, to garnish"]),
+    dict(dish_id="kh_samlor_prahal", dish_name="Samlor prahal (fragrant soup)", dish_name_kh="សម្លប្រហើរ",
+         search="samlor prahal fragrant soup fish vegetables", page="Samlor_prahal",
+         ingredients=["Chicken or fish stock", "Lemongrass or green kroeung",
+                      "Vegetables such as taro, winter melon, pumpkin and luffa", "Mushrooms",
+                      "Freshwater fish such as bream or pike", "Coconut blossom", "Palm sugar", "Fish sauce",
+                      "Rice powder", "Fresh herbs such as climbing wattle, wild asparagus, coriander or hot mint"]),
+    dict(dish_id="kh_aluek_trei_ngeat", dish_name="Aluek trei ngeat (dried fish and watermelon salad)",
+         dish_name_kh="ឪឡឹកត្រីងៀត", search="aluek trei ngeat dried fish watermelon salad", page="Aluek_trei_ngeat",
+         ingredients=["Cured, sun-dried snakehead or cod, pan-fried or grilled", "Watermelon, peeled, deseeded, cubed",
+                      "Scallions, finely chopped", "Coriander leaves", "Ripe mango", "Lime juice",
+                      "Crushed chilli, sometimes", "Steamed rice, sometimes, to serve"]),
+    dict(dish_id="kh_num_akor", dish_name="Num akor (steamed fermented rice cake)", dish_name_kh="នំអាកោរ",
+         search="num akor steamed rice cake palm sugar coconut", page="Num_akor",
+         ingredients=["Rice flour", "Palm sugar", "Water", "Pandan leaf juice, in modern versions",
+                      "Coconut cream or grated coconut, to serve"]),
+    dict(dish_id="kh_num_kreab", dish_name="Num kreab (rice cracker)", dish_name_kh="នំក្រៀប",
+         search="num kreab krieb rice cracker street food", page="Num_kreab",
+         ingredients=["Rice", "Palm sugar", "Lard", "Duck or chicken eggs"]),
+    dict(dish_id="kh_tung_lamaow", dish_name="Tung lamaow (Cham beef sausage)", dish_name_kh="",
+         search="tung lamaow tongmo cham beef sausage", page="Tongmo",
+         ingredients=["Minced beef (mainly thigh)", "Fat from the cow's stomach lining and intestines", "Ginger",
+                      "Chilli", "Star anise", "Garlic", "Sticky rice, as a filler", "Cleaned cow intestines, as casing",
+                      "Pickled papaya or soy sauce, to serve"]),
+    dict(dish_id="kh_fried_spider", dish_name="Fried spider (a-ping, Skuon snack)", dish_name_kh="រពីងបំពង",
+         search="fried spider a-ping skuon tarantula snack", page="Fried_spider",
+         ingredients=["Tarantulas (a-ping)", "Oil, for frying", "Garlic, crushed", "MSG, sugar and salt, to season"]),
+]
+
+COLUMNS =["dish_id", "dish_name", "dish_name_kh", "search", "recipe_title", "description", "ingredients", "steps",
            "prep_minutes", "cook_minutes", "total_minutes", "servings", "calories_per_serving", "difficulty",
            "source", "source_url", "recipe_id"]
 
@@ -847,6 +902,15 @@ def rows() -> list:
                     "prep_minutes": r["prep"], "cook_minutes": r["cook"], "total_minutes": total,
                     "servings": r["servings"], "calories_per_serving": "", "difficulty": difficulty(len(r["steps"]), total),
                     "source": SOURCE, "source_url": "", "recipe_id": ""})
+    for r in WIKI_RECIPES:                      # ingredients only: no steps, times, servings or difficulty
+        short = r["dish_name"].split(" (")[0]
+        title = f"{short} ({r['dish_name_kh']})" if r["dish_name_kh"] else short
+        out.append({"dish_id": r["dish_id"], "dish_name": r["dish_name"], "dish_name_kh": r["dish_name_kh"],
+                    "search": r["search"], "recipe_title": title, "description": "",
+                    "ingredients": json.dumps(r["ingredients"], ensure_ascii=False), "steps": "[]",
+                    "prep_minutes": "", "cook_minutes": "", "total_minutes": "", "servings": "",
+                    "calories_per_serving": "", "difficulty": "", "source": "Wikipedia",
+                    "source_url": WIKI + r["page"], "recipe_id": ""})
     return out
 
 

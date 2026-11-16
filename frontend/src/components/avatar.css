@@ -1,0 +1,355 @@
+/* ==========================================================================
+   Full-Body Cyber Chef Bot Avatar & Animations
+   Applied exclusively on chat reply and pending messages in the chat thread.
+   Features:
+   - Floating full-body robot with hovering thruster & cyan energy glow
+   - Pulsing arc-reactor chest core
+   - Expressive floating magnetic arms (victory cheer \^o^/ when done!)
+   - OLED visor screen with laser scanline HUD
+   - Live status antenna LED
+   ========================================================================== */
+
+.avatar {
+  display: inline-block;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+  background: #2347C5;
+  position: relative;
+}
+
+.avatar svg,
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar.sm { width: 30px; height: 30px; }
+.avatar.md { width: 40px; height: 40px; }
+.avatar.xl { width: 88px; height: 88px; }
+
+/* The full-body companion avatar in chat messages (transparent background) */
+.avatar.full-body-bot {
+  background: transparent !important;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.avatar.full-body-bot.sm {
+  width: 36px;
+  height: 41px;
+}
+
+.avatar.full-body-bot svg {
+  overflow: visible;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.28));
+}
+
+/* --------------------------------------------------------------------------
+   HOVER THRUSTER & BODY FLOATING ANIMATION
+   -------------------------------------------------------------------------- */
+@keyframes cyber-robot-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3.5px);
+  }
+}
+
+@keyframes cyber-thruster-pulse {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+    filter: drop-shadow(0 2px 4px rgba(56, 189, 248, 0.6));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+    filter: drop-shadow(0 3px 8px rgba(56, 189, 248, 0.95));
+  }
+}
+
+@keyframes cyber-chest-beat {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px #38BDF8);
+  }
+  50% {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 5px #38BDF8);
+  }
+}
+
+.cyber-robot-full {
+  animation: cyber-robot-float 2.4s ease-in-out infinite;
+  transform-origin: 50px 80px;
+}
+
+.cyber-thruster-beam {
+  animation: cyber-thruster-pulse 1.4s ease-in-out infinite;
+  transform-origin: 50px 100px;
+}
+
+.cyber-chest-core {
+  animation: cyber-chest-beat 1.8s ease-in-out infinite;
+  transform-origin: 50px 85px;
+}
+
+/* --------------------------------------------------------------------------
+   ANTENNA & EAR STATUS LEDS
+   -------------------------------------------------------------------------- */
+@keyframes cyber-antenna-idle {
+  0%, 100% { fill: #38BDF8; filter: drop-shadow(0 0 2px #38BDF8); }
+  50% { fill: #60A5FA; filter: drop-shadow(0 0 4px #60A5FA); }
+}
+
+@keyframes cyber-antenna-busy {
+  0%, 100% { fill: #38BDF8; filter: drop-shadow(0 0 2px #38BDF8); }
+  50% { fill: #FBBF24; filter: drop-shadow(0 0 5px #FBBF24); }
+}
+
+@keyframes cyber-antenna-done {
+  0% { fill: #38BDF8; transform: scale(1); }
+  30% { fill: #10B981; filter: drop-shadow(0 0 6px #10B981); transform: scale(1.3); }
+  100% { fill: #38BDF8; filter: drop-shadow(0 0 2px #38BDF8); transform: scale(1); }
+}
+
+@keyframes cyber-antenna-alert {
+  0%, 100% { fill: #F59E0B; filter: drop-shadow(0 0 2px #F59E0B); }
+  50% { fill: #EF4444; filter: drop-shadow(0 0 6px #EF4444); }
+}
+
+.cyber-ear-ring {
+  opacity: 0.85;
+  filter: drop-shadow(0 0 2px #38BDF8);
+}
+
+/* --------------------------------------------------------------------------
+   1. LOADING / ANSWERING STATE
+   -------------------------------------------------------------------------- */
+@keyframes cyber-eyes-scan {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2.8px); }
+  75% { transform: translateX(2.8px); }
+}
+
+@keyframes cyber-hud-laser {
+  0% { transform: translateY(-4px); opacity: 0; }
+  20% { opacity: 0.95; }
+  80% { opacity: 0.95; }
+  100% { transform: translateY(26px); opacity: 0; }
+}
+
+@keyframes cyber-wave-bounce-1 {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1.3); }
+}
+@keyframes cyber-wave-bounce-2 {
+  0%, 100% { transform: scaleY(1.4); }
+  50% { transform: scaleY(0.3); }
+}
+@keyframes cyber-wave-bounce-3 {
+  0%, 100% { transform: scaleY(0.6); }
+  50% { transform: scaleY(1.5); }
+}
+@keyframes cyber-wave-bounce-4 {
+  0%, 100% { transform: scaleY(1.2); }
+  50% { transform: scaleY(0.5); }
+}
+
+.emotion-loading .cyber-eye {
+  animation: cyber-eyes-scan 1.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  filter: drop-shadow(0 0 2px rgba(255, 194, 61, 0.85));
+}
+
+.emotion-loading .cyber-antenna-bulb {
+  animation: cyber-antenna-busy 1.2s ease-in-out infinite;
+  transform-origin: 74px 9.5px;
+}
+
+.emotion-loading .cyber-scan-laser {
+  animation: cyber-hud-laser 1.1s linear infinite;
+}
+
+.emotion-loading .cyber-wave.bar1 {
+  transform-origin: 44px 60px;
+  animation: cyber-wave-bounce-1 0.4s ease-in-out infinite;
+}
+.emotion-loading .cyber-wave.bar2 {
+  transform-origin: 48px 60px;
+  animation: cyber-wave-bounce-2 0.35s ease-in-out infinite;
+}
+.emotion-loading .cyber-wave.bar3 {
+  transform-origin: 52px 60px;
+  animation: cyber-wave-bounce-3 0.38s ease-in-out infinite;
+}
+.emotion-loading .cyber-wave.bar4 {
+  transform-origin: 56px 60px;
+  animation: cyber-wave-bounce-4 0.42s ease-in-out infinite;
+}
+
+/* --------------------------------------------------------------------------
+   2. SLOW STATE
+   -------------------------------------------------------------------------- */
+@keyframes cyber-eyes-slow {
+  0%, 100% { transform: translate(2px, -2px); }
+  50% { transform: translate(0.8px, -2.4px); }
+}
+
+@keyframes cyber-coolant-drip {
+  0% { transform: translateY(-2px) scale(0.6); opacity: 0; }
+  25% { transform: translateY(0) scale(1); opacity: 1; filter: drop-shadow(0 0 2px #38BDF8); }
+  70% { transform: translateY(1.2px) scale(1.08); opacity: 1; filter: drop-shadow(0 0 3px #38BDF8); }
+  100% { transform: translateY(3.5px) scale(0.7); opacity: 0; }
+}
+
+@keyframes cyber-mouth-wavy {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.88); }
+}
+
+.emotion-slow .cyber-eye {
+  animation: cyber-eyes-slow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 2px rgba(255, 194, 61, 0.7));
+}
+
+.emotion-slow .cyber-antenna-bulb {
+  animation: cyber-antenna-alert 0.8s ease-in-out infinite;
+  transform-origin: 74px 9.5px;
+}
+
+.emotion-slow .cyber-coolant-drop {
+  animation: cyber-coolant-drip 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: 67px 46px;
+}
+
+.emotion-slow .cyber-mouth.slow {
+  animation: cyber-mouth-wavy 2s ease-in-out infinite;
+  transform-origin: 50px 60px;
+}
+
+/* --------------------------------------------------------------------------
+   3. DONE STATE (Celebration Arms, Ticks ✓ ✓, Sparkles, Green LED)
+   -------------------------------------------------------------------------- */
+@keyframes cyber-done-pop {
+  0% { transform: scale(1) translateY(0); }
+  25% { transform: scale(1.08) translateY(-3px); }
+  55% { transform: scale(0.97) translateY(0.5px); }
+  80% { transform: scale(1.02) translateY(-0.3px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes cyber-tick-snap {
+  0% {
+    stroke-dashoffset: 24;
+    opacity: 0;
+    transform: scale(0.4);
+    filter: drop-shadow(0 0 0px #FFC23D);
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 6px #FFC23D);
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 2.5px rgba(255, 194, 61, 0.9));
+  }
+}
+
+@keyframes cyber-sparkle-flash {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  35% { transform: scale(1.3) rotate(45deg); opacity: 1; filter: drop-shadow(0 0 4px #FFE082); }
+  75% { transform: scale(0.9) rotate(80deg); opacity: 0.8; }
+  100% { transform: scale(0) rotate(120deg); opacity: 0; }
+}
+
+@keyframes cyber-blush-in {
+  0% { opacity: 0; transform: scale(0.3); }
+  35%, 85% { opacity: 0.75; transform: scale(1); filter: drop-shadow(0 0 2px #FF7A8A); }
+  100% { opacity: 0.65; transform: scale(1); }
+}
+
+.emotion-done .cyber-robot-full {
+  animation: cyber-done-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: 50px 80px;
+}
+
+.emotion-done .cyber-tick {
+  stroke-dasharray: 24;
+  animation: cyber-tick-snap 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) forwards;
+}
+.emotion-done .cyber-tick.left { transform-origin: 40px 52px; }
+.emotion-done .cyber-tick.right { transform-origin: 60px 52px; }
+
+.emotion-done .cyber-antenna-bulb {
+  animation: cyber-antenna-done 1.2s ease-out forwards;
+  transform-origin: 74px 9.5px;
+}
+
+.emotion-done .cyber-sparkle {
+  animation: cyber-sparkle-flash 1.2s ease-out forwards;
+}
+.emotion-done .cyber-sparkle.left { transform-origin: 33px 45px; }
+.emotion-done .cyber-sparkle.right { transform-origin: 66px 44px; }
+
+.emotion-done .cyber-blush {
+  animation: cyber-blush-in 1.2s ease-in-out forwards;
+  transform-origin: center;
+}
+
+/* --------------------------------------------------------------------------
+   4. ERROR STATE
+   -------------------------------------------------------------------------- */
+@keyframes cyber-error-glitch {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-1.5px) rotate(-1deg); }
+  40% { transform: translateX(1.5px) rotate(1deg); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+
+.emotion-error .cyber-robot-full {
+  animation: cyber-error-glitch 0.5s ease-in-out infinite;
+  transform-origin: 50px 80px;
+}
+
+.emotion-error .cyber-antenna-bulb {
+  fill: #EF4444 !important;
+  filter: drop-shadow(0 0 5px #EF4444) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .cyber-robot-full,
+  .cyber-thruster-beam,
+  .cyber-chest-core,
+  .emotion-loading .cyber-eye,
+  .emotion-loading .cyber-antenna-bulb,
+  .emotion-loading .cyber-scan-laser,
+  .emotion-loading .cyber-wave,
+  .emotion-slow .cyber-eye,
+  .emotion-slow .cyber-antenna-bulb,
+  .emotion-slow .cyber-coolant-drop,
+  .emotion-slow .cyber-mouth,
+  .emotion-done .cyber-robot-full,
+  .emotion-done .cyber-tick,
+  .emotion-done .cyber-antenna-bulb,
+  .emotion-done .cyber-sparkle,
+  .emotion-done .cyber-blush,
+  .emotion-error .cyber-robot-full {
+    animation: none !important;
+  }
+}

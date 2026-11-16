@@ -37,6 +37,8 @@ BACKOFF_S = 300          # after a 403 wait 5 minutes; each further 403 makes th
 MAX_BACKOFF_S = 1800     # (Foodpanda limits pages per hour: a short wait lets one page through and blocks again)
 CALM_PAGES = 25          # this many pages in a row without a 403: the waits go back down one step
 MAX_BLOCKS = 4           # MAX_BLOCKS 403s in a row = Foodpanda says stop: the run ends
+NET_WAIT_S = 60          # no answer at all (network down): wait this long, then retry the same page
+MAX_NET_ERRORS = 5       # this many of those in a row: the run ends
 
 
 def _json_ld(html: str) -> dict:
@@ -113,7 +115,7 @@ def main():
     print(f"{len(done)} done, {len(todo)} to fetch")
     sess = requests.Session()
     sess.headers.update(HEADERS)
-    blocks, pause, n = 0, args.pause, 0
+    blocks, pause, n, net_errors = 0, args.pause, 0, 0
     backoff, calm = BACKOFF_S, 0
     with open(OUT, "a", encoding="utf-8") as out:
         while n < len(todo):
@@ -143,11 +145,20 @@ def main():
                           f"then one page every ~{pause:.0f} s; retrying this page", flush=True)
                     time.sleep(backoff)
                     backoff, calm = min(backoff * 2, MAX_BACKOFF_S), 0
+                elif exc.response is None:
+                    # no answer at all (network down, DNS, timeout): not the page's fault. Wait and retry the same
+                    # page; after MAX_NET_ERRORS in a row end the run instead of burning through the list
+                    net_errors += 1
+                    if net_errors >= MAX_NET_ERRORS:
+                        print(f"{MAX_NET_ERRORS} network errors in a row. Stopping; run again later to resume.")
+                        return
+                    time.sleep(NET_WAIT_S)
                 else:
-                    n += 1                                   # another error: skip the page (the next run retries it)
+                    n += 1                                   # another HTTP error: skip the page (the next run retries it)
                     time.sleep(5)
                 continue
             n += 1
+            net_errors = 0
             blocks, calm = 0, calm + 1
             if calm >= CALM_PAGES and backoff > BACKOFF_S:
                 backoff, pause, calm = max(BACKOFF_S, backoff // 2), max(args.pause, pause / 1.5), 0

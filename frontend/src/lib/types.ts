@@ -79,6 +79,8 @@ export interface Dish {
   confidence: number | null;
   /** confident enough to say "this looks like …" (otherwise "it might be …" and the other guesses are offered) */
   sure: boolean;
+  /** very unsure (under 25%): the reply only asks "Is it one of these?" */
+  low?: boolean;
   alternatives: DishGuess[];
   model: string | null;
   has_recipe: boolean;
@@ -96,9 +98,9 @@ export interface Recipe {
   dish_name: string;
   title: string;
   description: string | null;
-  prep_minutes: number;
-  cook_minutes: number;
-  total_minutes: number;
+  prep_minutes: number | null;   // null: an ingredients-only recipe (Wikipedia) has no times or steps
+  cook_minutes: number | null;
+  total_minutes: number | null;
   servings: number | null;
   calories: number | null;
   difficulty: "easy" | "medium" | "hard" | null;

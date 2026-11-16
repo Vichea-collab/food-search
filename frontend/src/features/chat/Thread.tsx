@@ -57,7 +57,7 @@ export function Thread({
               <p className="intro-role">{t("role")}</p>
             </div>
           )}
-          {messages.map((m) => (
+          {messages.map((m, idx) => (
             <div
               key={m.id}
               className="msg-wrap"
@@ -66,7 +66,13 @@ export function Thread({
                 else items.current.delete(m.id);
               }}
             >
-              <MessageView message={m} onSuggestion={onSuggestion} onPickDish={onPickDish} onChooseVoice={onChooseVoice} />
+              <MessageView
+                message={m}
+                isLatest={idx === messages.length - 1}
+                onSuggestion={onSuggestion}
+                onPickDish={onPickDish}
+                onChooseVoice={onChooseVoice}
+              />
             </div>
           ))}
         </div>

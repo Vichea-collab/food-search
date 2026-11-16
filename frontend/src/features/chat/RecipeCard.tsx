@@ -13,7 +13,8 @@ const DIFFICULTY_KEYS: Record<string, StringKey> = { easy: "diffEasy", medium: "
  *  `focus` opens the part the question was about ("what are the ingredients?" -> ingredients). */
 export function RecipeCard({ recipe: r, focus }: { recipe: Recipe; focus?: "ingredients" | "steps" | null }) {
   const { t } = useI18n();
-  const minutes = (n: number) => minutesText(n, t);
+  const minutes = (n: number | null) => minutesText(n ?? 0, t);
+  const hasTimes = r.total_minutes != null;   // ingredients-only recipes (Wikipedia) have no times or steps
   const waits = r.waiting.map((w) => WAIT_KEYS[w]).filter(Boolean).map((k) => t(k));
   return (
     <section className="recipe" aria-label={`${t("recipe")}: ${r.title}`}>
@@ -22,26 +23,30 @@ export function RecipeCard({ recipe: r, focus }: { recipe: Recipe; focus?: "ingr
         <h3 className="recipe-title">{r.title}</h3>
         {r.description && <p className="recipe-desc">{r.description}</p>}
       </header>
-      <dl className="recipe-stats">
-        <div>
-          <dt>{t("recipePrep")}</dt>
-          <dd>{minutes(r.prep_minutes)}</dd>
-        </div>
-        <div>
-          <dt>{t("recipeCook")}</dt>
-          <dd>{minutes(r.cook_minutes)}</dd>
-        </div>
-        <div className="total">
-          <dt>{t("recipeTotal")}</dt>
-          <dd>{minutes(r.total_minutes)}</dd>
-        </div>
+      {(hasTimes || r.servings != null) && <dl className="recipe-stats">
+        {hasTimes && (
+          <>
+            <div>
+              <dt>{t("recipePrep")}</dt>
+              <dd>{minutes(r.prep_minutes)}</dd>
+            </div>
+            <div>
+              <dt>{t("recipeCook")}</dt>
+              <dd>{minutes(r.cook_minutes)}</dd>
+            </div>
+            <div className="total">
+              <dt>{t("recipeTotal")}</dt>
+              <dd>{minutes(r.total_minutes)}</dd>
+            </div>
+          </>
+        )}
         {r.servings != null && (
           <div>
             <dt>{t("recipeServes")}</dt>
             <dd>{r.servings}</dd>
           </div>
         )}
-      </dl>
+      </dl>}
       {waits.length > 0 && <p className="recipe-note">{t("recipeWait", { what: waits.join(", ") })}</p>}
       <details className="recipe-part" open={focus === "ingredients"}>
         <summary>{t("recipeIngredients", { n: r.ingredients.length })}</summary>
@@ -51,14 +56,16 @@ export function RecipeCard({ recipe: r, focus }: { recipe: Recipe; focus?: "ingr
           ))}
         </ul>
       </details>
-      <details className="recipe-part" open={focus === "steps"}>
-        <summary>{t("recipeSteps", { n: r.steps.length })}</summary>
-        <ol>
-          {r.steps.map((step, i) => (
-            <li key={i}>{step}</li>
-          ))}
-        </ol>
-      </details>
+      {r.steps.length > 0 && (
+        <details className="recipe-part" open={focus === "steps"}>
+          <summary>{t("recipeSteps", { n: r.steps.length })}</summary>
+          <ol>
+            {r.steps.map((step, i) => (
+              <li key={i}>{step}</li>
+            ))}
+          </ol>
+        </details>
+      )}
       <footer className="recipe-foot">
         {r.difficulty && DIFFICULTY_KEYS[r.difficulty] && (
           <span className="fact-badge">{t(DIFFICULTY_KEYS[r.difficulty])}</span>

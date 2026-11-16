@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Avatar } from "../../components/Avatar";
+import { useEffect, useState, type ReactNode } from "react";
+import { Avatar, type BotEmotion } from "../../components/Avatar";
 import { Icon } from "../../components/Icon";
 import { Markdown } from "../../components/Markdown";
 import { useI18n } from "../../i18n/I18nContext";
@@ -18,10 +18,10 @@ function Time({ at }: { at: Date; model?: string | null }) {
   );
 }
 
-function BotRow({ children }: { children: ReactNode }) {
+function BotRow({ children, emotion }: { children: ReactNode; emotion?: BotEmotion }) {
   return (
     <div className="msg bot">
-      <Avatar size="sm" />
+      <Avatar size="sm" emotion={emotion} />
       <div className="msg-body">{children}</div>
     </div>
   );
@@ -75,8 +75,8 @@ function AskNext({ items, onAsk }: { items?: string[]; onAsk: (q: string) => voi
 
 /** The dish in a photo: what it is (and how sure), other guesses to tap, then only what was asked
  *  (the recipe, or places that serve it) and the follow-up questions. */
-function DishReply({ data, at, onPickDish, onAsk }: {
-  data: ChatResponse; at: Date; onPickDish: (id: string, name: string, photoId?: string | null) => void; onAsk: (q: string) => void;
+function DishReply({ data, at, emotion, onPickDish, onAsk }: {
+  data: ChatResponse; at: Date; emotion?: BotEmotion; onPickDish: (id: string, name: string, photoId?: string | null) => void; onAsk: (q: string) => void;
 }) {
   const { t } = useI18n();
   const dish = data.dish!;
@@ -84,8 +84,10 @@ function DishReply({ data, at, onPickDish, onAsk }: {
   const byAi = data.provider === "gemini" || data.provider === "ollama";
   // other guesses ("Not it? Maybe:"): always, unless the model is very sure (90%+) and they are near 0%
   const others = dish.alternatives.filter((a) => (dish.confidence ?? 1) < 0.9 || a.confidence >= 0.05);
+  // very unsure (under 25%): the reply only asks "Is it one of these?", so the best guess is a button too
+  if (dish.low && dish.confidence != null) others.unshift({ id: dish.id, name: dish.name, confidence: dish.confidence });
   return (
-    <BotRow>
+    <BotRow emotion={emotion}>
       <div className="bubble answer dish-lead">
         {byAi && <AiBadge />}
         <Markdown text={data.answer ?? dish.name} />
@@ -113,10 +115,10 @@ function DishReply({ data, at, onPickDish, onAsk }: {
 }
 
 /** An answer about a dish's recipe ("how long does it take?"), with the recipe card under it. */
-function RecipeReply({ data, at, onAsk }: { data: ChatResponse; at: Date; onAsk: (q: string) => void }) {
+function RecipeReply({ data, at, emotion, onAsk }: { data: ChatResponse; at: Date; emotion?: BotEmotion; onAsk: (q: string) => void }) {
   const byAi = data.provider === "gemini" || data.provider === "ollama";
   return (
-    <BotRow>
+    <BotRow emotion={emotion}>
       <div className="bubble answer">
         {byAi && <AiBadge />}
         <Markdown text={data.answer ?? ""} />
@@ -129,15 +131,15 @@ function RecipeReply({ data, at, onAsk }: { data: ChatResponse; at: Date; onAsk:
   );
 }
 
-function Reply({ data, at, onPickDish, onAsk }: {
-  data: ChatResponse; at: Date; onPickDish: (id: string, name: string, photoId?: string | null) => void; onAsk: (q: string) => void;
+function Reply({ data, at, emotion, onPickDish, onAsk }: {
+  data: ChatResponse; at: Date; emotion?: BotEmotion; onPickDish: (id: string, name: string, photoId?: string | null) => void; onAsk: (q: string) => void;
 }) {
   const { t } = useI18n();
-  if (data.kind === "dish" && data.dish) return <DishReply data={data} at={at} onPickDish={onPickDish} onAsk={onAsk} />;
-  if (data.kind === "recipe") return <RecipeReply data={data} at={at} onAsk={onAsk} />;
+  if (data.kind === "dish" && data.dish) return <DishReply data={data} at={at} emotion={emotion} onPickDish={onPickDish} onAsk={onAsk} />;
+  if (data.kind === "recipe") return <RecipeReply data={data} at={at} emotion={emotion} onAsk={onAsk} />;
   if (data.pick_dishes) {                       // "no, that's wrong": which dish is it?
     return (
-      <BotRow>
+      <BotRow emotion={emotion}>
         <div className="bubble answer">
           <Markdown text={data.answer ?? ""} />
         </div>
@@ -166,7 +168,7 @@ function Reply({ data, at, onPickDish, onAsk }: {
     const byAi = data.provider === "gemini" || data.provider === "ollama";
     const tabular = data.shape === "list" || data.shape === "table";        // the answer already holds the details
     return (
-      <BotRow>
+      <BotRow emotion={emotion}>
         <div className={`bubble answer${data.shape === "table" ? " wide" : ""}`}>
           {byAi && (
             <div className="ai-badge">
@@ -184,7 +186,7 @@ function Reply({ data, at, onPickDish, onAsk }: {
   }
   const byAi = data.provider === "gemini" || data.provider === "ollama";
   return (
-    <BotRow>
+    <BotRow emotion={emotion}>
       {data.search_query && <p className="note searched">{t("searchedFor", { q: data.search_query })}</p>}
       {data.answer ? (
         <div className="bubble answer">
@@ -225,13 +227,42 @@ function SpokenAnswer({ audio }: { audio: NonNullable<Extract<Message, { kind: "
   );
 }
 
+/** Modern AI thinking bubble: clean, futuristic status with iridescent shimmer line instead of dull dots. */
+function ThinkingBubble() {
+  const { lang } = useI18n();
+  const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSlow(true), 3500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const label = lang === "kh"
+    ? (slow ? "កំពុងស្វែងរកហាង និងម្ហូប…" : "កំពុងគិត…")
+    : (slow ? "Searching recommendations…" : "Thinking…");
+
+  return (
+    <div className="bubble modern-thinking-bubble" role="status" aria-live="polite">
+      <div className="thinking-status">
+        <span className="thinking-sparkle" aria-hidden="true">✦</span>
+        <span className="thinking-text">{label}</span>
+      </div>
+      <div className="thinking-bar" aria-hidden="true">
+        <div className="thinking-glow-beam" />
+      </div>
+    </div>
+  );
+}
+
 export function MessageView({
   message: m,
+  isLatest = false,
   onSuggestion,
   onPickDish,
   onChooseVoice,
 }: {
   message: Message;
+  isLatest?: boolean;
   onSuggestion: (q: string) => void;
   onPickDish: (id: string, name: string, photoId?: string | null) => void;
   onChooseVoice: (id: number, text: string, mode: "text" | "voice") => void;
@@ -240,7 +271,7 @@ export function MessageView({
   switch (m.kind) {
     case "greeting":
       return (
-        <BotRow>
+        <BotRow emotion="idle">
           <div className="bubble">{t("greeting")}</div>
           <div className="suggest">
             {list("suggestions").map((q) => (
@@ -266,7 +297,7 @@ export function MessageView({
       );
     case "voice-choice":
       return (
-        <BotRow>
+        <BotRow emotion="loading">
           <div className="bubble">{t("voiceHeard")}</div>
           <div className="suggest voice-choice">
             <button type="button" onClick={() => onChooseVoice(m.id, m.text, "text")}>{t("voiceAsText")}</button>
@@ -286,22 +317,22 @@ export function MessageView({
       );
     case "pending":
       return (
-        <BotRow>
-          <div className="bubble typing" aria-hidden="true"><i /><i /><i /></div>
+        <BotRow emotion="loading">
+          <ThinkingBubble />
         </BotRow>
       );
     case "reply":
       return (
         <>
           {m.audio && <SpokenAnswer audio={m.audio} />}
-          <Reply data={m.data} at={m.at} onPickDish={onPickDish} onAsk={onSuggestion} />
+          <Reply data={m.data} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion} />
         </>
       );
     case "error": {
       const text = m.error.kind === "offline" ? t("offline") : m.error.kind === "client" && m.error.message !== "client"
         ? m.error.message : t("server");
       return (
-        <BotRow>
+        <BotRow emotion="error">
           <div className="bubble">{text}</div>
           {m.retry && (
             <button type="button" className="act retry" onClick={m.retry}>{t("retry")}</button>

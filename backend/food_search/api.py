@@ -132,10 +132,12 @@ def as_typed(query, part):
     return query[i:i + len(part)] if i >= 0 else part.title()
 
 
-def answer_query(query, user_loc=None, model=None, k=RESULTS_PER_QUERY, lead=False) -> dict:
+def answer_query(query, user_loc=None, model=None, k=RESULTS_PER_QUERY, lead=False, lang=None) -> dict:
     """Retrieve (hybrid search, with 'near <place>' geocoded) and generate (LLM over the top rows only).
     lead=True (the chat): no model, only a one-line lead built from the search, because the cards under it list the
-    places. The demo keeps the model, to show the RAG step. Blocking: call it from a thread in async code."""
+    places. The demo keeps the model, to show the RAG step. Blocking: call it from a thread in async code.
+    lang: the language of the user's question, when the query is not only their words (a photo's dish name in
+    English + 'ញ៉ាំនៅណា?' must still be answered in Khmer)."""
     t0 = time.perf_counter()
     _, flt = parse_query_filters(query)
     near, origin, llm_query = flt.get("near"), None, query
@@ -154,7 +156,8 @@ def answer_query(query, user_loc=None, model=None, k=RESULTS_PER_QUERY, lead=Fal
     t1 = time.perf_counter()
     if lead:
         near_name = "me" if origin and origin["kind"] == "me" else origin["name"] if origin and origin["kind"] == "place" else None
-        gen = {"text": search_lead(results, detect_lang(query), near_name) if len(results) else no_match(detect_lang(query), results),
+        lang = lang or detect_lang(query)
+        gen = {"text": search_lead(results, lang, near_name) if len(results) else no_match(lang, results),
                "provider": "facts" if len(results) else "no-results", "model": None, "label": None,
                "chosen": valid_model_id(model) or DEFAULT_MODEL_ID}
     else:
@@ -431,8 +434,8 @@ async def answer_chat(body: ChatRequest, request: Request):
                 "model": out["model"], "model_label": out["label"], "dish": dishes.dish_json(dish_id),
                 "recipe": dishes.recipe_json(dish_id), "focus": out["focus"], "results": [], "filters": {},
                 "suggestions": dishes.suggestions(dish_id, lang, card=bool(dishes.recipe_json(dish_id)))}
-    about = dishes.about_intent(query)
-    if about:                                    # "do u know amok?": the dish itself, then what to ask next
+    about = dishes.about_intent(query) or dishes.about_focus(query, focus)
+    if about:                                    # "do u know amok?", "what is this?" after a photo: the dish itself
         return {"kind": "dish", "query": query, "lang": lang, "answer": dishes.about_answer(about, lang, query),
                 "provider": "facts", "model": None, "model_label": None, "dish": dishes.dish_json(about),
                 "recipe": None, "results": [], "filters": {}, "origin": None, "no_match": None,
@@ -504,6 +507,8 @@ def dish_reply(dish, lang, question="", user_loc=None, model=None, no_location=F
             "results": [], "filters": {}, "provider": "photo", "model": None, "model_label": dish.get("model"),
             "origin": None, "no_match": None}
     kind = dishes.question_kind(question) if question else "about"
+    if dish.get("low"):                          # under LOW_AT: the guesses to tap first, no page, recipe or places for
+        return {**base, "answer": lead, "suggestions": []}   # a likely wrong dish (the question is asked again after)
     if kind == "about":                          # no question, or "what is this called?": the dish, nothing fetched
         about = dishes.about_text(dish["id"], lang)
         return {**base, "answer": f"{lead}\n\n{about}" if about else lead,
@@ -518,7 +523,7 @@ def dish_reply(dish, lang, question="", user_loc=None, model=None, no_location=F
         query = f"{dishes.search_words(dish['id'])} {question}"         # a photo's question is about the dish
     if parse_query_filters(query)[1].get("near") == "me" and not user_loc and not no_location:
         return {**base, "answer": lead, "need_location": True, "search_query": query}   # then /api/chat with direct=true
-    out = answer_query(query, user_loc, model, RESULTS_PER_QUERY, True)
+    out = answer_query(query, user_loc, model, RESULTS_PER_QUERY, True, lang)
     results = out["results"]
     return {**base, "answer": f"{lead}\n\n{out['answer']}" if len(results) else lead, "search_query": query,
             "origin": out["origin"], "results": places_json(results, lang),

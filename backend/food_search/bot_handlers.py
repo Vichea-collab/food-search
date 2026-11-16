@@ -675,8 +675,8 @@ async def handle_text(message, context, query, user_id, speak=False):
         remember(context, "user", query)
         await send_recipe_answer(message, context, query, named or focus)
         return
-    about = dishes.about_intent(query)
-    if about:                                     # "do u know amok?": the dish itself and buttons for what is next
+    about = dishes.about_intent(query) or dishes.about_focus(query, focus)
+    if about:                                     # "do u know amok?", "what is this?" after a photo: the dish
         remember(context, "user", query)
         lang = detect_lang(query)
         await send_dish(message, context, dishes.dish_json(about), lead=dishes.about_answer(about, lang, query), lang=lang)

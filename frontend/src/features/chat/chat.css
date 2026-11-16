@@ -138,6 +138,89 @@
 .typing i:nth-child(3) { animation-delay: .3s; }
 @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
 
+/* Modern AI thinking indicator (best & modern UX/UI) */
+.modern-thinking-bubble {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: var(--bubble);
+  box-shadow: 0 4px 18px rgba(35, 71, 197, 0.08), 0 0 12px rgba(56, 189, 248, 0.06);
+  min-width: 145px;
+  max-width: 270px;
+}
+
+.thinking-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.thinking-sparkle {
+  display: inline-block;
+  font-size: 13px;
+  color: #38BDF8;
+  animation: thinking-sparkle-spin 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.75));
+}
+
+@keyframes thinking-sparkle-spin {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+  50% { transform: scale(1.22) rotate(90deg); opacity: 1; }
+}
+
+.thinking-text {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  line-height: 1.35;
+  background: linear-gradient(90deg, var(--ink) 0%, #38BDF8 50%, var(--ink) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: thinking-text-shimmer 2.2s ease-in-out infinite;
+}
+
+@keyframes thinking-text-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.thinking-bar {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.thinking-glow-beam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, #38BDF8, #818CF8, transparent);
+  border-radius: 2px;
+  animation: thinking-beam-slide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes thinking-beam-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thinking-sparkle, .thinking-text, .thinking-glow-beam {
+    animation: none !important;
+  }
+  .thinking-text {
+    background: none !important;
+    -webkit-text-fill-color: var(--ink) !important;
+  }
+}
+
 /* ---------- places: one ranked list inside the reply ---------- */
 
 .places {

@@ -42,6 +42,10 @@ TITLES = {
     "kh_num_banh_chok": "Num banhchok", "kh_bai_sach_chrouk": "Bay sach chruk", "kh_num_pang_pate": "Num pang",
     "kh_lort_cha": "Lort cha", "kh_num_plae_ai": "Num plae ai", "kh_samlor_machu_ktis": "Samlor machu ktis",
     "kh_bok_lahong": "Green papaya salad",
+    "kh_bai_pong_moan": "Bai pong moan", "kh_chha_trob": "Chha trob", "kh_nataing": "Nataing",
+    "kh_chek_ktis": "Chek ktis", "kh_saraman": "Saraman curry", "kh_samlor_prahal": "Samlor prahal",
+    "kh_aluek_trei_ngeat": "Aluek trei ngeat", "kh_num_akor": "Num akor", "kh_num_kreab": "Num kreab",
+    "kh_tung_lamaow": "Tongmo", "kh_fried_spider": "Fried spider",      # added 15 Nov 2026 (scrapers/recipes_khmer.py WIKI_RECIPES)
     "kh_lok_lak": None, "kh_kari": None, "kh_beef_stew": None, "kh_samlor_proher": None, "kh_samlor_machu": None,
     "kh_prahok_ktiss": None, "kh_prahok_ang": None, "kh_kanh": None, "kh_khor": None, "kh_kuy_teav_kok": None,
     "kh_num_banh_chok_kampot": None, "kh_num_kom": None, "kh_num_ansorm_chek": None, "kh_cha_houy_teuk": None,
