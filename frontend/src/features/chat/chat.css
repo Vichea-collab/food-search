@@ -141,8 +141,6 @@
 /* Modern AI thinking indicator (best & modern UX/UI) */
 .modern-thinking-bubble {
   display: inline-flex;
-  flex-direction: column;
-  gap: 7px;
   padding: 10px 16px;
   background: var(--surface);
   border: 1px solid rgba(56, 189, 248, 0.28);
@@ -187,32 +185,8 @@
   100% { background-position: -100% 0; }
 }
 
-.thinking-bar {
-  position: relative;
-  width: 100%;
-  height: 2px;
-  background: var(--line);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.thinking-glow-beam {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 45%;
-  background: linear-gradient(90deg, transparent, #38BDF8, #818CF8, transparent);
-  border-radius: 2px;
-  animation: thinking-beam-slide 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-@keyframes thinking-beam-slide {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(250%); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .thinking-sparkle, .thinking-text, .thinking-glow-beam {
+  .thinking-sparkle, .thinking-text {
     animation: none !important;
   }
   .thinking-text {

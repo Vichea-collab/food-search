@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Avatar, type BotEmotion } from "../../components/Avatar";
 import { Icon } from "../../components/Icon";
 import { Markdown } from "../../components/Markdown";
@@ -229,28 +229,14 @@ function SpokenAnswer({ audio }: { audio: NonNullable<Extract<Message, { kind: "
   );
 }
 
-/** Modern AI thinking bubble: clean, futuristic status with iridescent shimmer line instead of dull dots. */
+/** The thinking bubble while an answer is being made: just "Thinking…" (no progress bar, no changing text). */
 function ThinkingBubble() {
   const { lang } = useI18n();
-  const [slow, setSlow] = useState(false);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setSlow(true), 3500);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const label = lang === "kh"
-    ? (slow ? "កំពុងស្វែងរកហាង និងម្ហូប…" : "កំពុងគិត…")
-    : (slow ? "Searching recommendations…" : "Thinking…");
-
   return (
     <div className="bubble modern-thinking-bubble" role="status" aria-live="polite">
       <div className="thinking-status">
         <span className="thinking-sparkle" aria-hidden="true">✦</span>
-        <span className="thinking-text">{label}</span>
-      </div>
-      <div className="thinking-bar" aria-hidden="true">
-        <div className="thinking-glow-beam" />
+        <span className="thinking-text">{lang === "kh" ? "កំពុងគិត…" : "Thinking…"}</span>
       </div>
     </div>
   );

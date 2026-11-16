@@ -249,7 +249,7 @@
     stroke-dashoffset: 24;
     opacity: 0;
     transform: scale(0.4);
-    filter: drop-shadow(0 0 0px #FFC23D);
+    filter: drop-shadow(0 0 0px #22C55E);
   }
   30% {
     opacity: 1;
@@ -257,7 +257,7 @@
   70% {
     stroke-dashoffset: 0;
     transform: scale(1.18);
-    filter: drop-shadow(0 0 6px #FFC23D);
+    filter: drop-shadow(0 0 6px #22C55E);
   }
   100% {
     stroke-dashoffset: 0;
