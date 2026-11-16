@@ -695,12 +695,21 @@ class TestAskNext:
     def test_only_what_the_shown_places_can_answer(self):
         from food_search.api import next_questions
         bare = [self.place(), self.place()]
-        assert next_questions("search", "coffee in BKK1", "en", bare, {"area": "Boeng Keng Kang"}) == ["coffee near me"]
+        assert next_questions("search", "coffee in BKK1", "en", bare, {"area": "Boeng Keng Kang"}) == ["Coffee near me"]
         rich = [self.place(rating=4.5, price_usd=3.0, open_hour=7, close_hour=21),
                 self.place(rating=4.0, price_usd=2.0, open_hour=8, close_hour=22)]
         q = next_questions("search", "coffee in BKK1", "en", rich, {"area": "Boeng Keng Kang"})
-        assert q[0] == "coffee open now in Boeng Keng Kang" and "Which one has the best rating?" in q
+        assert q[0] == "Coffee open now in Boeng Keng Kang" and "Which one has the best rating?" in q
         assert next_questions("search", "coffee in BKK1", "en", rich, {"area": "Boeng Keng Kang"}, limit=9)[-1] != q[0]
+
+    def test_search_does_not_offer_what_the_cards_show(self):
+        """16 Nov (UI check): the cards have a call button and the delivery apps, so a search does not offer "Which ones
+        have a phone number?" (its answer listed numbers 8 and 9, not even on screen). A follow-up still can."""
+        from food_search.api import next_questions
+        rich = [self.place(phone="+85512345678", delivery=["grab"], rating=4.0)] * 3
+        q = next_questions("search", "coffee in BKK1", "en", rich, {"area": "Boeng Keng Kang"}, limit=9)
+        assert not [x for x in q if "phone" in x or "deliver" in x]
+        assert "Which ones have a phone number?" in next_questions("followup", "which has a rating?", "en", rich, {}, limit=9)
 
     def test_never_offers_what_was_just_asked(self):
         from food_search.api import next_questions
@@ -715,7 +724,7 @@ class TestAskNext:
     def test_nothing_found_asks_again_with_less(self):
         from food_search.api import next_questions
         q = next_questions("search", "sushi under $1 in Kep", "en", [], {"max_price": 1, "city": "Kep"})
-        assert q[0] == "sushi" and len(q) == 3
+        assert q[0] == "Sushi" and len(q) == 3
 
     def test_small_talk_offers_something_to_try_by_the_hour(self):
         from food_search.api import next_questions
@@ -734,4 +743,4 @@ class TestAskNext:
             a = conversation([first, chip], model="none")[1]
             assert a.get("results") or a.get("answer") or a.get("no_match"), (first, chip, a.get("kind"))
             assert chip.lower() != first.lower()
-            assert a.get("kind") != "search" or a["results"] or chip in ("sushi",), (first, chip)
+            assert a.get("kind") != "search" or a["results"] or chip in ("Sushi",), (first, chip)

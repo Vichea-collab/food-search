@@ -327,7 +327,7 @@ export function MessageView({
       return (
         <>
           {m.audio && <SpokenAnswer audio={m.audio} />}
-          <Reply data={m.data} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion} />
+          <Reply data={isLatest ? m.data : { ...m.data, suggestions: [] }} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion} />
         </>
       );
     case "error": {

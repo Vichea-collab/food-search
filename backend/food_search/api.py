@@ -349,7 +349,7 @@ def next_questions(kind, query, lang, places=None, filters=None, hour=None, limi
         if text and (f.get("open_now") or f.get("open_late")) and place:
             out.append(join(text, place))
         out += _starters(lang, hour)
-        return list(dict.fromkeys(out))[:limit]
+        return [q[:1].upper() + q[1:] for q in dict.fromkeys(out)][:limit]
     if kind == "search":
         if text and not (f.get("open_now") or f.get("open_late")) and _has(get(r, "open") for r in rows) >= 2:
             out.append(join(text, "open now" if not kh else "បើកឥឡូវ", place))
@@ -365,11 +365,11 @@ def next_questions(kind, query, lang, places=None, filters=None, hour=None, limi
     if kind == "search" and (f.get("min_rating")):
         asked.add("rated")
     for k in ("rated", "cheap", "phone", "deliver", "open", "closest"):
-        if k in asked or (kind == "search" and k in ("open", "closest")):
-            continue
+        if k in asked or (kind == "search" and k in ("open", "closest", "phone", "deliver")):
+            continue      # (search: the cards already show a call button and the delivery apps: not asked again)
         if _has(get(r, k) for r in rows) >= (1 if k == "deliver" else 2):
             out.append(ABOUT_SHOWN[k][1 if kh else 0])
-    return list(dict.fromkeys(out))[:limit]
+    return [q[:1].upper() + q[1:] for q in dict.fromkeys(out)][:limit]
 
 
 # ======================= request bodies (checked by FastAPI, documented at /docs) =======================
