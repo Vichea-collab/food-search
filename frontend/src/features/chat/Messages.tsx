@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Avatar, type BotEmotion } from "../../components/Avatar";
 import { Icon } from "../../components/Icon";
 import { Markdown } from "../../components/Markdown";
-import { useI18n } from "../../i18n/I18nContext";
+import { LangScope, useI18n } from "../../i18n/I18nContext";
 import { timeText } from "../../lib/format";
 import type { ChatResponse } from "../../lib/types";
 import { PlaceList } from "./PlaceCard";
@@ -327,7 +327,9 @@ export function MessageView({
       return (
         <>
           {m.audio && <SpokenAnswer audio={m.audio} />}
-          <Reply data={isLatest ? m.data : { ...m.data, suggestions: [] }} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion} />
+          <LangScope lang={m.data.lang}>
+            <Reply data={isLatest ? m.data : { ...m.data, suggestions: [] }} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion} />
+          </LangScope>
         </>
       );
     case "error": {
