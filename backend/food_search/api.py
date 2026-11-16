@@ -430,10 +430,11 @@ async def answer_chat(body: ChatRequest, request: Request):
     if kind:                                     # "how do I make it?", "how long does pad thai take?": the recipe
         dish_id = named or focus
         out = await asyncio.to_thread(dishes.recipe_answer, query, dish_id, lang, model)
+        card = dishes.recipe_json(dish_id) if kind not in dishes.SHORT_FACTS else None   # "how long?": the answer alone
         return {"kind": "recipe", "query": query, "lang": lang, "answer": out["text"], "provider": out["provider"],
                 "model": out["model"], "model_label": out["label"], "dish": dishes.dish_json(dish_id),
-                "recipe": dishes.recipe_json(dish_id), "focus": out["focus"], "results": [], "filters": {},
-                "suggestions": dishes.suggestions(dish_id, lang, card=bool(dishes.recipe_json(dish_id)))}
+                "recipe": card, "focus": out["focus"], "results": [], "filters": {},
+                "suggestions": dishes.suggestions(dish_id, lang, skip=("time",) if kind == "time" else (), card=bool(card))}
     about = dishes.about_intent(query) or dishes.about_focus(query, focus)
     if about:                                    # "do u know amok?", "what is this?" after a photo: the dish itself
         return {"kind": "dish", "query": query, "lang": lang, "answer": dishes.about_answer(about, lang, query),
@@ -515,9 +516,11 @@ def dish_reply(dish, lang, question="", user_loc=None, model=None, no_location=F
                 "suggestions": dishes.suggestions(dish["id"], lang)}
     if kind == "recipe":
         out = dishes.recipe_answer(question, dish["id"], lang, model)
+        rkind = dishes.recipe_intent(question, has_dish=True)
+        card = dishes.recipe_json(dish["id"]) if rkind not in dishes.SHORT_FACTS else None
         return {**base, "answer": f"{lead}\n\n{out['text']}", "provider": out["provider"], "model": out["model"],
-                "recipe": dishes.recipe_json(dish["id"]), "focus": out["focus"],
-                "suggestions": dishes.suggestions(dish["id"], lang, card=True)}
+                "recipe": card, "focus": out["focus"],
+                "suggestions": dishes.suggestions(dish["id"], lang, skip=("time",) if rkind == "time" else (), card=bool(card))}
     query = dishes.resolve_reference(question, dish["id"])
     if not dishes.find_dish(query) and dishes.search_words(dish["id"]).lower() not in query.lower():
         query = f"{dishes.search_words(dish['id'])} {question}"         # a photo's question is about the dish

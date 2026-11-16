@@ -2,6 +2,10 @@
 Merge the Overture contact fields (scrapers/overture_contacts.py) into the main dataset: phone and street address of
 businesses with a landline. (Overture websites were checked: only 20 were new and most are Google Maps links: skipped.)
 
+  --with-mobiles  with --with-phones: ALSO fill the mobile numbers Overture lists for small sellers (16 Nov: asked for by
+                  the project owner, who said the proposal's no-personal-numbers rule no longer applies). Addresses
+                  stay landline-only. These numbers are in the CSV, so they go public if the repository is pushed.
+
   --with-phones   also fill the empty `phone_public` and `address`, but only for BUSINESSES: a landline number (+855 2x)
                   only. The proposal says "we do not collect personal phone
                   numbers or home addresses of private sellers", and most other Overture phones are the mobile numbers
@@ -36,6 +40,7 @@ def main():
     ap.add_argument("--src", default=str(MAIN))
     ap.add_argument("--out", required=True)
     ap.add_argument("--with-phones", action="store_true")
+    ap.add_argument("--with-mobiles", action="store_true", help="with --with-phones: mobile numbers too")
     a = ap.parse_args()
     d = pd.read_csv(a.src, dtype=str, keep_default_na=False)
     c = pd.read_csv(CONTACTS, dtype=str, keep_default_na=False).set_index("restaurant_id")
@@ -43,7 +48,8 @@ def main():
     if a.with_phones:
         ph = d.loc[hit, "id"].map(c["phone"]).map(clean_phone)
         business = ph.str.match(r"\+8552\d")
-        ph = ph.where(business, "")
+        ph_all = ph
+        ph = ph if a.with_mobiles else ph.where(business, "")
         f2 = hit.copy(); f2[hit] = ph.ne("") & d.loc[hit, "phone_public"].eq("")
         d.loc[f2, "phone_public"] = ph[f2[hit]].values
         ad = d.loc[hit, "id"].map(c["address"]).str.strip().where(business, "")

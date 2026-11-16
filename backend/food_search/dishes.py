@@ -1024,6 +1024,9 @@ SUGGESTIONS = {   # the follow-up questions offered under a recognised dish (ans
 }
 
 
+SHORT_FACTS = ("time", "servings", "calories")      # one-line answers from the recipe: said in a sentence, no recipe card
+
+
 def suggestions(dish_id, lang="en", skip=(), card=False) -> list:
     """card=True: the answer already shows the recipe card (steps, times, ingredients), so "how do I make it?" and "how
     long does it take?" would ask for what is on screen (found 15 Nov: each answer suggested the other). It offers what

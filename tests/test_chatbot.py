@@ -192,6 +192,13 @@ class TestDishQuestions:
         d = api.dish_reply(dishes.dish_json("kh_banh_chhev", 0.05, [{"id": "ravioli", "confidence": 0.04}]), "en")
         assert "\n\n" not in d["answer"] and not d["suggestions"]
 
+    @pytest.mark.parametrize("dish", ["kh_amok_trey", "kh_bok_lhong", "kh_num_pang", "kh_sach_ko_ang", "kh_banh_chhev",
+                                      "kh_borbor", "kh_chha_kdao"])
+    def test_every_recognised_khmer_dish_has_a_recipe(self, chat, dish):
+        """QA 15 Nov: "how do I make this?" after a photo of amok said "I don't have a recipe yet". (Only kh_kanh has none.)"""
+        d = chat("how do I make it?", dish_id=dish, **NO_AI)
+        assert d["kind"] == "recipe" and d["recipe"] and d["recipe"]["steps"], d["answer"]
+
     def test_where_it_comes_from_is_not_a_place_search(self, chat):
         d = chat("where does amok come from?", **NO_AI)       # no AI: what the dish is (the AI would answer it)
         assert d["kind"] == "recipe" and d["dish"]["id"] == "kh_amok" and not d["results"]
@@ -331,11 +338,19 @@ class TestRecipes:
     ])
     def test_recipe_answers(self, chat, q, dish, focus):
         d = chat(q, **NO_AI)
-        assert d["kind"] == "recipe" and d["dish"]["id"] == dish and d["recipe"], d.get("kind")
+        assert d["kind"] == "recipe" and d["dish"]["id"] == dish, d.get("kind")
+        assert bool(d["recipe"]) == (focus is not None), "the card is shown for steps / ingredients, not for a time"
         assert d.get("focus") == focus
 
-    @pytest.mark.parametrize("q", ["how do I make lok lak?", "how long does pad thai take?", "របៀបធ្វើភីហ្សា",
-                                   "what are the ingredients for pho?"])
+    @pytest.mark.parametrize("q", ["how long does pad thai take?", "តើ ផាត់ថៃ ប្រើពេលប៉ុន្មាននាទី?"])
+    def test_how_long_is_answered_in_a_sentence(self, chat, q):
+        """16 Nov: "how long?" gets the times in the answer, not a whole recipe card; the chips then offer the steps."""
+        d = chat(q, **NO_AI)
+        assert d["recipe"] is None and ("min" in d["answer"] or "នាទី" in d["answer"]), d["answer"]
+        assert not [x for x in d["suggestions"] if x in ("How long does it take to cook?", "ប្រើពេលប៉ុន្មាននាទី?")]
+        assert len(d["suggestions"]) == 2
+
+    @pytest.mark.parametrize("q", ["how do I make lok lak?", "របៀបធ្វើភីហ្សា", "what are the ingredients for pho?"])
     def test_recipe_card_does_not_suggest_what_it_shows(self, chat, q):
         """15 Nov: under a recipe card (steps, times, ingredients) the chips offered "How do I make it?" / "How long does
         it take?": the same thing again. They offer what the card does not say: what it is, and where to eat it."""
