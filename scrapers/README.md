@@ -121,3 +121,19 @@ places can be told apart this way, so an estimated 140 are still in the data unt
 Foodpanda's rate limit at 675 of 2,705 pages) can finish. Places that have only a Foodpanda slug have no address and no
 coordinates (1,994 places), and are not geocoded from their name: a guessed position would give wrong "near me" distances.
 
+
+## 📷 Khmer dish photos for the photo model (16 Nov 2026)
+
+The photo classifier is weakest where it has the fewest photos (kuy teav 22 training photos, borbor 25, amok 38, against 750
+per Food-101 dish). Scripts add photos and record where each one came from (source, page URL, and the licence when the source states one):
+
+| Script | What it does |
+|---|---|
+| `harvest_khmer_open_images.py` | Wikimedia Commons (files in the Cambodian-food categories, labelled by the category name, plus a text search) and Openverse (Creative-Commons photos, anonymous limit 200 requests/day, remembered in `data/khfood/openverse_budget.json`). A photo is kept only when its own title/tags name the dish, it is a real photo (>= 256 px) and it is not a near-duplicate of any photo we have. Every file is listed in `data/khfood/harvest_sources.csv` (dish, source, title, creator, licence, page URL). `--new` does the other Khmer dishes of `data/recipes_khmer.csv`. `--sources bing` adds Bing image search for much more volume: **its photos have no known licence** (marked "unknown (web image search)" with the page URL), and Bing's terms do not allow automated scraping, so this is for training our own course model only. |
+| `verify_harvested_images.py` | Looks at the picture, because text alone is not enough ("amok" also names a film and a dance show; a New York restaurant called Num Pang tags its selfies). CLIP zero-shot: a photo is rejected when it looks like a person / building / sign (distractors), when its dish is not among the 20 closest of 68 dishes, or when its CLIP vector is >= 0.93 cosine like a photo we already have (crops of the same bowl; a copy of a test photo in the training set would flatter the test score). `--calibrate` shows what the thresholds cost on the trusted photos (92% kept). `--apply` moves rejects to `data/khfood/rejected/`. |
+
+Order: `harvest_khmer_open_images.py` -> `verify_harvested_images.py` (look at the dry-run, then `--apply`; Bing files get a stricter test) -> `merge_harvested_into_khfood.py` (copies the kept photos of the 26 model classes into `combined/` and writes `meta/train_plus.txt`; the test split is untouched so scores stay comparable) -> `train_khmer_finetune.py --khmer-train train_plus.txt` (keep the Food-101 replay about 4:1 against the Khmer photos, see the results in the notes). Result: a weight average of three retrains (`soup3`) is the live model: Khmer 82.2%, Food-101 85.8%, amok 7 -> 10 of 12 test photos. The photos stay out of git
+(`data/khfood/` is ignored); the credits are in `docs/khmer-photo-credits.csv`. Many are CC BY-NC / ND and the Bing ones have no licence: fine for training a
+course model, never for publishing the photos. About a quarter of the Bing photos are still wrong (video thumbnails, another dish). Wikimedia throttles generic clients hard: the script paces itself and skips a
+file when the host asks for a long pause, so run it again later to pick those up. Measured limits: for a dish with a rare name
+(cha kney, chha kdao, sach ko ang) open archives hold almost nothing; only a handful of Khmer dishes have 20+ open photos.

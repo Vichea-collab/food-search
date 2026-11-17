@@ -136,7 +136,7 @@ def loader_for(samples, class_to_idx, tf, shuffle, workers, first_khmer=None):
     return DataLoader(ds, batch_size=48, shuffle=shuffle, num_workers=workers, persistent_workers=workers > 0)
 
 
-def finetune(base, out, epochs, per_class, eval_per_class, workers, seed, khmer_repeat=1):
+def finetune(base, out, epochs, per_class, eval_per_class, workers, seed, khmer_repeat=1, khmer_train="train"):
     rng = random.Random(seed)
     torch.manual_seed(seed)
     classes = [c["id"] for c in json.load(open(CLASSES_PATH, encoding="utf-8"))]
@@ -148,7 +148,7 @@ def finetune(base, out, epochs, per_class, eval_per_class, workers, seed, khmer_
     model = load_model(base, classes)
 
     train_tf, eval_tf = build_transforms()
-    kh_train, kh_test = khmer_list("train"), khmer_list("test")
+    kh_train, kh_test = khmer_list(khmer_train), khmer_list("test")
     f_test = food101_list("test", eval_per_class, random.Random(seed + 1))
     kh_loader = loader_for(kh_test, class_to_idx, eval_tf, False, workers, first_khmer)
     f_loader = loader_for(f_test, class_to_idx, eval_tf, False, workers, first_khmer)
@@ -213,9 +213,10 @@ if __name__ == "__main__":
     p.add_argument("--eval-per-class", type=int, default=10, help="Food-101 test photos per class for the epoch check")
     p.add_argument("--khmer-repeat", type=int, default=1, help="each Khmer training photo this many times per epoch "
                    "(the Khmer dishes have fewer photos than look-alike Food-101 dishes: kuy teav / pho, borbor / ramen)")
+    p.add_argument("--khmer-train", default="train", help="Khmer training list in data/khfood/combined/meta (train, or train_plus after scrapers/merge_harvested_into_khfood.py); the test list is always test")
     p.add_argument("--workers", type=int, default=4)
     p.add_argument("--seed", type=int, default=7)
     a = p.parse_args()
     if a.out.resolve() == LIVE_PATH.resolve():
         p.error("--out must not be the live model; compare first, then copy it over")
-    finetune(a.base, a.out, a.epochs, a.per_class, a.eval_per_class, a.workers, a.seed, a.khmer_repeat)
+    finetune(a.base, a.out, a.epochs, a.per_class, a.eval_per_class, a.workers, a.seed, a.khmer_repeat, a.khmer_train)
