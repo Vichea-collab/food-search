@@ -876,3 +876,14 @@
   .rec-dot, .voice-bars i { transition: none; }
   .send-btn.mic-btn.recording, .voice-spin, .voice-bubble.loading .voice-bars i { animation: none; }
 }
+
+/* a photo dragged over the chat: the whole chat area becomes the drop target */
+.drop-overlay {
+  position: absolute; inset: 8px; z-index: 30; pointer-events: none;     /* the drop itself lands on the chat below */
+  display: grid; place-content: center; justify-items: center; gap: 10px; padding: 24px; text-align: center;
+  border: 2px dashed var(--tarp); border-radius: 20px;
+  background: color-mix(in srgb, var(--paper) 78%, transparent); backdrop-filter: blur(3px);
+  color: var(--tarp); font-weight: 600;
+}
+.drop-overlay svg { width: 36px; height: 36px; }
+.drop-overlay p { margin: 0; }

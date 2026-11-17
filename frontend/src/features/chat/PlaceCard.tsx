@@ -120,9 +120,17 @@ export function PlaceCard({ place: p, rank }: { place: Place; rank: number }) {
 }
 
 /** The ranked places of one reply, five at a time ("Show more"). */
-export function PlaceList({ places, numbers }: { places: Place[]; numbers?: number[] }) {
+export const PLACE_PAGE = PAGE;
+
+/** shown / onShown: the count revealed, kept by the chat (so "more" typed in the box knows how many are showing);
+ *  without them the list keeps its own count. */
+export function PlaceList({ places, numbers, shown: held, onShown }: {
+  places: Place[]; numbers?: number[]; shown?: number; onShown?: (n: number) => void;
+}) {
   const { t } = useI18n();
-  const [shown, setShown] = useState(PAGE);
+  const [own, setOwn] = useState(PAGE);
+  const shown = held ?? own;
+  const setShown = (f: (n: number) => number) => (onShown ? onShown(f(shown)) : setOwn(f));
   return (
     <ol className="places">
       {places.slice(0, shown).map((p, i) => (

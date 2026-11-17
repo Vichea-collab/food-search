@@ -1,0 +1,1921 @@
+method,query,kind,n_relevant,P@5,Recall@5,MRR,nDCG@5
+BM25 + fuzzy,kuy teav,dish,63,0.6,0.047619047619047616,0.3333333333333333,0.4468535299918563
+BM25 + fuzzy,lok lak,dish,34,0.4,0.058823529411764705,1.0,0.48522855511632257
+BM25 + fuzzy,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+BM25 + fuzzy,bai sach chrouk,dish,29,0.4,0.06896551724137931,1.0,0.5087403079104241
+BM25 + fuzzy,num banh chok,dish,26,1.0,0.19230769230769232,1.0,1.0
+BM25 + fuzzy,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+BM25 + fuzzy,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+BM25 + fuzzy,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+BM25 + fuzzy,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+BM25 + fuzzy,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+BM25 + fuzzy,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+BM25 + fuzzy,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+BM25 + fuzzy,គុយទាវ,dish_kh,42,0.6,0.07142857142857142,1.0,0.6992148198508501
+BM25 + fuzzy,ឡុកឡាក់,dish_kh,28,0.4,0.07142857142857142,1.0,0.48522855511632257
+BM25 + fuzzy,បាយសាច់ជ្រូក,dish_kh,25,0.4,0.08,1.0,0.5531464700081437
+BM25 + fuzzy,នំបញ្ចុក,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+BM25 + fuzzy,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+BM25 + fuzzy,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+BM25 + fuzzy,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+BM25 + fuzzy,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+BM25 + fuzzy,kuytiew,typo,31,0.4,0.06451612903225806,0.25,0.27727342735504823
+BM25 + fuzzy,carry noodle,typo,4,0.6,0.75,1.0,0.8318724637288826
+BM25 + fuzzy,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+BM25 + fuzzy,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+BM25 + fuzzy,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+BM25 + fuzzy,num banh chuk,typo,24,1.0,0.20833333333333334,1.0,1.0
+BM25 + fuzzy,something sweet,meaning,65,0.0,0.0,0.0,0.0
+BM25 + fuzzy,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+BM25 + fuzzy,spicy noodle soup,meaning,43,1.0,0.11627906976744186,1.0,1.0
+BM25 + fuzzy,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+BM25 + fuzzy,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+BM25 + fuzzy,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+BM25 + fuzzy,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+BM25 + fuzzy,pizza in BKK1,area,30,0.8,0.13333333333333333,1.0,0.7860137352654724
+BM25 + fuzzy,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+BM25 + fuzzy,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+BM25 + fuzzy,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+BM25 + fuzzy,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+BM25 + fuzzy,coffee near CADT,near,14,0.0,0.0,0.0,0.0
+BM25 + fuzzy,kuy teav near Independence Monument,near,20,0.0,0.0,0.0,0.0
+BM25 + fuzzy,pizza near Aeon Mall 1,near,42,0.4,0.047619047619047616,0.5,0.36005461457723403
+BM25 + fuzzy,bbq near Russian Market,near,38,0.0,0.0,0.0,0.0
+BM25 + fuzzy,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+BM25 + fuzzy,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+BM25 + fuzzy,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+BM25 + fuzzy,costa coffee,named,4,0.8,1.0,1.0,1.0
+BM25 + fuzzy,khmer surin,named,1,0.2,1.0,1.0,1.0
+BM25 + fuzzy,ramen,dish,41,1.0,0.12195121951219512,1.0,1.0
+BM25 + fuzzy,korean bbq,dish,56,0.0,0.0,0.0,0.0
+BM25 + fuzzy,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+BM25 + fuzzy,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+BM25 + fuzzy,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+BM25 + fuzzy,shawarma,dish,24,1.0,0.20833333333333334,1.0,1.0
+BM25 + fuzzy,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+BM25 + fuzzy,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+BM25 + fuzzy,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+BM25 + fuzzy,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+BM25 + fuzzy,ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+BM25 + fuzzy,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+BM25 + fuzzy,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+BM25 + fuzzy,matcha,dish,46,1.0,0.10869565217391304,1.0,1.0
+BM25 + fuzzy,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+BM25 + fuzzy,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+BM25 + fuzzy,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+BM25 + fuzzy,crab,dish,70,1.0,0.07142857142857142,1.0,1.0
+BM25 + fuzzy,grilled fish,dish,7,0.2,0.14285714285714285,0.3333333333333333,0.16958010263680806
+BM25 + fuzzy,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+BM25 + fuzzy,croissant,dish,40,1.0,0.125,1.0,1.0
+BM25 + fuzzy,wine bar,dish,24,0.2,0.041666666666666664,0.25,0.14606834984270645
+BM25 + fuzzy,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+BM25 + fuzzy,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+BM25 + fuzzy,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+BM25 + fuzzy,sour soup,dish,1,0.0,0.0,0.0,0.0
+BM25 + fuzzy,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+BM25 + fuzzy,prahok,dish,3,0.6,1.0,1.0,1.0
+BM25 + fuzzy,boat noodle,dish,8,0.6,0.375,0.3333333333333333,0.4468535299918563
+BM25 + fuzzy,num pang,dish,50,1.0,0.1,1.0,1.0
+BM25 + fuzzy,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+BM25 + fuzzy,korean food,dish,50,1.0,0.1,1.0,1.0
+BM25 + fuzzy,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+BM25 + fuzzy,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+BM25 + fuzzy,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+BM25 + fuzzy,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+BM25 + fuzzy,អាម៉ុក,dish_kh,5,0.6,0.6,1.0,0.7227265726449519
+BM25 + fuzzy,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+BM25 + fuzzy,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+BM25 + fuzzy,មីឆា,dish_kh,21,1.0,0.23809523809523808,1.0,1.0
+BM25 + fuzzy,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+BM25 + fuzzy,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+BM25 + fuzzy,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+BM25 + fuzzy,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+BM25 + fuzzy,ការ៉េម,dish_kh,51,1.0,0.09803921568627451,1.0,1.0
+BM25 + fuzzy,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+BM25 + fuzzy,ទឹកក្រូច,dish_kh,19,0.4,0.10526315789473684,1.0,0.5531464700081437
+BM25 + fuzzy,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+BM25 + fuzzy,សម្លម្ជូរ,dish_kh,18,1.0,0.2777777777777778,1.0,1.0
+BM25 + fuzzy,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+BM25 + fuzzy,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+BM25 + fuzzy,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+BM25 + fuzzy,ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+BM25 + fuzzy,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+BM25 + fuzzy,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+BM25 + fuzzy,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+BM25 + fuzzy,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+BM25 + fuzzy,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+BM25 + fuzzy,kofee,typo,47,0.4,0.0425531914893617,1.0,0.5531464700081437
+BM25 + fuzzy,ramenn,typo,32,1.0,0.15625,1.0,1.0
+BM25 + fuzzy,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+BM25 + fuzzy,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+BM25 + fuzzy,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+BM25 + fuzzy,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+BM25 + fuzzy,bai sach chruk,typo,8,0.4,0.25,0.5,0.36005461457723403
+BM25 + fuzzy,kuy tiev,typo,44,0.2,0.022727272727272728,0.2,0.13120507751234178
+BM25 + fuzzy,healthy food,meaning,50,1.0,0.1,1.0,1.0
+BM25 + fuzzy,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+BM25 + fuzzy,rooftop,meaning,20,0.6,0.15,0.5,0.4912596920895758
+BM25 + fuzzy,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+BM25 + fuzzy,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+BM25 + fuzzy,something cold,meaning,44,0.2,0.022727272727272728,0.3333333333333333,0.16958010263680806
+BM25 + fuzzy,sweet drink,meaning,30,0.2,0.03333333333333333,0.25,0.14606834984270645
+BM25 + fuzzy,fine dining,meaning,2,0.2,0.5,0.2,0.23719771276929622
+BM25 + fuzzy,family restaurant,meaning,40,0.6,0.075,1.0,0.7227265726449519
+BM25 + fuzzy,late night snack,meaning,55,0.8,0.07272727272727272,1.0,0.8539316501572937
+BM25 + fuzzy,kuy teav in Sen Sok,area,9,0.8,0.4444444444444444,1.0,0.8539316501572937
+BM25 + fuzzy,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+BM25 + fuzzy,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+BM25 + fuzzy,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+BM25 + fuzzy,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+BM25 + fuzzy,burger in Daun Penh,area,38,0.8,0.10526315789473684,1.0,0.8687949224876582
+BM25 + fuzzy,noodles in Mean Chey,area,25,0.6,0.12,1.0,0.6164336326286644
+BM25 + fuzzy,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+BM25 + fuzzy,fried rice in Russey Keo,area,5,0.4,0.4,1.0,0.5087403079104241
+BM25 + fuzzy,coffee in Chroy Changvar,area,38,0.8,0.10526315789473684,1.0,0.8687949224876582
+BM25 + fuzzy,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+BM25 + fuzzy,ramen in BKK1,area,15,0.8,0.26666666666666666,1.0,0.830419897363192
+BM25 + fuzzy,lok lak in Daun Penh,area,3,0.0,0.0,0.0,0.0
+BM25 + fuzzy,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+BM25 + fuzzy,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+BM25 + fuzzy,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+BM25 + fuzzy,គុយទាវ នៅមានជ័យ,area,13,0.6,0.23076923076923078,1.0,0.6843515475204855
+BM25 + fuzzy,coffee near Royal Palace,near,50,0.2,0.02,0.3333333333333333,0.16958010263680806
+BM25 + fuzzy,pizza near Central Market,near,33,0.2,0.030303030303030304,0.5,0.21398626473452756
+BM25 + fuzzy,bbq near Olympic Stadium,near,29,0.0,0.0,0.0,0.0
+BM25 + fuzzy,kuy teav near Russian Market,near,14,0.8,0.2857142857142857,0.5,0.6608397947263839
+BM25 + fuzzy,coffee near Aeon Mall 2,near,22,0.0,0.0,0.0,0.0
+BM25 + fuzzy,burger near Sorya Mall,near,36,0.0,0.0,0.0,0.0
+BM25 + fuzzy,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+BM25 + fuzzy,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+BM25 + fuzzy,mixue,named,8,1.0,0.625,1.0,1.0
+BM25 + fuzzy,tube coffee,named,25,0.8,0.16,1.0,0.830419897363192
+BM25 + fuzzy,burger king,named,4,0.8,1.0,1.0,1.0
+BM25 + fuzzy,texas chicken,named,8,1.0,0.625,1.0,1.0
+BM25 + fuzzy,dairy queen,named,10,0.6,0.3,0.3333333333333333,0.4468535299918563
+BM25 + fuzzy,chatime,named,5,1.0,1.0,1.0,1.0
+BM25 + fuzzy,koi the,named,18,0.8,0.2222222222222222,1.0,0.8687949224876582
+BM25 + fuzzy,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+BM25 + fuzzy,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+BM25 + fuzzy,dominos pizza,named,4,0.2,0.25,1.0,0.3903800499921017
+BM25 + fuzzy,tous les jours,named,3,0.6,1.0,1.0,1.0
+BM25 + fuzzy,swensens,named,3,0.6,1.0,1.0,1.0
+Embeddings,kuy teav,dish,63,0.6,0.047619047619047616,0.5,0.5296347172140421
+Embeddings,lok lak,dish,34,0.0,0.0,0.0,0.0
+Embeddings,amok,dish,2,0.0,0.0,0.0,0.0
+Embeddings,bai sach chrouk,dish,29,0.0,0.0,0.0,0.0
+Embeddings,num banh chok,dish,26,0.2,0.038461538461538464,1.0,0.3391602052736161
+Embeddings,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Embeddings,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Embeddings,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Embeddings,fried rice,dish,47,0.4,0.0425531914893617,1.0,0.4703652827859579
+Embeddings,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Embeddings,khmer bbq,dish,52,0.4,0.038461538461538464,0.25,0.27727342735504823
+Embeddings,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Embeddings,គុយទាវ,dish_kh,42,0.0,0.0,0.0,0.0
+Embeddings,ឡុកឡាក់,dish_kh,28,0.0,0.0,0.0,0.0
+Embeddings,បាយសាច់ជ្រូក,dish_kh,25,0.0,0.0,0.0,0.0
+Embeddings,នំបញ្ចុក,dish_kh,55,0.0,0.0,0.0,0.0
+Embeddings,កាហ្វេ,dish_kh,82,0.8,0.04878048780487805,1.0,0.830419897363192
+Embeddings,ភីហ្សា,dish_kh,67,0.0,0.0,0.0,0.0
+Embeddings,តែគុជ,dish_kh,79,0.0,0.0,0.0,0.0
+Embeddings,បាយឆា,dish_kh,38,0.0,0.0,0.0,0.0
+Embeddings,kuytiew,typo,31,0.8,0.12903225806451613,1.0,0.8687949224876582
+Embeddings,carry noodle,typo,4,0.0,0.0,0.0,0.0
+Embeddings,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Embeddings,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Embeddings,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Embeddings,num banh chuk,typo,24,0.2,0.041666666666666664,0.25,0.14606834984270645
+Embeddings,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Embeddings,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Embeddings,spicy noodle soup,meaning,43,0.8,0.09302325581395349,1.0,0.8539316501572937
+Embeddings,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Embeddings,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Embeddings,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Embeddings,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Embeddings,pizza in BKK1,area,30,0.0,0.0,0.0,0.0
+Embeddings,bbq in Sen Sok,area,41,0.0,0.0,0.0,0.0
+Embeddings,sushi in Chamkar Mon,area,38,0.4,0.05263157894736842,0.3333333333333333,0.30078518014914984
+Embeddings,កាហ្វេ នៅទួលគោក,area,59,0.4,0.03389830508474576,0.25,0.27727342735504823
+Embeddings,bubble tea in Daun Penh,area,26,0.2,0.038461538461538464,1.0,0.3391602052736161
+Embeddings,coffee near CADT,near,14,0.0,0.0,0.0,0.0
+Embeddings,kuy teav near Independence Monument,near,20,0.4,0.1,0.3333333333333333,0.30078518014914984
+Embeddings,pizza near Aeon Mall 1,near,42,0.4,0.047619047619047616,0.5,0.34519134224686937
+Embeddings,bbq near Russian Market,near,38,0.0,0.0,0.0,0.0
+Embeddings,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Embeddings,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Embeddings,brown coffee,named,49,0.8,0.08163265306122448,1.0,0.8539316501572937
+Embeddings,costa coffee,named,4,0.0,0.0,0.0,0.0
+Embeddings,khmer surin,named,1,0.0,0.0,0.0,0.0
+Embeddings,ramen,dish,41,1.0,0.12195121951219512,1.0,1.0
+Embeddings,korean bbq,dish,56,0.6,0.05357142857142857,0.5,0.5147714448836774
+Embeddings,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Embeddings,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Embeddings,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Embeddings,shawarma,dish,24,0.0,0.0,0.0,0.0
+Embeddings,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Embeddings,thai food,dish,46,0.6,0.06521739130434782,1.0,0.6548086577531307
+Embeddings,tom yum,dish,51,0.8,0.0784313725490196,1.0,0.8539316501572937
+Embeddings,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Embeddings,ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+Embeddings,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Embeddings,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Embeddings,matcha,dish,46,0.8,0.08695652173913043,1.0,0.7860137352654724
+Embeddings,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Embeddings,sandwich,dish,57,0.6,0.05263157894736842,1.0,0.7227265726449519
+Embeddings,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Embeddings,crab,dish,70,0.8,0.05714285714285714,1.0,0.830419897363192
+Embeddings,grilled fish,dish,7,0.2,0.14285714285714285,0.3333333333333333,0.16958010263680806
+Embeddings,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Embeddings,croissant,dish,40,0.8,0.1,1.0,0.8539316501572937
+Embeddings,wine bar,dish,24,1.0,0.20833333333333334,1.0,1.0
+Embeddings,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Embeddings,porridge,dish,36,0.2,0.027777777777777776,1.0,0.3391602052736161
+Embeddings,khmer curry,dish,34,0.8,0.11764705882352941,1.0,0.8687949224876582
+Embeddings,sour soup,dish,1,0.0,0.0,0.0,0.0
+Embeddings,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Embeddings,prahok,dish,3,0.0,0.0,0.0,0.0
+Embeddings,boat noodle,dish,8,0.8,0.5,1.0,0.8687949224876582
+Embeddings,num pang,dish,50,0.2,0.02,1.0,0.3391602052736161
+Embeddings,japanese food,dish,73,0.8,0.0547945205479452,1.0,0.830419897363192
+Embeddings,korean food,dish,50,1.0,0.1,1.0,1.0
+Embeddings,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Embeddings,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Embeddings,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Embeddings,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Embeddings,អាម៉ុក,dish_kh,5,0.0,0.0,0.0,0.0
+Embeddings,ស៊ូស៊ី,dish_kh,47,0.0,0.0,0.0,0.0
+Embeddings,ប៊ឺហ្គឺ,dish_kh,54,0.0,0.0,0.0,0.0
+Embeddings,មីឆា,dish_kh,21,0.0,0.0,0.0,0.0
+Embeddings,បបរ,dish_kh,38,0.0,0.0,0.0,0.0
+Embeddings,សាច់អាំង,dish_kh,59,0.2,0.01694915254237288,0.3333333333333333,0.16958010263680806
+Embeddings,ម្ហូបបួស,dish_kh,36,0.0,0.0,0.0,0.0
+Embeddings,នំប៉័ង,dish_kh,53,0.0,0.0,0.0,0.0
+Embeddings,ការ៉េម,dish_kh,51,0.0,0.0,0.0,0.0
+Embeddings,ស៊ុបឆ្នាំងដី,dish_kh,35,0.0,0.0,0.0,0.0
+Embeddings,ទឹកក្រូច,dish_kh,19,0.2,0.05263157894736842,1.0,0.3391602052736161
+Embeddings,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Embeddings,សម្លម្ជូរ,dish_kh,18,0.0,0.0,0.0,0.0
+Embeddings,មាន់បំពង,dish_kh,66,0.8,0.06060606060606061,1.0,0.8539316501572937
+Embeddings,ម្ហូបជប៉ុន,dish_kh,55,0.2,0.01818181818181818,0.25,0.14606834984270645
+Embeddings,ម្ហូបកូរ៉េ,dish_kh,48,0.0,0.0,0.0,0.0
+Embeddings,ម្ហូបចិន,dish_kh,48,0.0,0.0,0.0,0.0
+Embeddings,ម្ហូបថៃ,dish_kh,42,0.0,0.0,0.0,0.0
+Embeddings,ភេសជ្ជៈ,dish_kh,70,0.2,0.014285714285714285,0.3333333333333333,0.16958010263680806
+Embeddings,នំខេក,dish_kh,50,0.0,0.0,0.0,0.0
+Embeddings,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Embeddings,burgr,typo,58,0.2,0.017241379310344827,0.25,0.14606834984270645
+Embeddings,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Embeddings,ramenn,typo,32,0.2,0.03125,0.3333333333333333,0.16958010263680806
+Embeddings,amokk,typo,2,0.0,0.0,0.0,0.0
+Embeddings,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Embeddings,sushy,typo,43,0.2,0.023255813953488372,0.25,0.14606834984270645
+Embeddings,nom bang chok,typo,30,0.4,0.06666666666666667,1.0,0.4703652827859579
+Embeddings,bai sach chruk,typo,8,0.0,0.0,0.0,0.0
+Embeddings,kuy tiev,typo,44,0.8,0.09090909090909091,1.0,0.8539316501572937
+Embeddings,healthy food,meaning,50,0.2,0.02,1.0,0.3391602052736161
+Embeddings,street food,meaning,44,0.6,0.06818181818181818,1.0,0.639945385422766
+Embeddings,rooftop,meaning,20,0.4,0.1,0.25,0.27727342735504823
+Embeddings,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Embeddings,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Embeddings,something cold,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Embeddings,sweet drink,meaning,30,1.0,0.16666666666666666,1.0,1.0
+Embeddings,fine dining,meaning,2,0.0,0.0,0.0,0.0
+Embeddings,family restaurant,meaning,40,1.0,0.125,1.0,1.0
+Embeddings,late night snack,meaning,55,0.4,0.03636363636363636,1.0,0.48522855511632257
+Embeddings,kuy teav in Sen Sok,area,9,0.0,0.0,0.0,0.0
+Embeddings,pizza in Toul Kork,area,21,0.0,0.0,0.0,0.0
+Embeddings,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Embeddings,bbq in Chamkar Mon,area,42,0.4,0.047619047619047616,1.0,0.5087403079104241
+Embeddings,sushi in Toul Kork,area,30,0.0,0.0,0.0,0.0
+Embeddings,burger in Daun Penh,area,38,0.0,0.0,0.0,0.0
+Embeddings,noodles in Mean Chey,area,25,0.2,0.04,1.0,0.3391602052736161
+Embeddings,bubble tea in Sen Sok,area,31,0.0,0.0,0.0,0.0
+Embeddings,fried rice in Russey Keo,area,5,0.0,0.0,0.0,0.0
+Embeddings,coffee in Chroy Changvar,area,38,0.6,0.07894736842105263,0.5,0.5147714448836774
+Embeddings,pizza in Sen Sok,area,19,0.4,0.10526315789473684,0.3333333333333333,0.30078518014914984
+Embeddings,ramen in BKK1,area,15,0.4,0.13333333333333333,1.0,0.5531464700081437
+Embeddings,lok lak in Daun Penh,area,3,0.0,0.0,0.0,0.0
+Embeddings,bakery in Daun Penh,area,49,0.8,0.08163265306122448,0.5,0.6608397947263839
+Embeddings,កាហ្វេ នៅសែនសុខ,area,60,0.4,0.03333333333333333,0.3333333333333333,0.30078518014914984
+Embeddings,ភីហ្សា នៅបឹងកេងកង,area,30,0.0,0.0,0.0,0.0
+Embeddings,គុយទាវ នៅមានជ័យ,area,13,0.0,0.0,0.0,0.0
+Embeddings,coffee near Royal Palace,near,50,0.8,0.08,1.0,0.7860137352654724
+Embeddings,pizza near Central Market,near,33,0.2,0.030303030303030304,0.2,0.13120507751234178
+Embeddings,bbq near Olympic Stadium,near,29,0.0,0.0,0.0,0.0
+Embeddings,kuy teav near Russian Market,near,14,0.0,0.0,0.0,0.0
+Embeddings,coffee near Aeon Mall 2,near,22,0.0,0.0,0.0,0.0
+Embeddings,burger near Sorya Mall,near,36,0.6,0.08333333333333333,1.0,0.6843515475204855
+Embeddings,kfc,named,13,0.0,0.0,0.0,0.0
+Embeddings,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Embeddings,mixue,named,8,1.0,0.625,1.0,1.0
+Embeddings,tube coffee,named,25,0.8,0.16,1.0,0.8539316501572937
+Embeddings,burger king,named,4,0.2,0.25,1.0,0.3903800499921017
+Embeddings,texas chicken,named,8,1.0,0.625,1.0,1.0
+Embeddings,dairy queen,named,10,1.0,0.5,1.0,1.0
+Embeddings,chatime,named,5,0.4,0.4,1.0,0.5531464700081437
+Embeddings,koi the,named,18,0.2,0.05555555555555555,1.0,0.3391602052736161
+Embeddings,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Embeddings,bonchon,named,7,0.0,0.0,0.0,0.0
+Embeddings,dominos pizza,named,4,0.8,1.0,1.0,1.0
+Embeddings,tous les jours,named,3,0.0,0.0,0.0,0.0
+Embeddings,swensens,named,3,0.0,0.0,0.0,0.0
+Hybrid (no filters),kuy teav,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid (no filters),lok lak,dish,34,0.4,0.058823529411764705,0.5,0.36005461457723403
+Hybrid (no filters),amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid (no filters),bai sach chrouk,dish,29,0.6,0.10344827586206896,1.0,0.7227265726449519
+Hybrid (no filters),num banh chok,dish,26,0.8,0.15384615384615385,1.0,0.8539316501572937
+Hybrid (no filters),pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid (no filters),sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid (no filters),burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid (no filters),fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid (no filters),bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid (no filters),khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid (no filters),coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid (no filters),គុយទាវ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid (no filters),ឡុកឡាក់,dish_kh,28,0.4,0.07142857142857142,1.0,0.48522855511632257
+Hybrid (no filters),បាយសាច់ជ្រូក,dish_kh,25,0.6,0.12,1.0,0.6548086577531307
+Hybrid (no filters),នំបញ្ចុក,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid (no filters),កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid (no filters),ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid (no filters),តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid (no filters),បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid (no filters),kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid (no filters),carry noodle,typo,4,0.2,0.25,0.2,0.15101961822780524
+Hybrid (no filters),piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid (no filters),cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid (no filters),sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid (no filters),num banh chuk,typo,24,0.6,0.125,1.0,0.6843515475204855
+Hybrid (no filters),something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid (no filters),vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid (no filters),spicy noodle soup,meaning,43,0.6,0.06976744186046512,0.5,0.5296347172140421
+Hybrid (no filters),breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid (no filters),seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid (no filters),hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid (no filters),coffee in Toul Kork,area,86,0.0,0.0,0.0,0.0
+Hybrid (no filters),pizza in BKK1,area,30,0.2,0.03333333333333333,1.0,0.3391602052736161
+Hybrid (no filters),bbq in Sen Sok,area,41,0.6,0.07317073170731707,0.3333333333333333,0.4468535299918563
+Hybrid (no filters),sushi in Chamkar Mon,area,38,0.2,0.02631578947368421,0.2,0.13120507751234178
+Hybrid (no filters),កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid (no filters),bubble tea in Daun Penh,area,26,0.0,0.0,0.0,0.0
+Hybrid (no filters),coffee near CADT,near,14,0.0,0.0,0.0,0.0
+Hybrid (no filters),kuy teav near Independence Monument,near,20,0.6,0.15,0.5,0.4912596920895758
+Hybrid (no filters),pizza near Aeon Mall 1,near,42,0.2,0.023809523809523808,0.3333333333333333,0.16958010263680806
+Hybrid (no filters),bbq near Russian Market,near,38,0.0,0.0,0.0,0.0
+Hybrid (no filters),starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid (no filters),pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid (no filters),brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid (no filters),costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid (no filters),khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid (no filters),ramen,dish,41,0.2,0.024390243902439025,0.5,0.21398626473452756
+Hybrid (no filters),korean bbq,dish,56,0.4,0.03571428571428571,0.3333333333333333,0.3156484524795145
+Hybrid (no filters),dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid (no filters),steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid (no filters),pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid (no filters),shawarma,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid (no filters),indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid (no filters),thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid (no filters),tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid (no filters),fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid (no filters),ice cream,dish,53,0.6,0.05660377358490566,1.0,0.6548086577531307
+Hybrid (no filters),smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid (no filters),fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid (no filters),matcha,dish,46,0.4,0.043478260869565216,1.0,0.5087403079104241
+Hybrid (no filters),donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid (no filters),sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid (no filters),salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid (no filters),crab,dish,70,0.6,0.04285714285714286,1.0,0.6164336326286644
+Hybrid (no filters),grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid (no filters),cake shop,dish,63,0.8,0.06349206349206349,1.0,0.830419897363192
+Hybrid (no filters),croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid (no filters),wine bar,dish,24,0.6,0.125,1.0,0.6992148198508501
+Hybrid (no filters),buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid (no filters),porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid (no filters),khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid (no filters),sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid (no filters),beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid (no filters),prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid (no filters),boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid (no filters),num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid (no filters),japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid (no filters),korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid (no filters),chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid (no filters),vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid (no filters),halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid (no filters),vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid (no filters),អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid (no filters),ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid (no filters),ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid (no filters),មីឆា,dish_kh,21,0.8,0.19047619047619047,1.0,0.7860137352654724
+Hybrid (no filters),បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid (no filters),សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid (no filters),ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid (no filters),នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid (no filters),ការ៉េម,dish_kh,51,0.8,0.0784313725490196,1.0,0.8539316501572937
+Hybrid (no filters),ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid (no filters),ទឹកក្រូច,dish_kh,19,0.6,0.15789473684210525,1.0,0.7227265726449519
+Hybrid (no filters),ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid (no filters),សម្លម្ជូរ,dish_kh,18,0.8,0.2222222222222222,1.0,0.8687949224876582
+Hybrid (no filters),មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid (no filters),ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid (no filters),ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid (no filters),ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid (no filters),ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid (no filters),ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid (no filters),នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid (no filters),pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid (no filters),burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid (no filters),kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid (no filters),ramenn,typo,32,0.2,0.03125,0.5,0.21398626473452756
+Hybrid (no filters),amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid (no filters),bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid (no filters),sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid (no filters),nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid (no filters),bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid (no filters),kuy tiev,typo,44,0.8,0.09090909090909091,0.5,0.6608397947263839
+Hybrid (no filters),healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid (no filters),street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid (no filters),rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid (no filters),spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid (no filters),grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid (no filters),something cold,meaning,44,0.2,0.022727272727272728,0.25,0.14606834984270645
+Hybrid (no filters),sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid (no filters),fine dining,meaning,2,0.2,0.5,0.2,0.23719771276929622
+Hybrid (no filters),family restaurant,meaning,40,0.8,0.1,1.0,0.830419897363192
+Hybrid (no filters),late night snack,meaning,55,0.2,0.01818181818181818,0.5,0.21398626473452756
+Hybrid (no filters),kuy teav in Sen Sok,area,9,0.2,0.1111111111111111,0.25,0.14606834984270645
+Hybrid (no filters),pizza in Toul Kork,area,21,0.4,0.09523809523809523,1.0,0.5531464700081437
+Hybrid (no filters),coffee in BKK1,area,69,0.8,0.057971014492753624,0.5,0.6608397947263839
+Hybrid (no filters),bbq in Chamkar Mon,area,42,0.6,0.07142857142857142,0.5,0.5147714448836774
+Hybrid (no filters),sushi in Toul Kork,area,30,0.2,0.03333333333333333,1.0,0.3391602052736161
+Hybrid (no filters),burger in Daun Penh,area,38,0.4,0.05263157894736842,0.3333333333333333,0.30078518014914984
+Hybrid (no filters),noodles in Mean Chey,area,25,0.4,0.08,1.0,0.48522855511632257
+Hybrid (no filters),bubble tea in Sen Sok,area,31,0.8,0.12903225806451613,1.0,0.8687949224876582
+Hybrid (no filters),fried rice in Russey Keo,area,5,0.0,0.0,0.0,0.0
+Hybrid (no filters),coffee in Chroy Changvar,area,38,0.0,0.0,0.0,0.0
+Hybrid (no filters),pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid (no filters),ramen in BKK1,area,15,0.0,0.0,0.0,0.0
+Hybrid (no filters),lok lak in Daun Penh,area,3,0.0,0.0,0.0,0.0
+Hybrid (no filters),bakery in Daun Penh,area,49,0.0,0.0,0.0,0.0
+Hybrid (no filters),កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid (no filters),ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid (no filters),គុយទាវ នៅមានជ័យ,area,13,0.2,0.07692307692307693,0.5,0.21398626473452756
+Hybrid (no filters),coffee near Royal Palace,near,50,0.0,0.0,0.0,0.0
+Hybrid (no filters),pizza near Central Market,near,33,0.6,0.09090909090909091,0.5,0.5147714448836774
+Hybrid (no filters),bbq near Olympic Stadium,near,29,0.2,0.034482758620689655,0.2,0.13120507751234178
+Hybrid (no filters),kuy teav near Russian Market,near,14,0.0,0.0,0.0,0.0
+Hybrid (no filters),coffee near Aeon Mall 2,near,22,0.2,0.045454545454545456,0.3333333333333333,0.16958010263680806
+Hybrid (no filters),burger near Sorya Mall,near,36,0.8,0.1111111111111111,1.0,0.8539316501572937
+Hybrid (no filters),kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid (no filters),lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid (no filters),mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid (no filters),tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid (no filters),burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid (no filters),texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid (no filters),dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid (no filters),chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid (no filters),koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid (no filters),carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid (no filters),bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid (no filters),dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid (no filters),tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid (no filters),swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid,kuy teav,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid,lok lak,dish,34,0.4,0.058823529411764705,0.5,0.36005461457723403
+Hybrid,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid,bai sach chrouk,dish,29,0.6,0.10344827586206896,1.0,0.7227265726449519
+Hybrid,num banh chok,dish,26,0.8,0.15384615384615385,1.0,0.8539316501572937
+Hybrid,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid,គុយទាវ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid,ឡុកឡាក់,dish_kh,28,0.4,0.07142857142857142,1.0,0.48522855511632257
+Hybrid,បាយសាច់ជ្រូក,dish_kh,25,0.6,0.12,1.0,0.6548086577531307
+Hybrid,នំបញ្ចុក,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid,carry noodle,typo,4,0.2,0.25,0.2,0.15101961822780524
+Hybrid,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid,num banh chuk,typo,24,0.6,0.125,1.0,0.6843515475204855
+Hybrid,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid,spicy noodle soup,meaning,43,0.6,0.06976744186046512,0.5,0.5296347172140421
+Hybrid,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid,ramen,dish,41,0.2,0.024390243902439025,0.5,0.21398626473452756
+Hybrid,korean bbq,dish,56,0.4,0.03571428571428571,0.3333333333333333,0.3156484524795145
+Hybrid,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid,shawarma,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid,ice cream,dish,53,0.6,0.05660377358490566,1.0,0.6548086577531307
+Hybrid,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid,matcha,dish,46,0.4,0.043478260869565216,1.0,0.5087403079104241
+Hybrid,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid,crab,dish,70,0.6,0.04285714285714286,1.0,0.6164336326286644
+Hybrid,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid,wine bar,dish,24,0.6,0.125,1.0,0.6992148198508501
+Hybrid,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid,មីឆា,dish_kh,21,0.8,0.19047619047619047,1.0,0.7860137352654724
+Hybrid,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid,ការ៉េម,dish_kh,51,0.8,0.0784313725490196,1.0,0.8539316501572937
+Hybrid,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid,ទឹកក្រូច,dish_kh,19,0.6,0.15789473684210525,1.0,0.7227265726449519
+Hybrid,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid,សម្លម្ជូរ,dish_kh,18,0.8,0.2222222222222222,1.0,0.8687949224876582
+Hybrid,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid,ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid,ramenn,typo,32,0.2,0.03125,0.5,0.21398626473452756
+Hybrid,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid,kuy tiev,typo,44,0.8,0.09090909090909091,0.5,0.6608397947263839
+Hybrid,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid,something cold,meaning,44,0.2,0.022727272727272728,0.2,0.13120507751234178
+Hybrid,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid,fine dining,meaning,2,0.2,0.5,0.2,0.23719771276929622
+Hybrid,family restaurant,meaning,40,0.8,0.1,1.0,0.7860137352654724
+Hybrid,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid,kuy teav in Sen Sok,area,9,0.4,0.2222222222222222,1.0,0.5531464700081437
+Hybrid,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid,noodles in Mean Chey,area,25,0.6,0.12,1.0,0.6843515475204855
+Hybrid,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid,ramen in BKK1,area,15,0.4,0.13333333333333333,0.3333333333333333,0.30078518014914984
+Hybrid,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid,គុយទាវ នៅមានជ័យ,area,13,0.6,0.23076923076923078,1.0,0.6548086577531307
+Hybrid,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker,kuy teav,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + reranker,lok lak,dish,34,0.4,0.058823529411764705,1.0,0.5531464700081437
+Hybrid + reranker,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker,bai sach chrouk,dish,29,0.4,0.06896551724137931,1.0,0.5531464700081437
+Hybrid + reranker,num banh chok,dish,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + reranker,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + reranker,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + reranker,គុយទាវ,dish_kh,42,0.8,0.09523809523809523,0.5,0.6608397947263839
+Hybrid + reranker,ឡុកឡាក់,dish_kh,28,0.4,0.07142857142857142,1.0,0.5531464700081437
+Hybrid + reranker,បាយសាច់ជ្រូក,dish_kh,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + reranker,នំបញ្ចុក,dish_kh,55,0.8,0.07272727272727272,1.0,0.8539316501572937
+Hybrid + reranker,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + reranker,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + reranker,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker,carry noodle,typo,4,0.2,0.25,1.0,0.3903800499921017
+Hybrid + reranker,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + reranker,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + reranker,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker,num banh chuk,typo,24,0.8,0.16666666666666666,1.0,0.8687949224876582
+Hybrid + reranker,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker,spicy noodle soup,meaning,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + reranker,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + reranker,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + reranker,ramen,dish,41,0.2,0.024390243902439025,1.0,0.3391602052736161
+Hybrid + reranker,korean bbq,dish,56,1.0,0.08928571428571429,1.0,1.0
+Hybrid + reranker,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + reranker,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker,shawarma,dish,24,0.6,0.125,1.0,0.7227265726449519
+Hybrid + reranker,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker,ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker,matcha,dish,46,0.6,0.06521739130434782,1.0,0.7227265726449519
+Hybrid + reranker,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker,crab,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + reranker,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + reranker,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + reranker,wine bar,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + reranker,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + reranker,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + reranker,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + reranker,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + reranker,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + reranker,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + reranker,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker,មីឆា,dish_kh,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker,ការ៉េម,dish_kh,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid + reranker,ទឹកក្រូច,dish_kh,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + reranker,សម្លម្ជូរ,dish_kh,18,0.8,0.2222222222222222,1.0,0.8687949224876582
+Hybrid + reranker,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + reranker,ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + reranker,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + reranker,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker,ramenn,typo,32,0.2,0.03125,1.0,0.3391602052736161
+Hybrid + reranker,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + reranker,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + reranker,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + reranker,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker,something cold,meaning,44,0.0,0.0,0.0,0.0
+Hybrid + reranker,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + reranker,fine dining,meaning,2,0.2,0.5,1.0,0.6131471927654584
+Hybrid + reranker,family restaurant,meaning,40,1.0,0.125,1.0,1.0
+Hybrid + reranker,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker,kuy teav in Sen Sok,area,9,1.0,0.5555555555555556,1.0,1.0
+Hybrid + reranker,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + reranker,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker,noodles in Mean Chey,area,25,0.8,0.16,1.0,0.830419897363192
+Hybrid + reranker,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + reranker,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker,ramen in BKK1,area,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + reranker,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker,គុយទាវ នៅមានជ័យ,area,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + reranker,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + reranker,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + reranker,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + reranker,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + reranker,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + reranker,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + reranker,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + reranker,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + multi-query,kuy teav,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + multi-query,lok lak,dish,34,0.4,0.058823529411764705,1.0,0.48522855511632257
+Hybrid + multi-query,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + multi-query,bai sach chrouk,dish,29,0.6,0.10344827586206896,1.0,0.6548086577531307
+Hybrid + multi-query,num banh chok,dish,26,0.8,0.15384615384615385,0.5,0.6608397947263839
+Hybrid + multi-query,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + multi-query,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + multi-query,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + multi-query,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + multi-query,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + multi-query,គុយទាវ,dish_kh,42,0.8,0.09523809523809523,1.0,0.830419897363192
+Hybrid + multi-query,ឡុកឡាក់,dish_kh,28,0.4,0.07142857142857142,1.0,0.48522855511632257
+Hybrid + multi-query,បាយសាច់ជ្រូក,dish_kh,25,0.6,0.12,1.0,0.7227265726449519
+Hybrid + multi-query,នំបញ្ចុក,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + multi-query,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + multi-query,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + multi-query,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + multi-query,carry noodle,typo,4,0.2,0.25,0.2,0.15101961822780524
+Hybrid + multi-query,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + multi-query,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + multi-query,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + multi-query,num banh chuk,typo,24,0.6,0.125,1.0,0.6843515475204855
+Hybrid + multi-query,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + multi-query,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + multi-query,spicy noodle soup,meaning,43,0.6,0.06976744186046512,0.5,0.5296347172140421
+Hybrid + multi-query,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + multi-query,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + multi-query,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + multi-query,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + multi-query,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + multi-query,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + multi-query,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + multi-query,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + multi-query,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + multi-query,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + multi-query,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + multi-query,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + multi-query,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + multi-query,ramen,dish,41,0.2,0.024390243902439025,0.5,0.21398626473452756
+Hybrid + multi-query,korean bbq,dish,56,0.4,0.03571428571428571,0.3333333333333333,0.3156484524795145
+Hybrid + multi-query,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + multi-query,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + multi-query,shawarma,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + multi-query,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + multi-query,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + multi-query,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + multi-query,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + multi-query,ice cream,dish,53,0.6,0.05660377358490566,1.0,0.6548086577531307
+Hybrid + multi-query,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query,matcha,dish,46,0.4,0.043478260869565216,1.0,0.5087403079104241
+Hybrid + multi-query,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + multi-query,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + multi-query,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + multi-query,crab,dish,70,0.6,0.04285714285714286,1.0,0.6164336326286644
+Hybrid + multi-query,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + multi-query,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + multi-query,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + multi-query,wine bar,dish,24,0.6,0.125,1.0,0.6992148198508501
+Hybrid + multi-query,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + multi-query,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + multi-query,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + multi-query,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + multi-query,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + multi-query,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + multi-query,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + multi-query,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + multi-query,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + multi-query,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + multi-query,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + multi-query,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + multi-query,មីឆា,dish_kh,21,0.8,0.19047619047619047,1.0,0.7860137352654724
+Hybrid + multi-query,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + multi-query,ការ៉េម,dish_kh,51,0.8,0.0784313725490196,1.0,0.8539316501572937
+Hybrid + multi-query,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid + multi-query,ទឹកក្រូច,dish_kh,19,0.6,0.15789473684210525,1.0,0.6992148198508501
+Hybrid + multi-query,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + multi-query,សម្លម្ជូរ,dish_kh,18,0.0,0.0,0.0,0.0
+Hybrid + multi-query,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + multi-query,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + multi-query,ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + multi-query,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + multi-query,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + multi-query,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + multi-query,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + multi-query,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query,ramenn,typo,32,0.2,0.03125,0.5,0.21398626473452756
+Hybrid + multi-query,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + multi-query,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + multi-query,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + multi-query,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + multi-query,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + multi-query,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + multi-query,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + multi-query,something cold,meaning,44,0.2,0.022727272727272728,0.2,0.13120507751234178
+Hybrid + multi-query,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + multi-query,fine dining,meaning,2,0.2,0.5,0.2,0.23719771276929622
+Hybrid + multi-query,family restaurant,meaning,40,0.8,0.1,1.0,0.7860137352654724
+Hybrid + multi-query,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query,kuy teav in Sen Sok,area,9,0.4,0.2222222222222222,1.0,0.5531464700081437
+Hybrid + multi-query,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + multi-query,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + multi-query,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + multi-query,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query,noodles in Mean Chey,area,25,0.6,0.12,1.0,0.6843515475204855
+Hybrid + multi-query,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + multi-query,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + multi-query,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + multi-query,ramen in BKK1,area,15,0.4,0.13333333333333333,0.3333333333333333,0.30078518014914984
+Hybrid + multi-query,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + multi-query,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + multi-query,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + multi-query,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query,គុយទាវ នៅមានជ័យ,area,13,0.6,0.23076923076923078,1.0,0.6548086577531307
+Hybrid + multi-query,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + multi-query,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + multi-query,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + multi-query,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + multi-query,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + multi-query,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + multi-query,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + multi-query,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + multi-query,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + multi-query,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + multi-query,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + multi-query,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + multi-query,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + multi-query,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + multi-query,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + multi-query,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + multi-query,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + multi-query,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + HyDE,kuy teav,dish,63,0.6,0.047619047619047616,0.5,0.5147714448836774
+Hybrid + HyDE,lok lak,dish,34,0.2,0.029411764705882353,0.3333333333333333,0.16958010263680806
+Hybrid + HyDE,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + HyDE,bai sach chrouk,dish,29,0.4,0.06896551724137931,1.0,0.5531464700081437
+Hybrid + HyDE,num banh chok,dish,26,0.8,0.15384615384615385,0.5,0.6608397947263839
+Hybrid + HyDE,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + HyDE,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + HyDE,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + HyDE,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + HyDE,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + HyDE,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + HyDE,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + HyDE,គុយទាវ,dish_kh,42,0.8,0.09523809523809523,1.0,0.830419897363192
+Hybrid + HyDE,ឡុកឡាក់,dish_kh,28,0.2,0.03571428571428571,0.3333333333333333,0.16958010263680806
+Hybrid + HyDE,បាយសាច់ជ្រូក,dish_kh,25,0.6,0.12,1.0,0.6992148198508501
+Hybrid + HyDE,នំបញ្ចុក,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + HyDE,កាហ្វេ,dish_kh,82,0.8,0.04878048780487805,1.0,0.8687949224876582
+Hybrid + HyDE,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + HyDE,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + HyDE,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + HyDE,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + HyDE,carry noodle,typo,4,0.2,0.25,0.2,0.15101961822780524
+Hybrid + HyDE,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + HyDE,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + HyDE,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + HyDE,num banh chuk,typo,24,0.6,0.125,1.0,0.6843515475204855
+Hybrid + HyDE,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + HyDE,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + HyDE,spicy noodle soup,meaning,43,0.6,0.06976744186046512,0.5,0.5296347172140421
+Hybrid + HyDE,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + HyDE,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + HyDE,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + HyDE,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + HyDE,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + HyDE,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + HyDE,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + HyDE,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + HyDE,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + HyDE,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + HyDE,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + HyDE,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + HyDE,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + HyDE,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + HyDE,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + HyDE,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + HyDE,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + HyDE,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + HyDE,ramen,dish,41,0.2,0.024390243902439025,0.5,0.21398626473452756
+Hybrid + HyDE,korean bbq,dish,56,0.4,0.03571428571428571,0.3333333333333333,0.3156484524795145
+Hybrid + HyDE,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + HyDE,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + HyDE,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + HyDE,shawarma,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + HyDE,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + HyDE,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + HyDE,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + HyDE,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + HyDE,ice cream,dish,53,0.6,0.05660377358490566,1.0,0.6548086577531307
+Hybrid + HyDE,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + HyDE,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + HyDE,matcha,dish,46,0.4,0.043478260869565216,1.0,0.5087403079104241
+Hybrid + HyDE,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + HyDE,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + HyDE,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + HyDE,crab,dish,70,0.6,0.04285714285714286,1.0,0.6164336326286644
+Hybrid + HyDE,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + HyDE,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + HyDE,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + HyDE,wine bar,dish,24,0.6,0.125,1.0,0.6992148198508501
+Hybrid + HyDE,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + HyDE,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + HyDE,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + HyDE,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + HyDE,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + HyDE,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + HyDE,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + HyDE,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + HyDE,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + HyDE,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + HyDE,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + HyDE,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + HyDE,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + HyDE,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + HyDE,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + HyDE,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + HyDE,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + HyDE,មីឆា,dish_kh,21,0.8,0.19047619047619047,1.0,0.7860137352654724
+Hybrid + HyDE,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + HyDE,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + HyDE,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + HyDE,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + HyDE,ការ៉េម,dish_kh,51,0.8,0.0784313725490196,1.0,0.8539316501572937
+Hybrid + HyDE,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid + HyDE,ទឹកក្រូច,dish_kh,19,0.6,0.15789473684210525,0.3333333333333333,0.4468535299918563
+Hybrid + HyDE,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + HyDE,សម្លម្ជូរ,dish_kh,18,0.8,0.2222222222222222,1.0,0.8539316501572937
+Hybrid + HyDE,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + HyDE,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + HyDE,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + HyDE,ម្ហូបចិន,dish_kh,48,0.8,0.08333333333333333,1.0,0.830419897363192
+Hybrid + HyDE,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + HyDE,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + HyDE,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + HyDE,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + HyDE,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + HyDE,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + HyDE,ramenn,typo,32,0.2,0.03125,0.5,0.21398626473452756
+Hybrid + HyDE,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + HyDE,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + HyDE,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + HyDE,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + HyDE,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + HyDE,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + HyDE,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + HyDE,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + HyDE,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + HyDE,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + HyDE,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + HyDE,something cold,meaning,44,0.2,0.022727272727272728,0.2,0.13120507751234178
+Hybrid + HyDE,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + HyDE,fine dining,meaning,2,0.2,0.5,0.2,0.23719771276929622
+Hybrid + HyDE,family restaurant,meaning,40,0.8,0.1,1.0,0.7860137352654724
+Hybrid + HyDE,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + HyDE,kuy teav in Sen Sok,area,9,0.4,0.2222222222222222,1.0,0.5531464700081437
+Hybrid + HyDE,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + HyDE,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + HyDE,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + HyDE,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + HyDE,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + HyDE,noodles in Mean Chey,area,25,0.6,0.12,1.0,0.6843515475204855
+Hybrid + HyDE,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + HyDE,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + HyDE,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + HyDE,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + HyDE,ramen in BKK1,area,15,0.4,0.13333333333333333,0.3333333333333333,0.30078518014914984
+Hybrid + HyDE,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + HyDE,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + HyDE,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + HyDE,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + HyDE,គុយទាវ នៅមានជ័យ,area,13,0.6,0.23076923076923078,1.0,0.6548086577531307
+Hybrid + HyDE,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + HyDE,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + HyDE,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + HyDE,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + HyDE,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + HyDE,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + HyDE,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + HyDE,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + HyDE,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + HyDE,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + HyDE,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + HyDE,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + HyDE,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + HyDE,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + HyDE,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + HyDE,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + HyDE,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + HyDE,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + HyDE,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + HyDE,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,kuy teav,dish,63,0.8,0.06349206349206349,1.0,0.7860137352654724
+Hybrid + multi-query + HyDE,lok lak,dish,34,0.2,0.029411764705882353,0.3333333333333333,0.16958010263680806
+Hybrid + multi-query + HyDE,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + multi-query + HyDE,bai sach chrouk,dish,29,0.4,0.06896551724137931,1.0,0.5531464700081437
+Hybrid + multi-query + HyDE,num banh chok,dish,26,0.8,0.15384615384615385,0.5,0.6608397947263839
+Hybrid + multi-query + HyDE,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + multi-query + HyDE,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query + HyDE,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + multi-query + HyDE,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query + HyDE,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + multi-query + HyDE,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + multi-query + HyDE,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + multi-query + HyDE,គុយទាវ,dish_kh,42,0.8,0.09523809523809523,1.0,0.8539316501572937
+Hybrid + multi-query + HyDE,ឡុកឡាក់,dish_kh,28,0.2,0.03571428571428571,0.3333333333333333,0.16958010263680806
+Hybrid + multi-query + HyDE,បាយសាច់ជ្រូក,dish_kh,25,0.4,0.08,1.0,0.5531464700081437
+Hybrid + multi-query + HyDE,នំបញ្ចុក,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query + HyDE,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + multi-query + HyDE,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + multi-query + HyDE,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + multi-query + HyDE,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query + HyDE,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + multi-query + HyDE,carry noodle,typo,4,0.2,0.25,0.2,0.15101961822780524
+Hybrid + multi-query + HyDE,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + multi-query + HyDE,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + multi-query + HyDE,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + multi-query + HyDE,num banh chuk,typo,24,0.6,0.125,1.0,0.6843515475204855
+Hybrid + multi-query + HyDE,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + multi-query + HyDE,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + multi-query + HyDE,spicy noodle soup,meaning,43,0.6,0.06976744186046512,0.5,0.5296347172140421
+Hybrid + multi-query + HyDE,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query + HyDE,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + multi-query + HyDE,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + multi-query + HyDE,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + multi-query + HyDE,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query + HyDE,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + multi-query + HyDE,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query + HyDE,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query + HyDE,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + multi-query + HyDE,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + multi-query + HyDE,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + multi-query + HyDE,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + multi-query + HyDE,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query + HyDE,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + multi-query + HyDE,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + multi-query + HyDE,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + multi-query + HyDE,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,ramen,dish,41,0.2,0.024390243902439025,0.5,0.21398626473452756
+Hybrid + multi-query + HyDE,korean bbq,dish,56,0.4,0.03571428571428571,0.3333333333333333,0.3156484524795145
+Hybrid + multi-query + HyDE,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query + HyDE,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + multi-query + HyDE,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + multi-query + HyDE,shawarma,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + multi-query + HyDE,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + multi-query + HyDE,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + multi-query + HyDE,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + multi-query + HyDE,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + multi-query + HyDE,ice cream,dish,53,0.6,0.05660377358490566,1.0,0.6548086577531307
+Hybrid + multi-query + HyDE,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query + HyDE,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query + HyDE,matcha,dish,46,0.4,0.043478260869565216,1.0,0.5087403079104241
+Hybrid + multi-query + HyDE,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + multi-query + HyDE,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + multi-query + HyDE,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + multi-query + HyDE,crab,dish,70,0.6,0.04285714285714286,1.0,0.6164336326286644
+Hybrid + multi-query + HyDE,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + multi-query + HyDE,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + multi-query + HyDE,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + multi-query + HyDE,wine bar,dish,24,0.6,0.125,1.0,0.6992148198508501
+Hybrid + multi-query + HyDE,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + multi-query + HyDE,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query + HyDE,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + multi-query + HyDE,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + multi-query + HyDE,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + multi-query + HyDE,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + multi-query + HyDE,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + multi-query + HyDE,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query + HyDE,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + multi-query + HyDE,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query + HyDE,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + multi-query + HyDE,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + multi-query + HyDE,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + multi-query + HyDE,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query + HyDE,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query + HyDE,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + multi-query + HyDE,មីឆា,dish_kh,21,0.8,0.19047619047619047,1.0,0.7860137352654724
+Hybrid + multi-query + HyDE,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query + HyDE,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query + HyDE,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query + HyDE,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + multi-query + HyDE,ការ៉េម,dish_kh,51,0.8,0.0784313725490196,1.0,0.8539316501572937
+Hybrid + multi-query + HyDE,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid + multi-query + HyDE,ទឹកក្រូច,dish_kh,19,0.6,0.15789473684210525,0.3333333333333333,0.4468535299918563
+Hybrid + multi-query + HyDE,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + multi-query + HyDE,សម្លម្ជូរ,dish_kh,18,0.0,0.0,0.0,0.0
+Hybrid + multi-query + HyDE,មាន់បំពង,dish_kh,66,0.8,0.06060606060606061,1.0,0.8687949224876582
+Hybrid + multi-query + HyDE,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query + HyDE,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + multi-query + HyDE,ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + multi-query + HyDE,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + multi-query + HyDE,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + multi-query + HyDE,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query + HyDE,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + multi-query + HyDE,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + multi-query + HyDE,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + multi-query + HyDE,ramenn,typo,32,0.2,0.03125,0.5,0.21398626473452756
+Hybrid + multi-query + HyDE,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + multi-query + HyDE,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + multi-query + HyDE,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + multi-query + HyDE,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query + HyDE,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + multi-query + HyDE,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + multi-query + HyDE,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query + HyDE,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + multi-query + HyDE,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + multi-query + HyDE,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query + HyDE,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + multi-query + HyDE,something cold,meaning,44,0.2,0.022727272727272728,0.2,0.13120507751234178
+Hybrid + multi-query + HyDE,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + multi-query + HyDE,fine dining,meaning,2,0.2,0.5,0.2,0.23719771276929622
+Hybrid + multi-query + HyDE,family restaurant,meaning,40,0.8,0.1,1.0,0.7860137352654724
+Hybrid + multi-query + HyDE,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + multi-query + HyDE,kuy teav in Sen Sok,area,9,0.4,0.2222222222222222,1.0,0.5531464700081437
+Hybrid + multi-query + HyDE,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + multi-query + HyDE,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + multi-query + HyDE,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + multi-query + HyDE,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query + HyDE,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query + HyDE,noodles in Mean Chey,area,25,0.6,0.12,1.0,0.6843515475204855
+Hybrid + multi-query + HyDE,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + multi-query + HyDE,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + multi-query + HyDE,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + multi-query + HyDE,ramen in BKK1,area,15,0.4,0.13333333333333333,0.3333333333333333,0.30078518014914984
+Hybrid + multi-query + HyDE,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + multi-query + HyDE,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + multi-query + HyDE,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + multi-query + HyDE,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + multi-query + HyDE,គុយទាវ នៅមានជ័យ,area,13,0.6,0.23076923076923078,1.0,0.6548086577531307
+Hybrid + multi-query + HyDE,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + multi-query + HyDE,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + multi-query + HyDE,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + multi-query + HyDE,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + multi-query + HyDE,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + multi-query + HyDE,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + multi-query + HyDE,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + multi-query + HyDE,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + multi-query + HyDE,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + multi-query + HyDE,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + multi-query + HyDE,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + multi-query + HyDE,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + multi-query + HyDE,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + multi-query + HyDE,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + multi-query + HyDE,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + multi-query + HyDE,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + multi-query + HyDE,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + multi-query + HyDE,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker + multi-query,kuy teav,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + reranker + multi-query,lok lak,dish,34,0.4,0.058823529411764705,1.0,0.5531464700081437
+Hybrid + reranker + multi-query,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker + multi-query,bai sach chrouk,dish,29,0.4,0.06896551724137931,1.0,0.5531464700081437
+Hybrid + reranker + multi-query,num banh chok,dish,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker + multi-query,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + reranker + multi-query,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + multi-query,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker + multi-query,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + reranker + multi-query,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + reranker + multi-query,គុយទាវ,dish_kh,42,0.8,0.09523809523809523,0.5,0.6608397947263839
+Hybrid + reranker + multi-query,ឡុកឡាក់,dish_kh,28,0.4,0.07142857142857142,1.0,0.5531464700081437
+Hybrid + reranker + multi-query,បាយសាច់ជ្រូក,dish_kh,25,0.6,0.12,1.0,0.6992148198508501
+Hybrid + reranker + multi-query,នំបញ្ចុក,dish_kh,55,0.8,0.07272727272727272,1.0,0.8539316501572937
+Hybrid + reranker + multi-query,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker + multi-query,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + reranker + multi-query,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + reranker + multi-query,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker + multi-query,carry noodle,typo,4,0.2,0.25,1.0,0.3903800499921017
+Hybrid + reranker + multi-query,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + reranker + multi-query,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + reranker + multi-query,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker + multi-query,num banh chuk,typo,24,0.8,0.16666666666666666,1.0,0.8687949224876582
+Hybrid + reranker + multi-query,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker + multi-query,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + multi-query,spicy noodle soup,meaning,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker + multi-query,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker + multi-query,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker + multi-query,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker + multi-query,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + reranker + multi-query,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker + multi-query,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker + multi-query,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + reranker + multi-query,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + multi-query,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + multi-query,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker + multi-query,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker + multi-query,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + reranker + multi-query,ramen,dish,41,0.2,0.024390243902439025,1.0,0.3391602052736161
+Hybrid + reranker + multi-query,korean bbq,dish,56,1.0,0.08928571428571429,1.0,1.0
+Hybrid + reranker + multi-query,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + reranker + multi-query,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + multi-query,shawarma,dish,24,0.6,0.125,1.0,0.7227265726449519
+Hybrid + reranker + multi-query,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + multi-query,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker + multi-query,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + multi-query,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker + multi-query,ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + multi-query,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query,matcha,dish,46,0.6,0.06521739130434782,1.0,0.7227265726449519
+Hybrid + reranker + multi-query,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker + multi-query,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker + multi-query,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker + multi-query,crab,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + multi-query,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + reranker + multi-query,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + reranker + multi-query,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + reranker + multi-query,wine bar,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + reranker + multi-query,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker + multi-query,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + reranker + multi-query,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker + multi-query,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + reranker + multi-query,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + multi-query,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + reranker + multi-query,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker + multi-query,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + multi-query,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + multi-query,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + multi-query,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker + multi-query,មីឆា,dish_kh,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + multi-query,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + multi-query,ការ៉េម,dish_kh,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + multi-query,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid + reranker + multi-query,ទឹកក្រូច,dish_kh,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker + multi-query,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query,សម្លម្ជូរ,dish_kh,18,0.4,0.1111111111111111,1.0,0.5531464700081437
+Hybrid + reranker + multi-query,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker + multi-query,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + reranker + multi-query,ម្ហូបចិន,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + reranker + multi-query,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + multi-query,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker + multi-query,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker + multi-query,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query,ramenn,typo,32,0.2,0.03125,1.0,0.3391602052736161
+Hybrid + reranker + multi-query,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker + multi-query,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker + multi-query,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + reranker + multi-query,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker + multi-query,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker + multi-query,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + reranker + multi-query,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker + multi-query,something cold,meaning,44,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query,fine dining,meaning,2,0.2,0.5,1.0,0.6131471927654584
+Hybrid + reranker + multi-query,family restaurant,meaning,40,1.0,0.125,1.0,1.0
+Hybrid + reranker + multi-query,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query,kuy teav in Sen Sok,area,9,1.0,0.5555555555555556,1.0,1.0
+Hybrid + reranker + multi-query,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + multi-query,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + reranker + multi-query,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query,noodles in Mean Chey,area,25,0.8,0.16,1.0,0.830419897363192
+Hybrid + reranker + multi-query,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker + multi-query,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + multi-query,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker + multi-query,ramen in BKK1,area,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker + multi-query,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + reranker + multi-query,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker + multi-query,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker + multi-query,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query,គុយទាវ នៅមានជ័យ,area,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + multi-query,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + reranker + multi-query,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + reranker + multi-query,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker + multi-query,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker + multi-query,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + multi-query,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker + multi-query,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + multi-query,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + reranker + multi-query,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker + multi-query,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + multi-query,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + reranker + multi-query,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + multi-query,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + reranker + multi-query,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker + multi-query,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker + multi-query,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + reranker + multi-query,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker + multi-query,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker + HyDE,kuy teav,dish,63,0.8,0.06349206349206349,1.0,0.830419897363192
+Hybrid + reranker + HyDE,lok lak,dish,34,0.2,0.029411764705882353,1.0,0.3391602052736161
+Hybrid + reranker + HyDE,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker + HyDE,bai sach chrouk,dish,29,0.2,0.034482758620689655,1.0,0.3391602052736161
+Hybrid + reranker + HyDE,num banh chok,dish,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker + HyDE,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + reranker + HyDE,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + HyDE,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + HyDE,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + HyDE,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker + HyDE,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + reranker + HyDE,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + reranker + HyDE,គុយទាវ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + HyDE,ឡុកឡាក់,dish_kh,28,0.2,0.03571428571428571,1.0,0.3391602052736161
+Hybrid + reranker + HyDE,បាយសាច់ជ្រូក,dish_kh,25,0.6,0.12,1.0,0.6992148198508501
+Hybrid + reranker + HyDE,នំបញ្ចុក,dish_kh,55,0.8,0.07272727272727272,1.0,0.8539316501572937
+Hybrid + reranker + HyDE,កាហ្វេ,dish_kh,82,0.8,0.04878048780487805,1.0,0.830419897363192
+Hybrid + reranker + HyDE,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + reranker + HyDE,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + reranker + HyDE,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + HyDE,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker + HyDE,carry noodle,typo,4,0.2,0.25,1.0,0.3903800499921017
+Hybrid + reranker + HyDE,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + reranker + HyDE,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + reranker + HyDE,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker + HyDE,num banh chuk,typo,24,0.8,0.16666666666666666,1.0,0.8687949224876582
+Hybrid + reranker + HyDE,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker + HyDE,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + HyDE,spicy noodle soup,meaning,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker + HyDE,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + HyDE,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker + HyDE,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker + HyDE,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker + HyDE,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + HyDE,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + reranker + HyDE,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + HyDE,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + HyDE,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker + HyDE,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker + HyDE,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + reranker + HyDE,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + HyDE,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + HyDE,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + HyDE,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + HyDE,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker + HyDE,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker + HyDE,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + reranker + HyDE,ramen,dish,41,0.2,0.024390243902439025,1.0,0.3391602052736161
+Hybrid + reranker + HyDE,korean bbq,dish,56,1.0,0.08928571428571429,1.0,1.0
+Hybrid + reranker + HyDE,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + HyDE,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + reranker + HyDE,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + HyDE,shawarma,dish,24,0.6,0.125,1.0,0.7227265726449519
+Hybrid + reranker + HyDE,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + HyDE,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker + HyDE,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + HyDE,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker + HyDE,ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + HyDE,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + HyDE,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + HyDE,matcha,dish,46,0.6,0.06521739130434782,1.0,0.7227265726449519
+Hybrid + reranker + HyDE,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker + HyDE,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker + HyDE,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker + HyDE,crab,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + HyDE,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + reranker + HyDE,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + reranker + HyDE,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + reranker + HyDE,wine bar,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + reranker + HyDE,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker + HyDE,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + HyDE,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + reranker + HyDE,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + reranker + HyDE,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker + HyDE,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + reranker + HyDE,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + HyDE,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + HyDE,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + reranker + HyDE,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + HyDE,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker + HyDE,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + HyDE,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + HyDE,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + HyDE,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + HyDE,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + HyDE,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker + HyDE,មីឆា,dish_kh,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + HyDE,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + HyDE,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + HyDE,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + HyDE,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + HyDE,ការ៉េម,dish_kh,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + HyDE,ស៊ុបឆ្នាំងដី,dish_kh,35,0.8,0.11428571428571428,0.5,0.6608397947263839
+Hybrid + reranker + HyDE,ទឹកក្រូច,dish_kh,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker + HyDE,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + reranker + HyDE,សម្លម្ជូរ,dish_kh,18,0.8,0.2222222222222222,1.0,0.8539316501572937
+Hybrid + reranker + HyDE,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker + HyDE,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + HyDE,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + reranker + HyDE,ម្ហូបចិន,dish_kh,48,0.6,0.0625,1.0,0.6992148198508501
+Hybrid + reranker + HyDE,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + HyDE,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + HyDE,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + HyDE,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker + HyDE,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker + HyDE,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + HyDE,ramenn,typo,32,0.2,0.03125,1.0,0.3391602052736161
+Hybrid + reranker + HyDE,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker + HyDE,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + HyDE,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker + HyDE,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + HyDE,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + reranker + HyDE,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker + HyDE,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + HyDE,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker + HyDE,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + reranker + HyDE,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + HyDE,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker + HyDE,something cold,meaning,44,0.0,0.0,0.0,0.0
+Hybrid + reranker + HyDE,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + reranker + HyDE,fine dining,meaning,2,0.2,0.5,1.0,0.6131471927654584
+Hybrid + reranker + HyDE,family restaurant,meaning,40,1.0,0.125,1.0,1.0
+Hybrid + reranker + HyDE,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + HyDE,kuy teav in Sen Sok,area,9,1.0,0.5555555555555556,1.0,1.0
+Hybrid + reranker + HyDE,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + HyDE,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + reranker + HyDE,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + HyDE,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + HyDE,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + HyDE,noodles in Mean Chey,area,25,0.8,0.16,1.0,0.830419897363192
+Hybrid + reranker + HyDE,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker + HyDE,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + HyDE,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + HyDE,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker + HyDE,ramen in BKK1,area,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker + HyDE,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + reranker + HyDE,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker + HyDE,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker + HyDE,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + HyDE,គុយទាវ នៅមានជ័យ,area,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + HyDE,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + HyDE,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + reranker + HyDE,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + reranker + HyDE,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker + HyDE,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker + HyDE,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + HyDE,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + HyDE,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker + HyDE,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + HyDE,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + reranker + HyDE,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker + HyDE,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + HyDE,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + reranker + HyDE,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + HyDE,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + reranker + HyDE,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker + HyDE,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker + HyDE,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + reranker + HyDE,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker + HyDE,swensens,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kuy teav,dish,63,0.8,0.06349206349206349,1.0,0.830419897363192
+Hybrid + reranker + multi-query + HyDE,lok lak,dish,34,0.4,0.058823529411764705,1.0,0.5531464700081437
+Hybrid + reranker + multi-query + HyDE,amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker + multi-query + HyDE,bai sach chrouk,dish,29,0.6,0.10344827586206896,1.0,0.6843515475204855
+Hybrid + reranker + multi-query + HyDE,num banh chok,dish,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,គុយទាវ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ឡុកឡាក់,dish_kh,28,0.2,0.03571428571428571,1.0,0.3391602052736161
+Hybrid + reranker + multi-query + HyDE,បាយសាច់ជ្រូក,dish_kh,25,0.8,0.16,1.0,0.8539316501572937
+Hybrid + reranker + multi-query + HyDE,នំបញ្ចុក,dish_kh,55,0.8,0.07272727272727272,1.0,0.8539316501572937
+Hybrid + reranker + multi-query + HyDE,កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,carry noodle,typo,4,0.2,0.25,1.0,0.3903800499921017
+Hybrid + reranker + multi-query + HyDE,piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,num banh chuk,typo,24,0.8,0.16666666666666666,1.0,0.8687949224876582
+Hybrid + reranker + multi-query + HyDE,something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,spicy noodle soup,meaning,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Hybrid + reranker + multi-query + HyDE,pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,costa coffee,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,khmer surin,named,1,0.2,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ramen,dish,41,0.2,0.024390243902439025,1.0,0.3391602052736161
+Hybrid + reranker + multi-query + HyDE,korean bbq,dish,56,1.0,0.08928571428571429,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,shawarma,dish,24,0.6,0.125,1.0,0.7227265726449519
+Hybrid + reranker + multi-query + HyDE,indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,matcha,dish,46,0.6,0.06521739130434782,1.0,0.7227265726449519
+Hybrid + reranker + multi-query + HyDE,donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,crab,dish,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Hybrid + reranker + multi-query + HyDE,cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,croissant,dish,40,1.0,0.125,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,wine bar,dish,24,1.0,0.20833333333333334,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sour soup,dish,1,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query + HyDE,beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Hybrid + reranker + multi-query + HyDE,boat noodle,dish,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,num pang,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,korean food,dish,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,មីឆា,dish_kh,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ការ៉េម,dish_kh,51,1.0,0.09803921568627451,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ទឹកក្រូច,dish_kh,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query + HyDE,សម្លម្ជូរ,dish_kh,18,0.4,0.1111111111111111,1.0,0.5531464700081437
+Hybrid + reranker + multi-query + HyDE,មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ម្ហូបចិន,dish_kh,48,0.8,0.08333333333333333,1.0,0.830419897363192
+Hybrid + reranker + multi-query + HyDE,ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ramenn,typo,32,0.2,0.03125,1.0,0.3391602052736161
+Hybrid + reranker + multi-query + HyDE,amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Hybrid + reranker + multi-query + HyDE,bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Hybrid + reranker + multi-query + HyDE,kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,healthy food,meaning,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,rooftop,meaning,20,1.0,0.25,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,something cold,meaning,44,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query + HyDE,sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Hybrid + reranker + multi-query + HyDE,fine dining,meaning,2,0.2,0.5,1.0,0.6131471927654584
+Hybrid + reranker + multi-query + HyDE,family restaurant,meaning,40,1.0,0.125,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kuy teav in Sen Sok,area,9,1.0,0.5555555555555556,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,noodles in Mean Chey,area,25,0.8,0.16,1.0,0.830419897363192
+Hybrid + reranker + multi-query + HyDE,bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ramen in BKK1,area,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Hybrid + reranker + multi-query + HyDE,bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,គុយទាវ នៅមានជ័យ,area,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,mixue,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Hybrid + reranker + multi-query + HyDE,burger king,named,4,0.8,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,texas chicken,named,8,1.0,0.625,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,dairy queen,named,10,1.0,0.5,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,chatime,named,5,1.0,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Hybrid + reranker + multi-query + HyDE,tous les jours,named,3,0.6,1.0,1.0,1.0
+Hybrid + reranker + multi-query + HyDE,swensens,named,3,0.6,1.0,1.0,1.0
+Live search (all + retry),kuy teav,dish,63,0.8,0.06349206349206349,1.0,0.830419897363192
+Live search (all + retry),lok lak,dish,34,0.4,0.058823529411764705,1.0,0.5531464700081437
+Live search (all + retry),amok,dish,2,0.4,1.0,0.25,0.5012658353418871
+Live search (all + retry),bai sach chrouk,dish,29,0.6,0.10344827586206896,1.0,0.6843515475204855
+Live search (all + retry),num banh chok,dish,26,1.0,0.19230769230769232,1.0,1.0
+Live search (all + retry),pizza,dish,87,1.0,0.05747126436781609,1.0,1.0
+Live search (all + retry),sushi,dish,59,1.0,0.0847457627118644,1.0,1.0
+Live search (all + retry),burger,dish,70,1.0,0.07142857142857142,1.0,1.0
+Live search (all + retry),fried rice,dish,47,1.0,0.10638297872340426,1.0,1.0
+Live search (all + retry),bubble tea,dish,86,1.0,0.05813953488372093,1.0,1.0
+Live search (all + retry),khmer bbq,dish,52,1.0,0.09615384615384616,1.0,1.0
+Live search (all + retry),coffee,dish,98,1.0,0.05102040816326531,1.0,1.0
+Live search (all + retry),គុយទាវ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Live search (all + retry),ឡុកឡាក់,dish_kh,28,0.2,0.03571428571428571,1.0,0.3391602052736161
+Live search (all + retry),បាយសាច់ជ្រូក,dish_kh,25,0.8,0.16,1.0,0.8539316501572937
+Live search (all + retry),នំបញ្ចុក,dish_kh,55,0.8,0.07272727272727272,1.0,0.8539316501572937
+Live search (all + retry),កាហ្វេ,dish_kh,82,1.0,0.06097560975609756,1.0,1.0
+Live search (all + retry),ភីហ្សា,dish_kh,67,1.0,0.07462686567164178,1.0,1.0
+Live search (all + retry),តែគុជ,dish_kh,79,1.0,0.06329113924050633,1.0,1.0
+Live search (all + retry),បាយឆា,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Live search (all + retry),kuytiew,typo,31,1.0,0.16129032258064516,1.0,1.0
+Live search (all + retry),carry noodle,typo,4,0.2,0.25,1.0,0.3903800499921017
+Live search (all + retry),piza,typo,81,1.0,0.06172839506172839,1.0,1.0
+Live search (all + retry),cofee,typo,103,1.0,0.04854368932038835,1.0,1.0
+Live search (all + retry),sushii,typo,57,1.0,0.08771929824561403,1.0,1.0
+Live search (all + retry),num banh chuk,typo,24,0.8,0.16666666666666666,1.0,0.8687949224876582
+Live search (all + retry),something sweet,meaning,65,1.0,0.07692307692307693,1.0,1.0
+Live search (all + retry),vegetarian food,meaning,45,1.0,0.1111111111111111,1.0,1.0
+Live search (all + retry),spicy noodle soup,meaning,43,1.0,0.11627906976744186,1.0,1.0
+Live search (all + retry),breakfast,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Live search (all + retry),seafood,meaning,71,1.0,0.07042253521126761,1.0,1.0
+Live search (all + retry),hot pot,meaning,60,1.0,0.08333333333333333,1.0,1.0
+Live search (all + retry),coffee in Toul Kork,area,86,1.0,0.05813953488372093,1.0,1.0
+Live search (all + retry),pizza in BKK1,area,30,1.0,0.16666666666666666,1.0,1.0
+Live search (all + retry),bbq in Sen Sok,area,41,1.0,0.12195121951219512,1.0,1.0
+Live search (all + retry),sushi in Chamkar Mon,area,38,1.0,0.13157894736842105,1.0,1.0
+Live search (all + retry),កាហ្វេ នៅទួលគោក,area,59,1.0,0.0847457627118644,1.0,1.0
+Live search (all + retry),bubble tea in Daun Penh,area,26,1.0,0.19230769230769232,1.0,1.0
+Live search (all + retry),coffee near CADT,near,14,1.0,0.35714285714285715,1.0,1.0
+Live search (all + retry),kuy teav near Independence Monument,near,20,0.2,0.05,1.0,0.3391602052736161
+Live search (all + retry),pizza near Aeon Mall 1,near,42,1.0,0.11904761904761904,1.0,1.0
+Live search (all + retry),bbq near Russian Market,near,38,1.0,0.13157894736842105,1.0,1.0
+Live search (all + retry),starbucks,named,21,1.0,0.23809523809523808,1.0,1.0
+Live search (all + retry),pizza company,named,13,1.0,0.38461538461538464,1.0,1.0
+Live search (all + retry),brown coffee,named,49,1.0,0.10204081632653061,1.0,1.0
+Live search (all + retry),costa coffee,named,4,0.8,1.0,1.0,1.0
+Live search (all + retry),khmer surin,named,1,0.2,1.0,1.0,1.0
+Live search (all + retry),ramen,dish,41,0.2,0.024390243902439025,1.0,0.3391602052736161
+Live search (all + retry),korean bbq,dish,56,1.0,0.08928571428571429,1.0,1.0
+Live search (all + retry),dim sum,dish,36,1.0,0.1388888888888889,1.0,1.0
+Live search (all + retry),steak,dish,62,1.0,0.08064516129032258,1.0,1.0
+Live search (all + retry),pasta,dish,53,1.0,0.09433962264150944,1.0,1.0
+Live search (all + retry),shawarma,dish,24,0.6,0.125,1.0,0.7227265726449519
+Live search (all + retry),indian food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Live search (all + retry),thai food,dish,46,1.0,0.10869565217391304,1.0,1.0
+Live search (all + retry),tom yum,dish,51,1.0,0.09803921568627451,1.0,1.0
+Live search (all + retry),fried chicken,dish,58,1.0,0.08620689655172414,1.0,1.0
+Live search (all + retry),ice cream,dish,53,1.0,0.09433962264150944,1.0,1.0
+Live search (all + retry),smoothie,dish,59,1.0,0.0847457627118644,1.0,1.0
+Live search (all + retry),fresh juice,dish,55,1.0,0.09090909090909091,1.0,1.0
+Live search (all + retry),matcha,dish,46,0.6,0.06521739130434782,1.0,0.7227265726449519
+Live search (all + retry),donut,dish,22,1.0,0.22727272727272727,1.0,1.0
+Live search (all + retry),sandwich,dish,57,1.0,0.08771929824561403,1.0,1.0
+Live search (all + retry),salad,dish,65,1.0,0.07692307692307693,1.0,1.0
+Live search (all + retry),crab,dish,70,1.0,0.07142857142857142,1.0,1.0
+Live search (all + retry),grilled fish,dish,7,0.6,0.42857142857142855,1.0,0.7227265726449519
+Live search (all + retry),cake shop,dish,63,1.0,0.07936507936507936,1.0,1.0
+Live search (all + retry),croissant,dish,40,1.0,0.125,1.0,1.0
+Live search (all + retry),wine bar,dish,24,1.0,0.20833333333333334,1.0,1.0
+Live search (all + retry),buffet,dish,54,1.0,0.09259259259259259,1.0,1.0
+Live search (all + retry),porridge,dish,36,1.0,0.1388888888888889,1.0,1.0
+Live search (all + retry),khmer curry,dish,34,1.0,0.14705882352941177,1.0,1.0
+Live search (all + retry),sour soup,dish,1,0.0,0.0,0.0,0.0
+Live search (all + retry),beef skewers,dish,46,1.0,0.10869565217391304,1.0,1.0
+Live search (all + retry),prahok,dish,3,0.4,0.6666666666666666,1.0,0.7653606369886217
+Live search (all + retry),boat noodle,dish,8,1.0,0.625,1.0,1.0
+Live search (all + retry),num pang,dish,50,1.0,0.1,1.0,1.0
+Live search (all + retry),japanese food,dish,73,1.0,0.0684931506849315,1.0,1.0
+Live search (all + retry),korean food,dish,50,1.0,0.1,1.0,1.0
+Live search (all + retry),chinese food,dish,71,1.0,0.07042253521126761,1.0,1.0
+Live search (all + retry),vietnamese food,dish,45,1.0,0.1111111111111111,1.0,1.0
+Live search (all + retry),halal food,dish,51,1.0,0.09803921568627451,1.0,1.0
+Live search (all + retry),vegan restaurant,dish,47,1.0,0.10638297872340426,1.0,1.0
+Live search (all + retry),អាម៉ុក,dish_kh,5,1.0,1.0,1.0,1.0
+Live search (all + retry),ស៊ូស៊ី,dish_kh,47,1.0,0.10638297872340426,1.0,1.0
+Live search (all + retry),ប៊ឺហ្គឺ,dish_kh,54,1.0,0.09259259259259259,1.0,1.0
+Live search (all + retry),មីឆា,dish_kh,21,1.0,0.23809523809523808,1.0,1.0
+Live search (all + retry),បបរ,dish_kh,38,1.0,0.13157894736842105,1.0,1.0
+Live search (all + retry),សាច់អាំង,dish_kh,59,1.0,0.0847457627118644,1.0,1.0
+Live search (all + retry),ម្ហូបបួស,dish_kh,36,1.0,0.1388888888888889,1.0,1.0
+Live search (all + retry),នំប៉័ង,dish_kh,53,1.0,0.09433962264150944,1.0,1.0
+Live search (all + retry),ការ៉េម,dish_kh,51,1.0,0.09803921568627451,1.0,1.0
+Live search (all + retry),ស៊ុបឆ្នាំងដី,dish_kh,35,1.0,0.14285714285714285,1.0,1.0
+Live search (all + retry),ទឹកក្រូច,dish_kh,19,1.0,0.2631578947368421,1.0,1.0
+Live search (all + retry),ត្រីអាំង,dish_kh,4,0.0,0.0,0.0,0.0
+Live search (all + retry),សម្លម្ជូរ,dish_kh,18,0.4,0.1111111111111111,1.0,0.5531464700081437
+Live search (all + retry),មាន់បំពង,dish_kh,66,1.0,0.07575757575757576,1.0,1.0
+Live search (all + retry),ម្ហូបជប៉ុន,dish_kh,55,1.0,0.09090909090909091,1.0,1.0
+Live search (all + retry),ម្ហូបកូរ៉េ,dish_kh,48,1.0,0.10416666666666667,1.0,1.0
+Live search (all + retry),ម្ហូបចិន,dish_kh,48,0.8,0.08333333333333333,1.0,0.830419897363192
+Live search (all + retry),ម្ហូបថៃ,dish_kh,42,1.0,0.11904761904761904,1.0,1.0
+Live search (all + retry),ភេសជ្ជៈ,dish_kh,70,1.0,0.07142857142857142,1.0,1.0
+Live search (all + retry),នំខេក,dish_kh,50,1.0,0.1,1.0,1.0
+Live search (all + retry),pizzza,typo,82,1.0,0.06097560975609756,1.0,1.0
+Live search (all + retry),burgr,typo,58,1.0,0.08620689655172414,1.0,1.0
+Live search (all + retry),kofee,typo,47,1.0,0.10638297872340426,1.0,1.0
+Live search (all + retry),ramenn,typo,32,0.2,0.03125,1.0,0.3391602052736161
+Live search (all + retry),amokk,typo,2,0.4,1.0,0.25,0.5012658353418871
+Live search (all + retry),bubble tae,typo,59,1.0,0.0847457627118644,1.0,1.0
+Live search (all + retry),sushy,typo,43,1.0,0.11627906976744186,1.0,1.0
+Live search (all + retry),nom bang chok,typo,30,1.0,0.16666666666666666,1.0,1.0
+Live search (all + retry),bai sach chruk,typo,8,0.4,0.25,1.0,0.5531464700081437
+Live search (all + retry),kuy tiev,typo,44,1.0,0.11363636363636363,1.0,1.0
+Live search (all + retry),healthy food,meaning,50,1.0,0.1,1.0,1.0
+Live search (all + retry),street food,meaning,44,1.0,0.11363636363636363,1.0,1.0
+Live search (all + retry),rooftop,meaning,20,1.0,0.25,1.0,1.0
+Live search (all + retry),spicy food,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Live search (all + retry),grilled meat,meaning,66,1.0,0.07575757575757576,1.0,1.0
+Live search (all + retry),something cold,meaning,44,0.0,0.0,0.0,0.0
+Live search (all + retry),sweet drink,meaning,30,0.0,0.0,0.0,0.0
+Live search (all + retry),fine dining,meaning,2,0.2,0.5,1.0,0.6131471927654584
+Live search (all + retry),family restaurant,meaning,40,1.0,0.125,1.0,1.0
+Live search (all + retry),late night snack,meaning,55,1.0,0.09090909090909091,1.0,1.0
+Live search (all + retry),kuy teav in Sen Sok,area,9,1.0,0.5555555555555556,1.0,1.0
+Live search (all + retry),pizza in Toul Kork,area,21,1.0,0.23809523809523808,1.0,1.0
+Live search (all + retry),coffee in BKK1,area,69,1.0,0.07246376811594203,1.0,1.0
+Live search (all + retry),bbq in Chamkar Mon,area,42,1.0,0.11904761904761904,1.0,1.0
+Live search (all + retry),sushi in Toul Kork,area,30,1.0,0.16666666666666666,1.0,1.0
+Live search (all + retry),burger in Daun Penh,area,38,1.0,0.13157894736842105,1.0,1.0
+Live search (all + retry),noodles in Mean Chey,area,25,0.8,0.16,1.0,0.830419897363192
+Live search (all + retry),bubble tea in Sen Sok,area,31,1.0,0.16129032258064516,1.0,1.0
+Live search (all + retry),fried rice in Russey Keo,area,5,1.0,1.0,1.0,1.0
+Live search (all + retry),coffee in Chroy Changvar,area,38,1.0,0.13157894736842105,1.0,1.0
+Live search (all + retry),pizza in Sen Sok,area,19,1.0,0.2631578947368421,1.0,1.0
+Live search (all + retry),ramen in BKK1,area,15,1.0,0.3333333333333333,1.0,1.0
+Live search (all + retry),lok lak in Daun Penh,area,3,0.6,1.0,0.5,0.7328286204777911
+Live search (all + retry),bakery in Daun Penh,area,49,1.0,0.10204081632653061,1.0,1.0
+Live search (all + retry),កាហ្វេ នៅសែនសុខ,area,60,1.0,0.08333333333333333,1.0,1.0
+Live search (all + retry),ភីហ្សា នៅបឹងកេងកង,area,30,1.0,0.16666666666666666,1.0,1.0
+Live search (all + retry),គុយទាវ នៅមានជ័យ,area,13,1.0,0.38461538461538464,1.0,1.0
+Live search (all + retry),coffee near Royal Palace,near,50,1.0,0.1,1.0,1.0
+Live search (all + retry),pizza near Central Market,near,33,1.0,0.15151515151515152,1.0,1.0
+Live search (all + retry),bbq near Olympic Stadium,near,29,1.0,0.1724137931034483,1.0,1.0
+Live search (all + retry),kuy teav near Russian Market,near,14,1.0,0.35714285714285715,1.0,1.0
+Live search (all + retry),coffee near Aeon Mall 2,near,22,1.0,0.22727272727272727,1.0,1.0
+Live search (all + retry),burger near Sorya Mall,near,36,1.0,0.1388888888888889,1.0,1.0
+Live search (all + retry),kfc,named,13,1.0,0.38461538461538464,1.0,1.0
+Live search (all + retry),lucky burger,named,15,1.0,0.3333333333333333,1.0,1.0
+Live search (all + retry),mixue,named,8,1.0,0.625,1.0,1.0
+Live search (all + retry),tube coffee,named,25,0.8,0.16,1.0,0.8687949224876582
+Live search (all + retry),burger king,named,4,0.8,1.0,1.0,1.0
+Live search (all + retry),texas chicken,named,8,1.0,0.625,1.0,1.0
+Live search (all + retry),dairy queen,named,10,1.0,0.5,1.0,1.0
+Live search (all + retry),chatime,named,5,1.0,1.0,1.0,1.0
+Live search (all + retry),koi the,named,18,1.0,0.2777777777777778,1.0,1.0
+Live search (all + retry),carls jr,named,7,1.0,0.7142857142857143,1.0,1.0
+Live search (all + retry),bonchon,named,7,1.0,0.7142857142857143,1.0,1.0
+Live search (all + retry),dominos pizza,named,4,0.6,0.75,1.0,0.8318724637288826
+Live search (all + retry),tous les jours,named,3,0.6,1.0,1.0,1.0
+Live search (all + retry),swensens,named,3,0.6,1.0,1.0,1.0

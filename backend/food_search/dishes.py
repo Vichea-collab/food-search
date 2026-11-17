@@ -913,6 +913,10 @@ def find_dish(text):
     return _name_ids.get(m.group(1).lower()) if m else None
 
 
+# "what about pizza?", "how about amok instead?", "ចុះ pizza វិញ?": the user moves on to another dish
+SWITCH_RE = re.compile(r"^\s*(?:(?:and|ok(?:ay)?|so|then)[\s,]+)?(?:what|how)\s+about\b|^\s*ចុះ", re.I)
+
+
 def recipe_intent(text, has_dish=False):
     """What a recipe question asks, or None when it is not one (then the normal place search answers).
     has_dish: a dish is in focus (just recognised from a photo, or named in the message). Without one it is never a
@@ -927,6 +931,8 @@ def recipe_intent(text, has_dish=False):
                      ("calories", CALORIES_RE), ("steps", STEPS_RE)):
         if rx.search(text):
             return kind
+    if SWITCH_RE.search(text) and find_dish(text):    # "what about pizza instead?", "ចុះ pizza វិញ?": another dish = a new search
+        return None
     # "can I use chicken instead?", "is it spicy?", "can I make lok lak without fish sauce?", "what does lok lak taste
     # like?", "is kuy teav healthy?": the AI answers from the dish's description and recipe
     if (OTHER_RE.search(text) or KNOW_RE.search(text)) and (REFERS_RE.search(text) or find_dish(text)

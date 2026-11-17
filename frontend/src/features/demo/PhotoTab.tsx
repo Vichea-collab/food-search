@@ -1,7 +1,8 @@
-import { useRef, useState, type DragEvent } from "react";
+import { useRef, useState } from "react";
 import { Icon } from "../../components/Icon";
 import { Markdown } from "../../components/Markdown";
 import { api, ApiError } from "../../lib/api";
+import { useImageDrop } from "../../lib/useImageDrop";
 import type { DemoPhotoResponse } from "../../lib/types";
 import { Meter } from "./Meter";
 
@@ -16,7 +17,6 @@ export function PhotoTab() {
   const [res, setRes] = useState<DemoPhotoResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [drag, setDrag] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   const run = async (f: File) => {
@@ -41,30 +41,23 @@ export function PhotoTab() {
     }
   };
 
-  const onDrop = (e: DragEvent) => {
-    e.preventDefault();
-    setDrag(false);
-    const f = e.dataTransfer.files?.[0];
-    if (f) void run(f);
-  };
+  // a photo can be dropped anywhere on the tab, not only on the dashed box
+  const { dragging: drag, bind } = useImageDrop((f) => { if (!busy) void run(f); });
 
   const inUse = (name: string) => !!res?.model && res.model.toLowerCase().startsWith(name.toLowerCase().split(" ")[0]);
 
   return (
-    <div className="demo-ask demo-photo">
+    <div className="demo-ask demo-photo" {...bind}>
       <div className="demo-ask-chat">
         <div
           className={`photo-drop${drag ? " drag" : ""}${preview ? " has-photo" : ""}`}
-          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-          onDragLeave={() => setDrag(false)}
-          onDrop={onDrop}
         >
           {preview ? (
             <img src={preview} alt={file?.name ?? "Your photo"} />
           ) : (
             <div className="photo-drop-empty">
               <span className="photo-drop-icon"><Icon name="camera" /></span>
-              <p className="demo-thread-empty-title">Drop a food photo here</p>
+              <p className="demo-thread-empty-title">{drag ? "Release to classify it" : "Drop a food photo here"}</p>
               <p className="demo-muted">or choose one. It is classified, then deleted (never stored).</p>
             </div>
           )}

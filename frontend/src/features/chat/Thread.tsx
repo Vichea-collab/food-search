@@ -16,6 +16,7 @@ export function Thread({
   onSuggestion,
   onPickDish,
   onChooseVoice,
+  onShown,
 }: {
   messages: Message[];
   busy: boolean;
@@ -23,6 +24,7 @@ export function Thread({
   onSuggestion: (q: string) => void;
   onPickDish: (id: string, name: string, photoId?: string | null) => void;
   onChooseVoice: (id: number, text: string, mode: "text" | "voice") => void;
+  onShown?: (id: number, n: number) => void;
 }) {
   const { t, lang } = useI18n();
   const ref = useRef<HTMLElement>(null);
@@ -72,6 +74,7 @@ export function Thread({
                 onSuggestion={onSuggestion}
                 onPickDish={onPickDish}
                 onChooseVoice={onChooseVoice}
+                onShown={onShown}
               />
             </div>
           ))}

@@ -6,6 +6,15 @@ a short answer using only those rows. A dish's name alone ("kuy teav", "គុ�
 is; places come once the user asks where to eat it ("where can I eat kuy teav?", "kuy teav near me").
 Available as a website, a Telegram Mini App and a Telegram bot, plus a "How it works" demo page.
 
+## Try it
+
+| | Link |
+|---|---|
+| 🌐 Website (chat app) | **https://kleannham.luchtithvichea.com** |
+| 🔎 "How it works" demo | https://kleannham.luchtithvichea.com/demo |
+| 🤖 Telegram bot | **[@Klean_Nham_Bot](https://t.me/Klean_Nham_Bot)**: tap **Open app** in the bot for the Mini App |
+| 📄 API documentation | https://kleannham.luchtithvichea.com/docs |
+
 ```
 [ data_preprocessing.ipynb ]  collect and clean the places  ->  data/restaurants.csv
             │

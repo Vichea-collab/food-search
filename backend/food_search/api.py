@@ -46,11 +46,11 @@ from .bot_handlers import SOURCE_LABELS, STATS, allow_request, direct_maps_url, 
 from .config import ENABLE_DEMO, FRONTEND_DIST, HYBRID_WEIGHT, MAX_PHOTO_MB, MAX_VOICE_MB, RESULTS_DIR, TELEGRAM_TOKEN, TOP_K, TZ
 from .llm import (followup_origin, CONTEXT_PLACES, delivery_platforms, DEFAULT_MODEL_ID, HISTORY_TURNS, MODELS, MODELS_BY_ID, NO_LLM, no_match,
                   answer_followup, asked_fields, build_prompt, chat_reply, generate_answer, plan_turn, safe_error, search_lead,
-                  unverified_note,
+                  unverified_note, is_more_request, expand_search, retry_note,
                   valid_model_id)
 from .search import (bm25_search, detect_lang, dish_keys, embedding_search, geocode_place, get_rows, haversine_km,
                      hybrid_search, image_search_available, is_open_at, matching_dishes, parse_query_filters,
-                     search_images_by_image, PLACE_NAMES_KH)
+                     search_images_by_image, search_with_retry, PLACE_NAMES_KH)
 
 log = logging.getLogger("food_search.web")
 
@@ -152,7 +152,11 @@ def answer_query(query, user_loc=None, model=None, k=RESULTS_PER_QUERY, lead=Fal
         origin = {"kind": "me"}
     elif near == "me":                                # "near me" but the user chose not to share a location
         origin, llm_query = {"kind": "no_location"}, parse_query_filters(query)[0] or query
-    results = hybrid_search(query, k, user_loc)
+    # multi-query + HyDE: other wordings from the AI (the chat's plan usually wrote them already: no extra call),
+    # merged with reciprocal rank fusion; a search that finds nothing is tried again (search_with_retry)
+    expansion = expand_search(query, model)
+    te = time.perf_counter()
+    results = search_with_retry(query, k, user_loc, expansion.get("variants"), expansion.get("hyde"))
     t1 = time.perf_counter()
     if lead:
         near_name = "me" if origin and origin["kind"] == "me" else origin["name"] if origin and origin["kind"] == "place" else None
@@ -165,7 +169,9 @@ def answer_query(query, user_loc=None, model=None, k=RESULTS_PER_QUERY, lead=Fal
     t2 = time.perf_counter()
     return {"results": results, "answer": gen["text"], "provider": gen["provider"], "model": gen["model"],
             "model_label": gen["label"], "chosen_model": gen["chosen"], "origin": origin, "llm_query": llm_query,
-            "timing": {"retrieve_ms": round((t1 - t0) * 1000), "generate_ms": round((t2 - t1) * 1000)}}
+            "expansion": expansion,
+            "timing": {"expand_ms": round((te - t0) * 1000), "retrieve_ms": round((t1 - te) * 1000),
+                       "generate_ms": round((t2 - t1) * 1000)}}
 
 
 def num(x, digits=2):
@@ -476,6 +482,38 @@ async def chat(body: ChatRequest, request: Request):
     return resp
 
 
+MORE_TEXT = {
+    "en": {"first": "Tell me what you would like to eat first, for example “kuy teav in Toul Kork”. Then say “more” and I show the next places.",
+           "more": "Here are {n} more places for “{q}”:",
+           "none": "That is everything I found for “{q}”. Try another area or dish, or ask for “open now”."},
+    "kh": {"first": "សូមប្រាប់ខ្ញុំជាមុនសិនថាចង់ញ៉ាំអ្វី ឧ. “គុយទាវ ទួលគោក” រួចនិយាយថា “បន្ថែម” ខ្ញុំនឹងបង្ហាញកន្លែងបន្ទាប់។",
+           "more": "នេះជាកន្លែងបន្ថែម {n} សម្រាប់ “{q}”៖",
+           "none": "នេះជាអ្វីទាំងអស់ដែលខ្ញុំរកឃើញសម្រាប់ “{q}”។ សាកល្បងតំបន់ ឬម្ហូបផ្សេង ឬសួរថា “បើកឥឡូវ”។"},
+}
+
+
+def more_reply(body, query, lang, user_loc) -> dict:
+    """"more" / "continue" / "next". The web app answers this itself when it still holds places it has not shown (it
+    reveals them under the list); a request that reaches the server is answered from what the client sent: the last
+    search is run again and the places not shown yet (not in context_ids) are returned, numbered after the shown ones.
+    No earlier search: ask what to look for (not a search for the word "continue")."""
+    t = MORE_TEXT.get(lang, MORE_TEXT["en"])
+    base = {"kind": "chat", "query": query, "lang": lang, "provider": "facts", "model": None, "model_label": None,
+            "results": [], "filters": {}}
+    if not body.context_ids or not body.last_query:
+        return {**base, "answer": t["first"], "suggestions": next_questions("chat", query, lang)}
+    out = answer_query(body.last_query, user_loc, NO_LLM, RESULTS_PER_QUERY, True, lang)
+    results = out["results"]
+    rest = results[~results["id"].isin(body.context_ids)]
+    shown = len(body.context_ids)
+    if len(rest) == 0:
+        return {**base, "answer": t["none"].format(q=body.last_query)}
+    return {**base, "kind": "search", "answer": t["more"].format(n=len(rest), q=body.last_query),
+            "numbers": list(range(shown + 1, shown + 1 + len(rest))), "results": places_json(rest, lang),
+            "origin": out["origin"], "suggestions": next_questions("search", body.last_query, lang, places_json(rest, lang),
+                                                                  parse_query_filters(body.last_query)[1])}
+
+
 def command_correction(arg, body, user, lang) -> dict:
     """/correction <the right answer>: after a photo it corrects the dish (as "no, it's amok" does); after a text
     answer it saves the correction with the question and the answer (see dishes.save_text_correction).
@@ -518,6 +556,8 @@ async def answer_chat(body: ChatRequest, request: Request):
     model = valid_model_id(body.model)
     history = [{"role": t.role, "text": t.text} for t in body.history][-HISTORY_TURNS * 2:]
     focus = body.dish_id if body.dish_id in dishes.DISHES else None
+    if is_more_request(query):                   # "more", "continue", "next": the next places of the last list
+        return await asyncio.to_thread(more_reply, body, query, lang, user_loc)
     fix = dishes.correction(query, focus) if body.photo_id else None
     if fix is not None:                          # "no, it's amok" after a photo: learn it, then show that dish
         return await asyncio.to_thread(correction_reply, fix, body.photo_id, feedback_user(request), lang, focus)
@@ -833,6 +873,12 @@ async def ask(body: DemoAskRequest, request: Request):
             "geocoded": bool(out["origin"] and out["origin"]["kind"] in ("place", "not_found")),
             "retrieve_ms": out["timing"]["retrieve_ms"],
             "generate_ms": out["timing"]["generate_ms"],
+            "expand_ms": out["timing"]["expand_ms"],
+            # multi-query + HyDE: the AI's other wordings and made-up place, and whether the merge used them
+            "variants": out["expansion"].get("variants") or [],
+            "hyde": out["expansion"].get("hyde") or "",
+            "fused": bool(attrs.get("fused")),
+            "retry": retry_note(results, detect_lang(query)).strip() or None,
             "prompt_chars": len(prompt),
         },
         "rows": scored_rows(top),

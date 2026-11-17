@@ -6,7 +6,9 @@ import { storage } from "../../lib/storage";
 import type { AppConfig } from "../../lib/types";
 import { ChatHeader, type ShownStatus } from "./ChatHeader";
 import { useServerReachable } from "../../lib/useServerReachable";
-import { Composer } from "./Composer";
+import { useImageDrop } from "../../lib/useImageDrop";
+import { Icon } from "../../components/Icon";
+import { Composer, type ComposerHandle } from "./Composer";
 import { LocationSheet } from "./LocationSheet";
 import { ProfilePanel, type VoiceGender } from "./ProfilePanel";
 import { Thread } from "./Thread";
@@ -76,12 +78,14 @@ export function ChatPage() {
     sheetResolve.current = null;
   }, []);
 
-  const { lang } = useI18n();
+  const { lang, t } = useI18n();
   const langRef = useRef<string>(lang);
   useEffect(() => {
     langRef.current = lang;
   }, [lang]);
   const chat = useChat({ askLocation, modelRef, langRef, voiceRef, voiceReplyRef });
+  const composer = useRef<ComposerHandle>(null);
+  const photoDrop = useImageDrop((f) => composer.current?.attach(f), !!config?.photo_search && !profileOpen);
   const serverUp = useServerReachable();
   const status: ShownStatus = serverUp ? chat.status : "offline";
 
@@ -115,11 +119,12 @@ export function ChatPage() {
           chat.newChat();
         }}
       />
-      <section className="chat" aria-label="Chat">
+      <section className="chat" aria-label="Chat" {...photoDrop.bind}>
         <ChatHeader status={status} profileOpen={profileOpen} onOpenProfile={() => setProfileOpen(true)} />
         <Thread messages={chat.messages} busy={chat.busy} scroll={chat.scroll} onSuggestion={chat.send}
-                onPickDish={chat.pickDish} onChooseVoice={chat.chooseVoice} />
+                onPickDish={chat.pickDish} onChooseVoice={chat.chooseVoice} onShown={chat.setShown} />
         <Composer
+          ref={composer}
           busy={chat.busy}
           photoSearch={!!config?.photo_search}
           voiceOn={!!config?.voice}
@@ -134,6 +139,12 @@ export function ChatPage() {
           correcting={chat.correcting}
           onCancelCorrection={chat.cancelCorrection}
         />
+        {photoDrop.dragging && (
+          <div className="drop-overlay" aria-hidden="true">
+            <Icon name="camera" />
+            <p>{t("photoDrop")}</p>
+          </div>
+        )}
       </section>
       <LocationSheet open={sheetOpen} onLocated={chat.setLocation} onDone={onSheetDone} />
     </div>

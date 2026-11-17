@@ -75,7 +75,8 @@ function AskNext({ items, onAsk }: { items?: string[]; onAsk: (q: string) => voi
 
 /** The dish in a photo: what it is (and how sure), other guesses to tap, then only what was asked
  *  (the recipe, or places that serve it) and the follow-up questions. */
-function DishReply({ data, at, emotion, onPickDish, onAsk }: {
+function DishReply({ data, at, emotion, onPickDish, onAsk, shown, onShown }: {
+  shown?: number; onShown?: (n: number) => void;
   data: ChatResponse; at: Date; emotion?: BotEmotion; onPickDish: (id: string, name: string, photoId?: string | null) => void; onAsk: (q: string) => void;
 }) {
   const { t } = useI18n();
@@ -107,7 +108,7 @@ function DishReply({ data, at, emotion, onPickDish, onAsk }: {
       )}
       {data.recipe && <RecipeCard recipe={data.recipe} focus={data.focus} />}
       {data.no_match && <div className="bubble">{data.no_match}</div>}
-      {results.length > 0 && <PlaceList places={results} />}
+      {results.length > 0 && <PlaceList places={results} numbers={data.numbers} shown={shown} onShown={onShown} />}
       <AskNext items={data.suggestions} onAsk={onAsk} />
       <Time at={at} model={byAi ? data.model_label : null} />
     </BotRow>
@@ -131,11 +132,12 @@ function RecipeReply({ data, at, emotion, onAsk }: { data: ChatResponse; at: Dat
   );
 }
 
-function Reply({ data, at, emotion, onPickDish, onAsk }: {
+function Reply({ data, at, emotion, onPickDish, onAsk, shown, onShown }: {
+  shown?: number; onShown?: (n: number) => void;
   data: ChatResponse; at: Date; emotion?: BotEmotion; onPickDish: (id: string, name: string, photoId?: string | null) => void; onAsk: (q: string) => void;
 }) {
   const { t } = useI18n();
-  if (data.kind === "dish" && data.dish) return <DishReply data={data} at={at} emotion={emotion} onPickDish={onPickDish} onAsk={onAsk} />;
+  if (data.kind === "dish" && data.dish) return <DishReply data={data} at={at} emotion={emotion} onPickDish={onPickDish} onAsk={onAsk} shown={shown} onShown={onShown} />;
   if (data.kind === "recipe") return <RecipeReply data={data} at={at} emotion={emotion} onAsk={onAsk} />;
   if (data.pick_dishes) {                       // "no, that's wrong": which dish is it?
     return (
@@ -179,7 +181,7 @@ function Reply({ data, at, emotion, onPickDish, onAsk }: {
           <Markdown text={data.answer ?? ""} />
         </div>
         <Corrections items={data.corrections} />
-        {results.length > 0 && !tabular && <PlaceList places={results} numbers={data.numbers} />}
+        {results.length > 0 && !tabular && <PlaceList places={results} numbers={data.numbers} shown={shown} onShown={onShown} />}
         <AskNext items={data.suggestions} onAsk={onAsk} />
         <Time at={at} model={byAi ? data.model_label : null} />
       </BotRow>
@@ -207,7 +209,7 @@ function Reply({ data, at, emotion, onPickDish, onAsk }: {
       {note && <p className={`note${o?.kind === "not_found" ? " warn" : ""}`}>{note}</p>}
       {data.unverified_note && <p className="note">{data.unverified_note}</p>}
       <Corrections items={data.corrections} />
-      {results.length > 0 && <PlaceList places={results} />}
+      {results.length > 0 && <PlaceList places={results} numbers={data.numbers} shown={shown} onShown={onShown} />}
       <AskNext items={data.suggestions} onAsk={onAsk} />
       <Time at={at} model={byAi ? data.model_label : null} />
     </BotRow>
@@ -248,9 +250,12 @@ export function MessageView({
   onSuggestion,
   onPickDish,
   onChooseVoice,
+  onShown,
 }: {
   message: Message;
   isLatest?: boolean;
+  /** a reply's list shows this many places now (the "Show more" button, or "more" typed in the box) */
+  onShown?: (id: number, n: number) => void;
   onSuggestion: (q: string) => void;
   onPickDish: (id: string, name: string, photoId?: string | null) => void;
   onChooseVoice: (id: number, text: string, mode: "text" | "voice") => void;
@@ -314,7 +319,8 @@ export function MessageView({
         <>
           {m.audio && <SpokenAnswer audio={m.audio} />}
           <LangScope lang={m.data.lang}>
-            <Reply data={isLatest ? m.data : { ...m.data, suggestions: [] }} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion} />
+            <Reply data={isLatest ? m.data : { ...m.data, suggestions: [] }} at={m.at} emotion={isLatest ? "done" : "idle"} onPickDish={onPickDish} onAsk={onSuggestion}
+                   shown={m.shown} onShown={onShown && ((n) => onShown(m.id, n))} />
           </LangScope>
         </>
       );

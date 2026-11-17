@@ -1,0 +1,732 @@
+{
+ "kuy teav": {
+  "variants": [
+   "គុយទាវ"
+  ],
+  "hyde": "A bustling morning street stall serving steaming bowls of aromatic kuy teav (គុយទាវ), a traditional Cambodian pork and rice noodle soup beloved by locals."
+ },
+ "lok lak": {
+  "variants": [
+   "beef lok lak",
+   "ឡុកឡាក់"
+  ],
+  "hyde": "A bustling open-air street food stall famous for serving tender, wok-tossed beef lok lak (ឡុកឡាក់) accompanied by peppery lime dipping sauce and fried rice."
+ },
+ "amok": {
+  "variants": [
+   "fish amok",
+   "អាម៉ុក"
+  ],
+  "hyde": "A traditional wooden pavilion serving authentic fish amok (អាម៉ុកត្រី) alongside other classic Cambodian curries in a lush garden setting."
+ },
+ "bai sach chrouk": {
+  "variants": [
+   "pork and rice",
+   "បាយសាច់ជ្រូក"
+  ],
+  "hyde": "A bustling morning street stall serving traditional bai sach chrouk (បាយសាច់ជ្រូក), featuring tender grilled pork marinated in coconut milk and garlic served over warm broken rice."
+ },
+ "num banh chok": {
+  "variants": [
+   "Khmer rice noodles",
+   "សីសាសិស្តិញត្រូវ"
+  ],
+  "hyde": "A bustling street stall serving traditional Num Banh Chok (សីសាសិស្តិញត្រូវ), featuring fresh fermented rice noodles drenched in a fragrant, lemongrass-infused fish gravy accompanied by a mountain of crisp local herbs and banana blossoms."
+ },
+ "pizza": {
+  "variants": [
+   "wood fired pizza",
+   "ភីហ្សា"
+  ],
+  "hyde": "Enjoy authentic wood-fired pizzas (ភីហ្សា) at this cozy Italian-run garden restaurant tucked away in a quiet alley."
+ },
+ "sushi": {
+  "variants": [
+   "japanese sushi",
+   "ស៊ូស៊ី"
+  ],
+  "hyde": "A sleek modern Japanese restaurant serving fresh sashimi and creative sushi rolls in a stylish air-conditioned dining room."
+ },
+ "burger": {
+  "variants": [
+   "hamburger",
+   "ប៊ឺហ្គឺ"
+  ],
+  "hyde": "A cozy neighborhood burger joint serving classic beef burgers (ប៊ឺហ្គឺសាច់គោ) and crispy fries in a relaxed, modern restaurant setting."
+ },
+ "fried rice": {
+  "variants": [
+   "lok lak fried rice",
+   "បាយឆា"
+  ],
+  "hyde": "A bustling street stall famous for its fragrant wok-fried rice (បាយឆា - bay cha), served hot with crunchy morning glory and tender beef."
+ },
+ "bubble tea": {
+  "variants": [
+   "milk tea",
+   "តែគុជ"
+  ],
+  "hyde": "A trendy modern cafe serving sweet milk tea with chewy tapioca pearls and fruit teas (តែគុជ)."
+ },
+ "khmer bbq": {
+  "variants": [
+   "cambodian barbecue",
+   "សាច់អាំង"
+  ],
+  "hyde": "This bustling open-air street stall serves traditional Khmer BBQ (សាច់អាំង) featuring marinated meats and fresh herbs grilled over clay pots."
+ },
+ "coffee": {
+  "variants": [
+   "iced coffee",
+   "កាហ្វេ"
+  ],
+  "hyde": "A charming neighborhood cafe serving robust Cambodian iced coffee (កាហ្វេទឹកកក) and fresh pastries in a relaxed garden setting."
+ },
+ "គុយទាវ": {
+  "variants": [
+   "kuy teav",
+   "នំបញ្ចុក"
+  ],
+  "hyde": "A bustling morning street stall serving steaming bowls of authentic Kuy Teav (គុយទាវ), a fragrant Cambodian pork and rice noodle soup."
+ },
+ "ឡុកឡាក់": {
+  "variants": [
+   "lok lak"
+  ],
+  "hyde": "A bustling roadside food stall famous for its sizzling beef lok lak (ឡុកឡាក់), served with a peppery lime dipping sauce and fried rice."
+ },
+ "បាយសាច់ជ្រូក": {
+  "variants": [
+   "bay sach chrouk"
+  ],
+  "hyde": "A bustling street stall serving the ultimate morning comfort food of sweet marinated grilled pork over broken rice (បាយសាច់ជ្រូក)."
+ },
+ "នំបញ្ចុក": {
+  "variants": [],
+  "hyde": ""
+ },
+ "កាហ្វេ": {
+  "variants": [
+   "coffee"
+  ],
+  "hyde": "A cozy neighborhood cafe serving iced milk coffee and traditional Khmer coffee alongside freshly baked pastries."
+ },
+ "ភីហ្សា": {
+  "variants": [
+   "pizza",
+   "ភីហ្សាដុតឡែន"
+  ],
+  "hyde": "A cozy Italian-style pizzeria serving wood-fired pizzas (ភីហ្សា) and fresh pasta in a relaxed garden restaurant setting."
+ },
+ "តែគុជ": {
+  "variants": [],
+  "hyde": ""
+ },
+ "បាយឆា": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kuytiew": {
+  "variants": [],
+  "hyde": ""
+ },
+ "carry noodle": {
+  "variants": [],
+  "hyde": ""
+ },
+ "piza": {
+  "variants": [],
+  "hyde": ""
+ },
+ "cofee": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sushii": {
+  "variants": [],
+  "hyde": ""
+ },
+ "num banh chuk": {
+  "variants": [],
+  "hyde": ""
+ },
+ "something sweet": {
+  "variants": [],
+  "hyde": ""
+ },
+ "vegetarian food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "spicy noodle soup": {
+  "variants": [],
+  "hyde": ""
+ },
+ "breakfast": {
+  "variants": [],
+  "hyde": ""
+ },
+ "seafood": {
+  "variants": [
+   "អាហារសមុទ្រ"
+  ],
+  "hyde": "A bustling open-air seafood restaurant serving fresh grilled fish, spicy crab, and steamed prawns (អាហារសមុទ្រ) right by the riverside."
+ },
+ "hot pot": {
+  "variants": [],
+  "hyde": ""
+ },
+ "coffee in Toul Kork": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pizza in BKK1": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bbq in Sen Sok": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sushi in Chamkar Mon": {
+  "variants": [],
+  "hyde": ""
+ },
+ "កាហ្វេ នៅទួលគោក": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bubble tea in Daun Penh": {
+  "variants": [],
+  "hyde": ""
+ },
+ "coffee near CADT": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kuy teav near Independence Monument": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pizza near Aeon Mall 1": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bbq near Russian Market": {
+  "variants": [],
+  "hyde": ""
+ },
+ "starbucks": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pizza company": {
+  "variants": [],
+  "hyde": ""
+ },
+ "brown coffee": {
+  "variants": [],
+  "hyde": ""
+ },
+ "costa coffee": {
+  "variants": [],
+  "hyde": ""
+ },
+ "khmer surin": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ramen": {
+  "variants": [],
+  "hyde": ""
+ },
+ "korean bbq": {
+  "variants": [],
+  "hyde": ""
+ },
+ "dim sum": {
+  "variants": [],
+  "hyde": ""
+ },
+ "steak": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pasta": {
+  "variants": [],
+  "hyde": ""
+ },
+ "shawarma": {
+  "variants": [],
+  "hyde": ""
+ },
+ "indian food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "thai food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "tom yum": {
+  "variants": [],
+  "hyde": ""
+ },
+ "fried chicken": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ice cream": {
+  "variants": [],
+  "hyde": ""
+ },
+ "smoothie": {
+  "variants": [],
+  "hyde": ""
+ },
+ "fresh juice": {
+  "variants": [],
+  "hyde": ""
+ },
+ "matcha": {
+  "variants": [],
+  "hyde": ""
+ },
+ "donut": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sandwich": {
+  "variants": [],
+  "hyde": ""
+ },
+ "salad": {
+  "variants": [],
+  "hyde": ""
+ },
+ "crab": {
+  "variants": [],
+  "hyde": ""
+ },
+ "grilled fish": {
+  "variants": [],
+  "hyde": ""
+ },
+ "cake shop": {
+  "variants": [],
+  "hyde": ""
+ },
+ "croissant": {
+  "variants": [],
+  "hyde": ""
+ },
+ "wine bar": {
+  "variants": [],
+  "hyde": ""
+ },
+ "buffet": {
+  "variants": [],
+  "hyde": ""
+ },
+ "porridge": {
+  "variants": [],
+  "hyde": ""
+ },
+ "khmer curry": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sour soup": {
+  "variants": [],
+  "hyde": ""
+ },
+ "beef skewers": {
+  "variants": [],
+  "hyde": ""
+ },
+ "prahok": {
+  "variants": [],
+  "hyde": ""
+ },
+ "boat noodle": {
+  "variants": [],
+  "hyde": ""
+ },
+ "num pang": {
+  "variants": [],
+  "hyde": ""
+ },
+ "japanese food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "korean food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "chinese food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "vietnamese food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "halal food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "vegan restaurant": {
+  "variants": [],
+  "hyde": ""
+ },
+ "អាម៉ុក": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ស៊ូស៊ី": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ប៊ឺហ្គឺ": {
+  "variants": [],
+  "hyde": ""
+ },
+ "មីឆា": {
+  "variants": [],
+  "hyde": ""
+ },
+ "បបរ": {
+  "variants": [],
+  "hyde": ""
+ },
+ "សាច់អាំង": {
+  "variants": [
+   "BBQ"
+  ],
+  "hyde": "A bustling street stall serving delicious Cambodian BBQ (សាច់អាំង) with marinated meats grilled over charcoal, accompanied by fresh herbs and a tangy dipping sauce."
+ },
+ "ម្ហូបបួស": {
+  "variants": [
+   "vegetarian food",
+   "បាយបួស"
+  ],
+  "hyde": "A peaceful garden restaurant serving a wide variety of delicious vegetarian food (ម្ហូបបួស) and fresh organic juices in a relaxing atmosphere."
+ },
+ "នំប៉័ង": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ការ៉េម": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ស៊ុបឆ្នាំងដី": {
+  "variants": [
+   "clay pot soup"
+  ],
+  "hyde": "A bustling local street stall known for serving comforting clay pot soup (ស៊ុបឆ្នាំងដី) filled with rich broths, meats, and fresh vegetables."
+ },
+ "ទឹកក្រូច": {
+  "variants": [
+   "Teuk kroch"
+  ],
+  "hyde": "A refreshing roadside beverage stall serving traditional iced Teuk kroch (ទឹកក្រូច) and freshly squeezed citrus drinks in a casual local street setting."
+ },
+ "ត្រីអាំង": {
+  "variants": [
+   "grilled fish"
+  ],
+  "hyde": "A popular roadside stall serving perfectly charred fish (ត្រីអាំង) stuffed with lemongrass and kaffir lime leaves, accompanied by a spicy tamarind dipping sauce and fresh local herbs."
+ },
+ "សម្លម្ជូរ": {
+  "variants": [
+   "samlor mchour"
+  ],
+  "hyde": "A bustling local eatery serving authentic Cambodian sour soup (សម្លម្ជូរ) alongside a variety of traditional homestyle dishes in a casual, open-air setting."
+ },
+ "មាន់បំពង": {
+  "variants": [
+   "treung bompong",
+   "ចា់សីភ្នាំ"
+  ],
+  "hyde": "A bustling street food stall known for serving the crispiest deep-fried fish (ចា់សីភ្នាំ) paired with a tangy tamarind dipping sauce."
+ },
+ "ម្ហូបជប៉ុន": {
+  "variants": [
+   "Japanese food"
+  ],
+  "hyde": "A sleek and cozy Japanese restaurant serving authentic sushi, sashimi, and steaming bowls of ramen in the heart of Phnom Penh."
+ },
+ "ម្ហូបកូរ៉េ": {
+  "variants": [
+   "Korean food"
+  ],
+  "hyde": "A popular restaurant serving authentic Korean food (ម្ហូបកូរ៉េ) including barbecue and stews in a cozy and modern dining atmosphere."
+ },
+ "ម្ហូបចិន": {
+  "variants": [
+   "Chinese food"
+  ],
+  "hyde": "A bustling Chinatown restaurant serving authentic Chinese food and ម្ហូបចិន in a lively dining room."
+ },
+ "ម្ហូបថៃ": {
+  "variants": [
+   "Thai food"
+  ],
+  "hyde": "A popular restaurant serving authentic Thai food (ម្ហូបថៃ) and spicy salads in a cozy dining room."
+ },
+ "ភេសជ្ជៈ": {
+  "variants": [
+   "drinks"
+  ],
+  "hyde": "A refreshing roadside beverage stall serving traditional iced milk coffee (កាហ្វេទឹកដោះគោ) and fresh sugarcane juice (ទឹកអំពៅ)."
+ },
+ "នំខេក": {
+  "variants": [
+   "cake",
+   "នំ"
+  ],
+  "hyde": "A cozy neighborhood bakery and cafe serving a delightful selection of sweet and savory cakes (នំខេក) alongside artisanal coffee in a relaxed, air-conditioned setting."
+ },
+ "pizzza": {
+  "variants": [
+   "pizza",
+   "ភីហ្សា"
+  ],
+  "hyde": "A cozy Italian restaurant serving wood-fired pizzas and homemade pastas in a rustic, air-conditioned dining room."
+ },
+ "burgr": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kofee": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ramenn": {
+  "variants": [],
+  "hyde": ""
+ },
+ "amokk": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bubble tae": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sushy": {
+  "variants": [
+   "sushi",
+   "ស៊ូស៊ី"
+  ],
+  "hyde": "A sleek modern Japanese restaurant serving fresh sushi (ស៊ូស៊ី) and sashimi in a trendy air-conditioned dining room."
+ },
+ "nom bang chok": {
+  "variants": [
+   "khmer rice noodles",
+   "នំបញ្ចុក"
+  ],
+  "hyde": "A bustling morning street stall serving fresh nom bang chok (នំបញ្ចុក), traditional Khmer fermented rice noodles topped with a rich, aromatic fish green curry gravy and crisp garden-fresh herbs."
+ },
+ "bai sach chruk": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kuy tiev": {
+  "variants": [
+   "kuy teav",
+   "គុយទាវ"
+  ],
+  "hyde": "A bustling morning street stall serving steaming bowls of authentic kuy teav (គុយទាវ), Cambodia's beloved pork and rice noodle soup."
+ },
+ "healthy food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "street food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "rooftop": {
+  "variants": [],
+  "hyde": ""
+ },
+ "spicy food": {
+  "variants": [],
+  "hyde": ""
+ },
+ "grilled meat": {
+  "variants": [],
+  "hyde": ""
+ },
+ "something cold": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sweet drink": {
+  "variants": [],
+  "hyde": ""
+ },
+ "fine dining": {
+  "variants": [],
+  "hyde": ""
+ },
+ "family restaurant": {
+  "variants": [],
+  "hyde": ""
+ },
+ "late night snack": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kuy teav in Sen Sok": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pizza in Toul Kork": {
+  "variants": [],
+  "hyde": ""
+ },
+ "coffee in BKK1": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bbq in Chamkar Mon": {
+  "variants": [],
+  "hyde": ""
+ },
+ "sushi in Toul Kork": {
+  "variants": [],
+  "hyde": ""
+ },
+ "burger in Daun Penh": {
+  "variants": [],
+  "hyde": ""
+ },
+ "noodles in Mean Chey": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bubble tea in Sen Sok": {
+  "variants": [],
+  "hyde": ""
+ },
+ "fried rice in Russey Keo": {
+  "variants": [],
+  "hyde": ""
+ },
+ "coffee in Chroy Changvar": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pizza in Sen Sok": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ramen in BKK1": {
+  "variants": [],
+  "hyde": ""
+ },
+ "lok lak in Daun Penh": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bakery in Daun Penh": {
+  "variants": [],
+  "hyde": ""
+ },
+ "កាហ្វេ នៅសែនសុខ": {
+  "variants": [],
+  "hyde": ""
+ },
+ "ភីហ្សា នៅបឹងកេងកង": {
+  "variants": [],
+  "hyde": ""
+ },
+ "គុយទាវ នៅមានជ័យ": {
+  "variants": [],
+  "hyde": ""
+ },
+ "coffee near Royal Palace": {
+  "variants": [],
+  "hyde": ""
+ },
+ "pizza near Central Market": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bbq near Olympic Stadium": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kuy teav near Russian Market": {
+  "variants": [],
+  "hyde": ""
+ },
+ "coffee near Aeon Mall 2": {
+  "variants": [],
+  "hyde": ""
+ },
+ "burger near Sorya Mall": {
+  "variants": [],
+  "hyde": ""
+ },
+ "kfc": {
+  "variants": [],
+  "hyde": ""
+ },
+ "lucky burger": {
+  "variants": [],
+  "hyde": ""
+ },
+ "mixue": {
+  "variants": [],
+  "hyde": ""
+ },
+ "tube coffee": {
+  "variants": [],
+  "hyde": ""
+ },
+ "burger king": {
+  "variants": [],
+  "hyde": ""
+ },
+ "texas chicken": {
+  "variants": [],
+  "hyde": ""
+ },
+ "dairy queen": {
+  "variants": [],
+  "hyde": ""
+ },
+ "chatime": {
+  "variants": [],
+  "hyde": ""
+ },
+ "koi the": {
+  "variants": [],
+  "hyde": ""
+ },
+ "carls jr": {
+  "variants": [],
+  "hyde": ""
+ },
+ "bonchon": {
+  "variants": [],
+  "hyde": ""
+ },
+ "dominos pizza": {
+  "variants": [],
+  "hyde": ""
+ },
+ "tous les jours": {
+  "variants": [],
+  "hyde": ""
+ },
+ "swensens": {
+  "variants": [],
+  "hyde": ""
+ }
+}

@@ -24,11 +24,11 @@ from telegram.ext import filters as tg_filters
 
 from . import dishes, voice
 from .config import ADMIN_IDS, GOOGLE_MAPS_API_KEY, MAX_VOICE_MB, MAX_VOICE_SECONDS, RATE_LIMIT_PER_MIN, TZ, WEBAPP_URL
-from .llm import (CONTEXT_PLACES, DEFAULT_MODEL_ID, HISTORY_TURNS, MODELS, MODELS_BY_ID, NO_LLM, answer_followup, no_match,
+from .llm import (expand_search, CONTEXT_PLACES, DEFAULT_MODEL_ID, HISTORY_TURNS, MODELS, MODELS_BY_ID, NO_LLM, answer_followup, no_match,
                   asked_fields, chat_reply, followup_origin, fmt_hours, fmt_price, menu_items, menu_line, plan_turn, safe_error,
-                  search_lead, unverified_note)
+                  search_lead, unverified_note, is_more_request)
 from . import search as search_module
-from .search import (detect_lang, dish_keys, geocode_place, haversine_km, get_rows, hybrid_search, image_search_available, is_open_at,
+from .search import (search_with_retry, detect_lang, dish_keys, geocode_place, haversine_km, get_rows, hybrid_search, image_search_available, is_open_at,
                      matching_dishes,
                      parse_query_filters, search_images_by_image, HOME_CITY, PLACE_NAMES_KH)
 
@@ -235,7 +235,7 @@ RATE_LIMIT_TEXT = "⏳ Too many requests – please wait a minute. / សូម�
 UI = {   # the bot's own words, in both languages
     "en": {"know": "What would you like to know?", "recipe": "🍳 How to make it", "time": "⏱ Cooking time",
            "where": "📍 Where to eat it", "notit": "🤔 Not it?", "back": "‹ Back", "type": "✏️ Type it",
-           "more": "➕ More results", "no_more": "No more results.", "share": "📍 Share my location",
+           "more": "➕ More results", "no_more": "No more results.", "more_first": "Tell me what you would like to eat first, for example “kuy teav in Toul Kork”. Then say “more” and I show the next places.", "share": "📍 Share my location",
            "ask_loc": "📍 Where are you? Tap the closest landmark below, or just type a place (e.g. CADT, Toul Kork, "
                       "Aeon Mall 1). It is kept in memory only, for this chat.",
            "share_loc": "📱 On a phone you can also share your exact location with the button below (not on a computer).",
@@ -253,7 +253,7 @@ UI = {   # the bot's own words, in both languages
            "similar": "📷 Places with similar-looking food:"},
     "kh": {"know": "តើអ្នកចង់ដឹងអ្វី?", "recipe": "🍳 របៀបធ្វើ", "time": "⏱ រយៈពេលចម្អិន", "where": "📍 ញ៉ាំនៅណា",
            "notit": "🤔 មិនមែនទេ?", "back": "‹ ត្រឡប់", "type": "✏️ វាយឈ្មោះ", "more": "➕ លទ្ធផលបន្ថែម",
-           "no_more": "មិនមានលទ្ធផលទៀតទេ។", "share": "📍 ចែករំលែកទីតាំងរបស់ខ្ញុំ",
+           "no_more": "មិនមានលទ្ធផលទៀតទេ។", "more_first": "សូមប្រាប់ខ្ញុំជាមុនសិនថាចង់ញ៉ាំអ្វី ឧ. “គុយទាវ ទួលគោក” រួចនិយាយថា “បន្ថែម” ខ្ញុំនឹងបង្ហាញកន្លែងបន្ទាប់។", "share": "📍 ចែករំលែកទីតាំងរបស់ខ្ញុំ",
            "ask_loc": "📍 តើអ្នកនៅឯណា? សូមជ្រើសរើសទីតាំងខាងក្រោម ឬវាយឈ្មោះទីកន្លែង (ឧ. CADT, ទួលគោក)។ "
                       "វារក្សាទុកតែក្នុងអង្គចងចាំ សម្រាប់ការសន្ទនានេះ។",
            "share_loc": "📱 នៅលើទូរស័ព្ទ អ្នកក៏អាចចែករំលែកទីតាំងពិតប្រាកដ ដោយចុចប៊ូតុងខាងក្រោម (មិនមែនលើកុំព្យូទ័រ)។",
@@ -553,7 +553,10 @@ async def run_query(message, context, query, user_loc=None, rewritten=False):
             warning = ui(context, "no_map", lang, place=html.escape(typed, quote=False))
     elif user_loc:
         origin = "me"
-    results = await asyncio.to_thread(hybrid_search, query, 15, user_loc)
+    # multi-query + HyDE (the plan usually wrote the wordings already), and a second try when nothing is found
+    expansion = await asyncio.to_thread(expand_search, query, context.user_data.get("model"))
+    results = await asyncio.to_thread(search_with_retry, query, 15, user_loc, expansion.get("variants"),
+                                      expansion.get("hyde"))
     unchecked = unverified_note(results, lang)               # "under $5" when the data has no prices for these places
     if unchecked:
         warning = "\n".join(x for x in (warning, f"ℹ️ {html.escape(unchecked, quote=False)}") if x)
@@ -668,6 +671,10 @@ async def handle_text(message, context, query, user_id, speak=False):
     if fix is not None:                          # "no, it's amok" after a photo: learn it
         await correct_photo(message, context, photo_id, fix, user_id)
         return
+    if is_more_request(query):                   # "more", "continue", "next": the next places, as the button does
+        remember(context, "user", query)
+        await send_more(message, context)
+        return
     context.user_data.update(last_kind="text", last_question=query)     # what /correction refers to
     for note in dishes.correction_notes(query, user_id):   # this question was answered wrongly before
         await message.reply_text(note)
@@ -769,13 +776,21 @@ async def spot_callback(update, context):
 async def more_callback(update, context):
     q = update.callback_query
     await q.answer()
+    await send_more(q.message, context)
+
+
+async def send_more(message, context):
+    """The next 5 places of the last list: the "More results" button, or "more" / "continue" / "next" typed."""
     results, lang = context.user_data.get("last_results"), context.user_data.get("last_lang", "en")
+    if results is None:                          # nothing searched yet: not a search for the word "continue"
+        await message.reply_text(ui(context, "more_first"))
+        return
     offset = context.user_data.get("offset", 0) + 5
-    if results is None or offset >= len(results):
-        await q.message.reply_text(ui(context, "no_more"))
+    if offset >= len(results):
+        await message.reply_text(ui(context, "no_more"))
         return
     context.user_data["offset"] = offset
-    await q.message.reply_text(format_telegram(results, lang, start=offset, origin=context.user_data.get("last_origin", "")),
+    await message.reply_text(format_telegram(results, lang, start=offset, origin=context.user_data.get("last_origin", "")),
                                parse_mode=ParseMode.HTML,
                                reply_markup=results_keyboard(results, start=offset, lang=lang),
                                link_preview_options=LinkPreviewOptions(is_disabled=True))

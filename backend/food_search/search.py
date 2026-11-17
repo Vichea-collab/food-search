@@ -353,6 +353,10 @@ def clean_df(raw: pd.DataFrame) -> pd.DataFrame:
     d["id"] = d["id"].fillna("").astype(str).str.strip()
     d = d[~d["id"].isin(["", "id"])]                           # "id" = header row pasted again by a sheet import
     d = d.drop_duplicates("id", keep="first")                    # ids must be unique for ChromaDB
+    # Foodpanda "Pandasend" pages (-pandasend in the link) are its parcel-courier service: shops and people who
+    # send parcels (a nail salon, a clothes store, a home baker), with no menu to order from. Not places to eat at.
+    # Left in the CSV (a scraper run puts them back); never searched or shown (QA B12: "pizza near CADT" ranked one first).
+    d = d[~d["source_url"].fillna("").astype(str).str.contains("pandasend", case=False, regex=False)]
     # the seller's Facebook page / website (optional column): only real http(s) links are kept
     page = raw["page_url"] if "page_url" in raw.columns else pd.Series("", index=raw.index)
     d["page_url"] = page.reindex(d.index).fillna("").astype(str).str.strip()
@@ -702,17 +706,27 @@ NEAR_ME_RE = re.compile(r"\b(?:near[\s.,]*me|nearby|near\s+here|around\s+me|arou
 
 SPATIAL_PREFIXES = r"(?:នៅម្ដុំ|នៅម្តុំ|ម្ដុំ|ម្តុំ|នៅក្បែរ|ក្បែរ|នៅជិត|ជិត|នៅ|ឯ|in|around|at|near)\s*"
 
+# Khmer has no spaces between words, so a short filler word must not be cut out of the middle of a longer word
+# ("ទេ" is in ប្រទេស "country", "ល្អ" in ល្អិត "tiny"). A particle that ends a phrase (ទេ ដែរ ផង អត់ ល្អ ល្បី) is only
+# removed when no Khmer letter follows it; a leading one (មាន រក តើ) only when no Khmer letter precedes it (the words
+# before it were already replaced by a space, or it follows ហាង/កន្លែង/តើ).
+_KH = "ក-៿"
+_NOT_IN_WORD_AFTER = r"(?![" + _KH + r"])"
+_STARTS_A_WORD = r"(?:(?<![" + _KH + r"])|(?<=ហាង)|(?<=កន្លែង)|(?<=តើ))"
 CONVERSATIONAL_STOP_PATTERNS = [
     r"តើមាន\s*ហាង", r"តើមាន\s*កន្លែង", r"តើមាន",
-    r"មាន\s*ហាង", r"មាន\s*កន្លែង", r"មាន",
+    _STARTS_A_WORD + r"មាន\s*ហាង", _STARTS_A_WORD + r"មាន\s*កន្លែង", _STARTS_A_WORD + r"មាន",
     r"ហាង", r"កន្លែង",
-    r"ឆ្ងាញ់ៗ?", r"ល្អ", r"ល្បី",
+    r"ឆ្ងាញ់ៗ?", r"ល្អៗ?" + _NOT_IN_WORD_AFTER, r"ល្បី" + _NOT_IN_WORD_AFTER,
     r"ចង់ញ៉ាំ", r"ចង់រក", r"ចង់បាន",
     r"(?<!ជិត)(?<!ក្បែរ)(?<!ជុំវិញ)ខ្ញុំ",            # "I" (ខ្ញុំចង់ញ៉ាំ...), but not "near me" (ជិតខ្ញុំ)
     r"ជួយណែនាំ", r"សូមណែនាំ", r"ណែនាំ",
-    r"ជួយរក", r"រក",
-    r"អត់\s*\??", r"ទេ\s*\??", r"ដែរ\s*\??", r"ផង\s*\??",
-    r"ណាខ្លះ\s*\??", r"ខ្លះ\s*\??", r"មួយណា\s*\??", r"ឯណា\s*\??", r"នៅឯណា\s*\??",
+    r"ជួយរក", _STARTS_A_WORD + r"រក",
+    _STARTS_A_WORD + r"អាច(?=ញ៉ាំ|រក|ទិញ)",                            # "can" in "តើខ្ញុំអាចញ៉ាំ…"
+    r"(?<![" + _KH + r"])តើ" + r"(?![" + _KH + r"])|^\s*តើ",       # "តើ" = a question word ("is it that…")
+    r"អត់" + _NOT_IN_WORD_AFTER + r"\s*\??", r"ទេ" + _NOT_IN_WORD_AFTER + r"\s*\??", r"ដែរ" + _NOT_IN_WORD_AFTER + r"\s*\??",
+    r"ផង" + _NOT_IN_WORD_AFTER + r"\s*\??",
+    r"ណាខ្លះ\s*\??", r"ខ្លះ\s*\??", r"មួយណា\s*\??", r"នៅឯណា\s*\??", r"ឯណា\s*\??",
     r"ណា(?=[^ក-៿]|$)", r"មួយ(?=[^ក-៿]|$)",
     r"\b(?:is|are)\s+there\s+any\b", r"\bwhere\s+(?:can\s+i|to)\s+(?:find|get|eat)\b",
     r"\blooking\s+for\b", r"\bi\s*(?:want|wanna|would\s+like|'?\s*d\s+like)\b(?:\s+(?:to\s+)?(?:eat|have|try)\b)?",
@@ -724,7 +738,7 @@ CONVERSATIONAL_STOP_PATTERNS = [
     r"\b(?:do|did)\s+(?:you|u|ya)\s+know(?:\s+(?:about|of))?\b", r"\bhave\s+you\s+heard\s+of\b",
     r"\b(?:this|that)\s+(?=(?:restaurant|resturant|restuarant|place|shop|store|cafe)\b)",
     r"\bor\s+(?:a\s+)?store\b",
-    r"\b(?:please|any)\b",
+    r"\b(?:please|any|something|anything)\b",              # "something khmer" -> "khmer"
 ]
 
 
@@ -821,7 +835,7 @@ def parse_query_filters(query):
         q = NEAR_ME_RE.sub(" ", q)
 
     # 2. Price
-    m = PRICE_RE.search(q)
+    m = next((x for x in PRICE_RE.finditer(q) if x.group(0).replace(" ", "") != "<3"), None)   # "pizza <3": a heart
     if m:
         amount = float(m.group(1))
         unit = m.group(2) or "$"
@@ -1069,40 +1083,25 @@ def rerank_head(text, out, n) -> pd.DataFrame:
     return pd.concat([head.iloc[np.argsort(-np.asarray(scores), kind="stable")], out.iloc[n:]])
 
 
-def hybrid_search(query, k=TOP_K, user_loc=None, weight=None, filters=None,
-                  use_query_filters=True, now=None) -> pd.DataFrame:
-    """BM25 + embeddings + rating + distance, after filters. user_loc = (lat, lng)."""
+def text_relevance(text, weight=None):
+    """How well each place matches one wording of the question: (score, match mask, method, typo-fixed text, bm25,
+    embedding). score = weight * embeddings + (1 - weight) * BM25 (both scaled 0..1) plus the menu floor;
+    match = the places that really match (a keyword hit, close in meaning, or the named dish, see below)."""
     weight = HYBRID_WEIGHT if weight is None else weight
-    text, parsed = parse_query_filters(query) if use_query_filters else (normalize_text(query), {})
-    flt = {**parsed, **(filters or {})}
-    out = df.copy()
-    fixed = fix_typos(text) if text else ""
-    if text:
-        search_text = expand_query(fixed)                # both halves search the corrected words ("carry" -> "curry")
-        bm, method = bm25_scores(search_text)
-        em = embedding_scores(search_text)
-    else:                                    # query was only conditions, e.g. "open now"
-        bm, em, method = np.zeros(len(df)), np.zeros(len(df)), "filters-only"
-    out["bm25"], out["embed"] = minmax(bm), minmax(em)
-    out["rating_boost"] = RATING_BOOST * out["rating"].fillna(0) / 5
-    out["distance_km"], out["distance"] = np.nan, 0.0
-    if user_loc:
-        out["distance_km"] = haversine_km(user_loc[0], user_loc[1], out["lat"], out["lng"])
-        out["distance"] = DISTANCE_WEIGHT / (1 + out["distance_km"].fillna(1e6))
-    out["home"] = 0.0
-    if not (flt.get("area") or flt.get("city") or user_loc):      # no place named: Phnom Penh first
-        out["home"] = HOME_CITY_BONUS * out["city"].eq(HOME_CITY)
-    out["final"] = (weight * out["embed"] + (1 - weight) * out["bm25"] + out["rating_boost"] + out["distance"]
-                    + out["home"])
+    fixed = fix_typos(text)
+    search_text = expand_query(fixed)                # both halves search the corrected words ("carry" -> "curry")
+    bm, method = bm25_scores(search_text)
+    em = embedding_scores(search_text)
+    bmn, emn = minmax(bm), minmax(em)
+    score = weight * emn + (1 - weight) * bmn
     # relevant = a real keyword match (not just a shared word piece: Khmer n-grams match almost every place) or close
     # in meaning. Measured: "kuy teav" -> 1,026 places, "lok lak" -> 104; bubble tea (0.035) no longer counts for kuy teav
-    match_mask = ((out["bm25"].to_numpy() >= MIN_BM25_SHARE) | (em >= MIN_EMBED_SIM)) if text else np.ones(len(out), dtype=bool)
-    keys = [k for k in dish_keys(text) if k not in BROAD_DISH_WORDS] if text else []    # "rice" is on every menu
+    match_mask = (bmn >= MIN_BM25_SHARE) | (em >= MIN_EMBED_SIM)
+    keys = [k for k in dish_keys(text) if k not in BROAD_DISH_WORDS]    # "rice" is on every menu
     if keys:
-        on_menu = out["menu_key"].map(lambda m: bool(m) and any(k in m for k in keys)).to_numpy()
-        text_score = weight * out["embed"] + (1 - weight) * out["bm25"]
+        on_menu = df["menu_key"].map(lambda m: bool(m) and any(k in m for k in keys)).to_numpy()
         menu_floor = weight + (1 - weight) * MIN_BM25_SHARE
-        out["final"] += np.where(on_menu, np.maximum(0, menu_floor - text_score), 0)
+        score = score + np.where(on_menu, np.maximum(0, menu_floor - score), 0)
         # The question is a known dish ("lok lak", "kuy teav", "piza" -> pizza, "បាយសាច់ជ្រូក"): a place must name it
         # (its name, Khmer name or another spelling, in the place's text or menu). Closeness in meaning and broad
         # related words ("beef" for lok lak, "pho" for kuy teav) still rank, but alone they are not a match. QA 10 Nov:
@@ -1112,19 +1111,87 @@ def hybrid_search(query, k=TOP_K, user_loc=None, weight=None, filters=None,
         own = set(dish_keys(text)[:2] + dish_keys(fixed)[:2])            # the question's own words, squeezed
         if own & DISH_TERMS:
             strict_keys = [k for k in dict.fromkeys(dish_keys(fixed) + keys) if k not in BROAD_DISH_WORDS]
-            names_it = out["doc_key"].map(lambda t: any(k in t for k in strict_keys)).to_numpy() | on_menu
+            names_it = df["doc_key"].map(lambda t: any(k in t for k in strict_keys)).to_numpy() | on_menu
             if names_it.any():
                 match_mask = names_it
+    return score, match_mask, method, fixed, bmn, emn
+
+
+def rrf_order(lists, weights, rows) -> np.ndarray:
+    """Reciprocal rank fusion of several score lists over the candidate rows (a boolean mask): each list ranks the
+    candidates, and a place scores sum(weight / (RRF_K + rank)). Returns the fused score (0 outside the candidates)."""
+    idx = np.flatnonzero(rows)
+    fused = np.zeros(len(rows))
+    for scores, w in zip(lists, weights):
+        order = idx[np.argsort(-scores[idx], kind="stable")]
+        fused[order] += w / (RRF_K + np.arange(1, len(order) + 1))
+    return fused
+
+
+def hybrid_search(query, k=TOP_K, user_loc=None, weight=None, filters=None,
+                  use_query_filters=True, now=None, variants=None, hyde=None) -> pd.DataFrame:
+    """BM25 + embeddings + rating + distance, after filters. user_loc = (lat, lng).
+    variants = other wordings of the same search, hyde = a made-up description of an ideal place (both written by the
+    AI, see llm.expand_search): each one ranks the matching places too, and the lists are merged with reciprocal rank
+    fusion (RAG-Fusion). The conditions (price, area, open now, near) always come from `query` itself, so another
+    wording cannot change them; the places that count as a match too, unless the question alone finds fewer than k."""
+    weight = HYBRID_WEIGHT if weight is None else weight
+    text, parsed = parse_query_filters(query) if use_query_filters else (normalize_text(query), {})
+    flt = {**parsed, **(filters or {})}
+    flt = {key: v for key, v in flt.items() if v is not None}      # filters={"open_now": None} drops a condition
+    out = df.copy()
+    if text:
+        score, match_mask, method, fixed, bmn, emn = text_relevance(text, weight)
+    else:                                    # query was only conditions, e.g. "open now"
+        score, match_mask, method = np.zeros(len(df)), np.ones(len(df), dtype=bool), "filters-only"
+        bmn = emn = np.zeros(len(df))
+    out["bm25"], out["embed"] = bmn, emn
+    out["rating_boost"] = RATING_BOOST * out["rating"].fillna(0) / 5
+    out["distance_km"], out["distance"] = np.nan, 0.0
+    if user_loc:
+        out["distance_km"] = haversine_km(user_loc[0], user_loc[1], out["lat"], out["lng"])
+        out["distance"] = DISTANCE_WEIGHT / (1 + out["distance_km"].fillna(1e6))
+    out["home"] = 0.0
+    if not (flt.get("area") or flt.get("city") or user_loc):      # no place named: Phnom Penh first
+        out["home"] = HOME_CITY_BONUS * out["city"].eq(HOME_CITY)
+    bonus = (out["rating_boost"] + out["distance"] + out["home"]).to_numpy()
+    out["final"] = score + bonus
+    # other wordings / HyDE (not for "near": those are sorted by distance; not for conditions alone)
+    lists, weights, used = [out["final"].to_numpy()], [FUSION_MAIN_WEIGHT], []
+    if text and not flt.get("near"):
+        alt_match = np.zeros(len(df), dtype=bool)
+        for v in dict.fromkeys(" ".join(str(v).split()) for v in (variants or []) if v and str(v).strip()):
+            v_text = parse_query_filters(v)[0] if use_query_filters else normalize_text(v)
+            if not v_text or v_text == text:
+                continue
+            v_score, v_match, *_ = text_relevance(v_text, weight)
+            lists.append(v_score + bonus)
+            weights.append(1.0)
+            alt_match |= v_match
+            used.append(v_text)
+        if hyde and str(hyde).strip():
+            lists.append(minmax(embedding_scores(normalize_text(hyde))) + bonus)
+            weights.append(1.0)
+            used.append("hyde")
+        if alt_match.any() and match_mask.sum() < k:   # the question alone finds too little: the wordings may add places
+            match_mask = match_mask | alt_match
     unverified = []
     keep = apply_filters(out, flt, now, match_mask, unverified)
     if text:                                   # never pad with places that do not match: none left (a dish we do not
         keep &= match_mask                     # have, "martian soup", or nothing "under $3") = an honest "no match"
+    fused = len(lists) > 1 and keep.any()
+    if fused:
+        out["fused"] = rrf_order(lists, weights, keep)
     out = out[keep].sort_values("final", ascending=False, kind="stable")
     if text and len(out):                      # the question names one place (or a chain): only that place
         named = named_place_mask(text, out["name"].head(1000).astype(str), query)
         if named.any():
             out = out.head(1000)[named]
             flt["named_place"] = True
+            fused = False                      # a name is found by its own words, not by other wordings
+    if fused:
+        out = out.sort_values("fused", ascending=False, kind="stable")
+        method += " + fusion(" + ", ".join(["query"] + used) + ")"
     if flt.get("near") and user_loc and len(out):      # "near me" / "near X": closest of the clearly relevant places first
         pool = out[out["final"] >= 0.7 * out["final"].iloc[0]].head(NEAR_POOL)
         out = pool.sort_values("distance_km", kind="stable")
@@ -1136,7 +1203,51 @@ def hybrid_search(query, k=TOP_K, user_loc=None, weight=None, filters=None,
         except Exception as e:                           # model missing or offline: keep the hybrid order
             log.warning("reranker failed (%s): continuing without it", e)
     out = out.head(k).reset_index(drop=True)
-    out.attrs.update(filters=flt, method=method, query_text=text, unverified=unverified)
+    out.attrs.update(filters=flt, method=method, query_text=text, unverified=unverified, fused=used if fused else [],
+                     n_match=int(match_mask.sum()) if text else None)
+    return out
+
+
+# A search that finds nothing is tried again before saying so (corrective retrieval). The conditions are dropped one
+# by one, the softest first: whether it is open now, then the price and the rating. Where it is (a khan or city the
+# user named) is never dropped: "lok lak in Toul Kork" with none there stays an honest "nothing in Toul Kork", whose
+# reply offers the search without the district (tests/test_chatbot.py::test_a_filter_never_leaves_places_without_the_dish).
+RELAX_ORDER = ["open_now", "open_late", "max_price", "min_rating"]
+
+
+def search_with_retry(query, k=TOP_K, user_loc=None, variants=None, hyde=None, now=None) -> pd.DataFrame:
+    """hybrid_search, and when it finds nothing:
+    1. the words matched no place at all ("noodle soup Khmer style" phrased oddly): another wording from the AI that
+       names a dish we know ("kuy teav") is searched with the same conditions (attrs["retried_with"]);
+    2. the words matched but the conditions left nothing ("kuy teav open now in Sen Sok" at 3 am): the conditions are
+       dropped one at a time in RELAX_ORDER until places are found (attrs["relaxed"] = the dropped ones).
+    A question nothing matches even then ("martian soup") stays an honest "no match"."""
+    out = hybrid_search(query, k, user_loc, variants=variants, hyde=hyde, now=now)
+    if len(out) or not out.attrs.get("query_text"):
+        return out
+    flt = dict(out.attrs.get("filters", {}))
+    if not out.attrs.get("n_match"):                     # 1. the words found nothing: another wording
+        for v in variants or []:
+            v_text = parse_query_filters(str(v))[0]
+            if not v_text or v_text == out.attrs["query_text"] or not set(dish_keys(v_text)[:3]) & DISH_TERMS:
+                continue
+            again = hybrid_search(v_text, k, user_loc, filters=flt, use_query_filters=True, now=now)
+            if len(again):
+                log.info("search_with_retry: no match -> another wording found %d places", len(again))
+                again.attrs.update(retried_with=v_text, asked_text=out.attrs["query_text"])
+                return again
+        return out
+    dropped = []                                         # 2. the conditions left nothing: drop them one by one
+    for key in RELAX_ORDER:
+        if flt.get(key) in (None, False):
+            continue
+        dropped.append(key)
+        again = hybrid_search(query, k, user_loc, filters={d: None for d in dropped}, variants=variants, hyde=hyde,
+                              now=now)
+        if len(again):
+            log.info("search_with_retry: nothing with %s -> dropped it", "+".join(dropped))
+            again.attrs["relaxed"] = {d: flt[d] for d in dropped}
+            return again
     return out
 
 

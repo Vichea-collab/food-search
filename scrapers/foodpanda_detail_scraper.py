@@ -32,6 +32,9 @@ SRC = ROOT / "data/scraped/foodpanda_places.csv"
 OUT = ROOT / "data/scraped/foodpanda_details.jsonl"
 HEADERS = {"User-Agent": "Mozilla/5.0 (food-search course project)", "Accept-Language": "en"}
 PAUSE_S = 8              # Foodpanda answers 403 when pages are fetched fast: one page every 8 s to start with
+CENTRAL = {"Daun Penh", "Boeung Keng Kang", "Chamkar Mon", "Prampir Makara", "Toul Kork"}
+DISTRICTS = CENTRAL | {"Sen Sok", "Mean Chey", "Russey Keo", "Chbar Ampov", "Dangkao", "Kamboul", "Chroy Changvar",
+                       "Pou Senchey", "Prek Pnov"}
 MAX_PAUSE_S = 45         # each 403 makes the pause 1.5x longer, up to this
 BACKOFF_S = 300          # after a 403 wait 5 minutes; each further 403 makes that wait 2x longer, up to MAX_BACKOFF_S
 MAX_BACKOFF_S = 1800     # (Foodpanda limits pages per hour: a short wait lets one page through and blocks again)
@@ -96,6 +99,8 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="stop after this many new pages (0 = all)")
     ap.add_argument("--city", default="", help='only this city, e.g. "Phnom Penh" (its districts count as the city)')
     ap.add_argument("--pause", type=float, default=PAUSE_S, help="seconds between pages to start with (grows after a 403)")
+    ap.add_argument("--central-first", action="store_true",
+                    help="central districts first (the 15 Nov 2026 slow run: ~20 pages an hour is all Foodpanda allows)")
     args = ap.parse_args()
     places = pd.read_csv(SRC, dtype=str, keep_default_na=False)
     if args.city:
@@ -110,6 +115,8 @@ def main():
                 pass
     # "-pandasend" listings are Foodpanda's parcel courier service, not places to eat: skipped
     todo = [r for r in places.itertuples() if r.id not in done and "pandasend" not in r.source_url.lower()]
+    if args.central_first:                                   # stable: the order inside a group does not change
+        todo.sort(key=lambda r: 0 if r.area in CENTRAL else 1 if r.area in DISTRICTS else 2)
     if args.limit:
         todo = todo[:args.limit]
     print(f"{len(done)} done, {len(todo)} to fetch")
@@ -140,7 +147,7 @@ def main():
                     if blocks >= MAX_BLOCKS:
                         print(f"Foodpanda refused {MAX_BLOCKS} times in a row (403). Stopping; run again later to resume.")
                         return
-                    pause = min(pause * 1.5, MAX_PAUSE_S)
+                    pause = min(pause * 1.5, max(MAX_PAUSE_S, args.pause))   # a slow run (--pause 200) must not speed up
                     print(f"  403 ({time.strftime('%H:%M')}, {n} new pages so far): waiting {backoff // 60} minutes, "
                           f"then one page every ~{pause:.0f} s; retrying this page", flush=True)
                     time.sleep(backoff)

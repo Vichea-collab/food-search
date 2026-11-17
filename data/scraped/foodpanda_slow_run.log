@@ -1,0 +1,16 @@
+728 done, 1839 to fetch
+[robots] https://www.foodpanda.com.kh: robots.txt read
+  1/1839 Hobe Food & Drink  (BKK III) - 24 items, rating None
+  2/1839 Kanazawa Japanese Restaurant (Riverside) - 189 items, rating None
+  3/1839 Tob Cafe (Chamkar Mon) - 13 items, rating None
+  fp-uq54: HTTPSConnectionPool(host='www.foodpanda.com.kh', port=443): Read timed out. (read timeout=30)
+  fp-uq54: HTTPSConnectionPool(host='www.foodpanda.com.kh', port=443): Read timed out. (read timeout=10)
+  fp-uq54: HTTPSConnectionPool(host='www.foodpanda.com.kh', port=443): Max retries exceeded with url: /en/restaurant/uq54/midam-bkk-uq54 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.foodpanda.com.kh', port=443) at 0x113ba1090>, 'Connection to www.foodpanda.com.kh timed out. (connect timeout=10)'))
+  fp-uq54: HTTPSConnectionPool(host='www.foodpanda.com.kh', port=443): Max retries exceeded with url: /en/restaurant/uq54/midam-bkk-uq54 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.foodpanda.com.kh', port=443) at 0x113ba0050>, 'Connection to www.foodpanda.com.kh timed out. (connect timeout=10)'))
+  fp-uq54: HTTPSConnectionPool(host='www.foodpanda.com.kh', port=443): Max retries exceeded with url: /en/restaurant/uq54/midam-bkk-uq54 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.foodpanda.com.kh', port=443) at 0x113ba1310>, 'Connection to www.foodpanda.com.kh timed out. (connect timeout=10)'))
+5 network errors in a row. Stopping; run again later to resume.
+773 done, 1794 to fetch
+[robots] https://www.foodpanda.com.kh: robots.txt could not be read (ReadTimeout): nothing is fetched from this site for now
+  fp-uq54: robots.txt does not allow https://www.foodpanda.com.kh/en/restaurant/uq54/midam-bkk-uq54
+  robots.txt unreadable: waiting 10 minutes; retrying this page
+[robots] https://www.foodpanda.com.kh: robots.txt read

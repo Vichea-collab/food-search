@@ -6,10 +6,15 @@ can look better or worse than it is).
   venv/bin/python scrapers/eval_run.py            # prints the tables, writes results/eval_results.csv,
                                                   # results/eval_by_kind.csv, results/eval_per_query.csv
   venv/bin/python scrapers/eval_run.py --rerank BAAI/bge-reranker-v2-m3   # adds a "Hybrid + reranker" row
+  venv/bin/python scrapers/eval_run.py --rerank BAAI/bge-reranker-v2-m3 --fusion
+                                                  # + multi-query, HyDE, both (RAG-Fusion), and the full live search
+                                                  # (the AI's wordings are saved in data/eval/expansions.json, so a
+                                                  # re-run gives the same numbers without AI calls)
   venv/bin/python scrapers/eval_run.py --queries data/eval/queries_human.csv --tag human
                                                   # the human-labelled set: writes results/eval_results_human.csv ...
 """
 import argparse
+import json
 import math
 import sys
 from pathlib import Path
@@ -40,6 +45,8 @@ def main():
     ap.add_argument("--queries", default=str(ROOT / "data/eval/queries.csv"))
     ap.add_argument("--tag", default="", help="suffix for the result files, e.g. human -> eval_results_human.csv")
     ap.add_argument("--rerank", default="", help="also score the hybrid with this cross-encoder, e.g. BAAI/bge-reranker-v2-m3")
+    ap.add_argument("--fusion", action="store_true", help="also score multi-query, HyDE and both (needs the AI once)")
+    ap.add_argument("--expansions", default=str(ROOT / "data/eval/expansions.json"))
     args = ap.parse_args()
     sfx = f"_{args.tag}" if args.tag else ""
     S.init()
@@ -72,6 +79,35 @@ def main():
             finally:
                 S.RERANK_MODEL = ""
         methods["Hybrid + reranker"] = reranked
+    if args.fusion:
+        from food_search import llm as L
+        path = Path(args.expansions)
+        saved = json.loads(path.read_text()) if path.exists() else {}
+        for text in q["query"]:
+            if text not in saved:
+                L.EXPANSIONS.pop(L.expansion_key(text), None)
+                saved[text] = L.expand_search(text) or {"variants": [], "hyde": ""}
+                path.write_text(json.dumps(saved, ensure_ascii=False, indent=1))
+        print(f"wordings: {sum(bool(v.get('variants')) for v in saved.values())} of {len(q)} questions")
+
+        def fused(t, use_variants, use_hyde, rerank=False, retry=False):
+            exp = saved.get(t) or {}
+            variants = exp.get("variants") if use_variants else None
+            hyde = exp.get("hyde") if use_hyde else None
+            S.RERANK_MODEL = args.rerank if rerank else ""
+            try:
+                fn = S.search_with_retry if retry else S.hybrid_search
+                return fn(t, K, landmark(t), variants=variants, hyde=hyde)["id"].tolist()
+            finally:
+                S.RERANK_MODEL = ""
+        methods["Hybrid + multi-query"] = lambda t: fused(t, True, False)
+        methods["Hybrid + HyDE"] = lambda t: fused(t, False, True)
+        methods["Hybrid + multi-query + HyDE"] = lambda t: fused(t, True, True)
+        if args.rerank:
+            methods["Hybrid + reranker + multi-query"] = lambda t: fused(t, True, False, True)
+            methods["Hybrid + reranker + HyDE"] = lambda t: fused(t, False, True, True)
+            methods["Hybrid + reranker + multi-query + HyDE"] = lambda t: fused(t, True, True, True)
+            methods["Live search (all + retry)"] = lambda t: fused(t, True, True, True, True)
     rows = []
     for name, fn in methods.items():
         for text, rel, kind in zip(q["query"], q["relevant"], q["kind"]):

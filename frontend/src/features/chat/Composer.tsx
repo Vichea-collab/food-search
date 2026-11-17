@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent,
+import { useEffect, useImperativeHandle, useRef, useState, type ClipboardEvent, type Ref, type FormEvent, type KeyboardEvent,
          type PointerEvent as ReactPointerEvent } from "react";
 import { Icon, type IconName } from "../../components/Icon";
 import { useI18n } from "../../i18n/I18nContext";
@@ -38,7 +38,11 @@ function shortModelName(label?: string | null): string {
  *  that waits in a preview until it is sent, with an optional question typed in the box ("where can I eat this?").
  *  "/" (the button, or typed first) opens the command menu: /correction, /new, /photo. While the bot waits for the
  *  right answer of a /correction, a bar above the box says so (the next message is that answer). */
+/** What the page can ask of the composer: put a photo (dropped anywhere on the chat) into its preview. */
+export type ComposerHandle = { attach: (file: File) => void };
+
 export function Composer({
+  ref,
   busy,
   photoSearch,
   voiceOn,
@@ -53,6 +57,7 @@ export function Composer({
   correcting,
   onCancelCorrection,
 }: {
+  ref?: Ref<ComposerHandle>;
   busy: boolean;
   photoSearch: boolean;
   /** speaking a question is on (the server has voice, and this browser can record) */
@@ -215,6 +220,8 @@ export function Composer({
     setPhoto({ file, url: URL.createObjectURL(file) });
     requestAnimationFrame(() => box.current?.focus());     // ready for an optional question
   };
+
+  useImperativeHandle(ref, () => ({ attach }));
 
   const submit = (e?: FormEvent) => {
     e?.preventDefault();

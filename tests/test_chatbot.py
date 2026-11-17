@@ -770,3 +770,179 @@ class TestAskNext:
         assert re.search(r"\d+ places", text) and "The closest is" in text and " away." in text, text
         k = chat("កាហ្វេ ជិតខ្ញុំ", location={"lat": 11.5564, "lng": 104.9282})
         assert re.search(r"\d+ កន្លែង", k["answer"] or "") and "ជិតបំផុតគឺ" in k["answer"], k["answer"]
+
+
+class TestQAFixes:
+    """QA fixes of 16 Nov: Khmer filler words, Khmer off-topic, "<3", courier listings, "what about X", "more"."""
+
+    @pytest.mark.parametrize("q,kept,gone", [
+        ("រាជធានីនៃប្រទេសបារាំងជាអ្វី?", "ប្រទេស", None),      # "ទេ" is part of ប្រទេស: it is not a filler here
+        ("ល្អិតល្អន់", "ល្អិត", None),
+        ("តើមានហាងគុយទាវទេ?", "គុយទាវ", "ទេ"),                 # but the particle at the end is still removed
+        ("មានគុយទាវអត់?", "គុយទាវ", "អត់"),
+        ("តើខ្ញុំអាចញ៉ាំគុយទាវនៅឯណា?", "គុយទាវ", "តើ"),
+    ])
+    def test_khmer_filler_is_removed_only_as_a_word(self, q, kept, gone):
+        from food_search.search import parse_query_filters
+        text, _ = parse_query_filters(q)
+        assert kept in text and (gone is None or gone not in text), text
+
+    @pytest.mark.parametrize("q", ["រាជធានីនៃប្រទេសបារាំងជាអ្វី?", "តើអាកាសធាតុថ្ងៃនេះយ៉ាងម៉េច?", "ជួយសរសេរកំណាព្យ"])
+    def test_khmer_off_topic_is_declined_not_searched(self, chat, q):
+        assert chat(q, **NO_AI)["kind"] == "chat"
+
+    @pytest.mark.parametrize("q", ["ហាងអាកាសធាតុ កាហ្វេ", "ម្ហូបបារាំងនៅទួលគោក"])
+    def test_khmer_food_questions_are_still_searched(self, chat, q):
+        assert chat(q, **NO_AI)["kind"] == "search"
+
+    def test_a_heart_is_not_a_price(self):
+        from food_search.search import parse_query_filters
+        assert "max_price" not in parse_query_filters("pizza & pasta <3")[1]
+        assert parse_query_filters("pizza under $3")[1]["max_price"] == 3
+        assert parse_query_filters("pizza <$4")[1]["max_price"] == 4
+
+    def test_parcel_courier_listings_are_not_places(self, chat):
+        """Foodpanda 'Pandasend' pages (a nail salon, a clothes store, ...) are not restaurants (QA B12)."""
+        from food_search import search
+        assert not search.df["source_url"].str.contains("pandasend", case=False).any()
+        d = chat("pizza near CADT", **NO_AI)
+        assert all("pandasend" not in (p.get("source_url") or "").lower() for p in d["results"])
+
+    def test_what_about_another_dish_is_a_search_in_the_same_area(self, conversation):
+        a = conversation(["kuy teav in Toul Kork", "what about pizza instead?"], model="none")
+        assert a[1]["kind"] == "search" and re.search(r"pizza", names(a[1])), a[1]["kind"]
+        assert a[1]["filters"].get("area") == "Toul Kork"
+
+    def test_instead_after_a_dish_is_still_a_recipe_question(self, conversation):
+        a = conversation(["how do I make lok lak?", "can I use chicken instead?"], model="none")
+        assert a[1]["kind"] == "recipe"
+
+    @pytest.mark.parametrize("q", ["more", "continue", "next", "show me more places", "any more?", "keep going",
+                                   "បន្ថែម", "បន្តទៀត", "បង្ហាញបន្ថែម", "មានទៀតទេ?"])
+    def test_more_is_recognised(self, q):
+        from food_search.llm import is_more_request
+        assert is_more_request(q)
+
+    @pytest.mark.parametrize("q", ["more coffee shops", "next to CADT", "coffee", "another coffee in BKK1", "first one",
+                                   "what is more popular"])
+    def test_more_does_not_catch_real_searches(self, q):
+        from food_search.llm import is_more_request
+        assert not is_more_request(q)
+
+    def test_more_before_any_search_asks_what_to_look_for(self, chat):
+        d = chat("continue", **NO_AI)
+        assert d["kind"] == "chat" and not d["results"] and "kuy teav" in d["answer"]
+        assert chat("បន្ថែម", **NO_AI)["lang"] == "kh"
+
+    def test_more_returns_the_places_not_shown_yet(self, chat):
+        first = chat("kuy teav in Toul Kork", **NO_AI)
+        shown = [p["id"] for p in first["results"][:10]]
+        d = chat("more", **NO_AI, context_ids=shown, last_query="kuy teav in Toul Kork")
+        assert d["kind"] == "search" and d["results"] and not {p["id"] for p in d["results"]} & set(shown)
+        assert d["numbers"][0] == 11, d["numbers"]
+
+    def test_more_when_everything_was_shown_says_so(self, chat):
+        first = chat("kuy teav in Toul Kork", **NO_AI)
+        d = chat("next", **NO_AI, context_ids=[p["id"] for p in first["results"]], last_query="kuy teav in Toul Kork")
+        assert d["kind"] == "chat" and not d["results"] and "everything I found" in d["answer"]
+
+
+class TestNoRepeats:
+    """No answer repeats what the user already sees (16 Nov): the list again under a recommendation, one link on 10
+    lines, the 10 names again for "any menus?", a "closest first" that the cards do not follow."""
+
+    def test_cards_follow_only_the_places_the_answer_names(self):
+        from food_search.llm import numbers_named
+        rows = [type("R", (), {"name": n})() for n in ("Costa", "Kuyteav Chef", "Brown Coffee", "Pizza Hut")]
+        assert numbers_named("Try 2. Kuyteav Chef: it is the closest (2.9 km).", [1, 2, 3, 4], rows) == [2]
+        assert numbers_named("Brown Coffee and Costa both deliver.", [1, 2, 3, 4], rows) == [1, 3]
+        assert numbers_named("We have no reviews for these places.", [1, 2, 3, 4], rows) == []
+        assert numbers_named("It opens 10:00–19:00 and costs $3.00.", [1, 2, 3, 4], rows) == []   # not "3. "
+
+    def test_any_menus_says_which_have_one_not_all_the_names(self, conversation):
+        a = conversation(["pizza in BKK1", "do any of them have a menu?"], model="none")
+        text = a[1]["answer"]
+        shown = [p["name"] for p in a[0]["results"][:10]]
+        assert sum(name in text for name in shown) < len(shown), text
+        assert re.search(r"of these \d+ places|Only 1 of these|Sorry, our data has no menu", text), text
+
+    def test_one_link_shared_by_branches_is_written_once(self, conversation):
+        a = conversation(["do you know Brown Coffee?", "can it deliver?"], model="none")
+        links = re.findall(r"\((https?://[^)]+)\)", a[1]["answer"])
+        assert len(links) == len(set(links)), a[1]["answer"]
+
+    def test_closest_first_only_when_the_cards_are_in_that_order(self, chat):
+        for q in ["kuy teav in Toul Kork", "ខ្ញុំចង់ញ៉ាំគុយទាវ", "coffee near me", "pizza near CADT"]:
+            d = chat(q, **NO_AI, location={"lat": 11.5564, "lng": 104.9282})
+            dist = [p["distance_km"] for p in d["results"] if p.get("distance_km") is not None]
+            if re.search(r"closest first|closest to .+ first|ជិតខ្ញុំមុន", d["answer"] or ""):
+                assert dist == sorted(dist), (q, d["answer"])
+
+    def test_something_is_not_part_of_the_dish(self):
+        from food_search.search import parse_query_filters
+        assert parse_query_filters("something khmer")[0] == "khmer"
+
+    @pytest.mark.network
+    @pytest.mark.parametrize("turns", [["kuy teav in Toul Kork", "recommend one"],
+                                       ["coffee in BKK1", "which is the best?"],
+                                       ["ខ្ញុំចង់ញ៉ាំគុយទាវ", "ណែនាំមួយ"]])
+    def test_a_recommendation_does_not_show_the_whole_list_again(self, conversation, turns):
+        a = conversation(turns)
+        assert a[1]["kind"] == "followup" and len(a[1]["results"]) <= 2, (a[1]["answer"], len(a[1]["results"]))
+
+    @pytest.mark.network
+    def test_the_same_question_twice_is_not_answered_word_for_word(self, conversation):
+        a = conversation(["kuy teav in Toul Kork", "recommend one", "which is the best?"])
+        assert a[1]["answer"].strip() != a[2]["answer"].strip(), a[2]["answer"]
+
+    @pytest.mark.network
+    def test_another_one_is_not_the_same_search_again(self, conversation):
+        a = conversation(["kuy teav in Toul Kork", "recommend one", "any other good one?"])
+        assert a[2]["kind"] == "followup" and len(a[2]["results"]) <= 2, (a[2]["kind"], a[2]["answer"])
+
+    @pytest.mark.parametrize("q", ["another one?", "any other good one?", "a different one", "another", "មួយទៀត?",
+                                   "ហាងផ្សេងទៀត", "ណែនាំមួយទៀត"])
+    def test_another_one_is_about_the_places_shown(self, q):
+        from food_search.llm import ANOTHER_RE, is_more_request
+        assert ANOTHER_RE.match(q) and not is_more_request(q)
+
+    @pytest.mark.parametrize("q", ["another coffee in BKK1", "other pizza places near me", "ភីហ្សាផ្សេងទៀត នៅទួលគោក"])
+    def test_another_with_a_dish_is_still_a_search(self, q):
+        from food_search.llm import ANOTHER_RE
+        assert not ANOTHER_RE.match(q)
+
+    @pytest.mark.network
+    def test_khmer_one_more_recommends_from_the_list(self, conversation):
+        a = conversation(["ខ្ញុំចង់ញ៉ាំគុយទាវ", "ណែនាំមួយ", "មួយទៀត?"])
+        assert a[2]["kind"] == "followup" and len(a[2]["results"]) <= 2, (a[2]["kind"], a[2]["answer"])
+        assert "Places shown" not in a[2]["answer"]
+
+    def test_what_was_said_about_the_current_list(self):
+        from food_search.llm import said_since_list
+        hist = [{"role": "user", "text": "kuy teav"},
+                {"role": "assistant", "text": "Here's what I found. Places shown: 1. A; 2. B; 3. C"},
+                {"role": "user", "text": "recommend one"},
+                {"role": "assistant", "text": "We have no reviews, but 2. B is the closest. Places shown: 1. B"},
+                {"role": "user", "text": "pizza"},
+                {"role": "assistant", "text": "Here's what I found. Places shown: 1. D; 2. E; 3. F"}]
+        assert said_since_list(hist) == []                       # a new list: nothing said about it yet
+        assert said_since_list(hist[:4]) == ["We have no reviews, but 2. B is the closest. "]
+
+    @pytest.mark.network
+    def test_no_reviews_is_said_once_and_the_first_pick_is_not_another(self, conversation):
+        a = conversation(["kuy teav in Toul Kork", "recommend one", "another one?", "a different one",
+                          "what about pizza instead?", "recommend one"])
+        said = [bool(re.search(r"no (reviews?|ratings?)", x["answer"] or "", re.I)) for x in a[1:4]]
+        assert sum(said) <= 1, [x["answer"] for x in a[1:4]]
+        assert not re.search(r"\banother\b", a[5]["answer"], re.I), a[5]["answer"]
+
+    def test_same_search_ignores_case_and_punctuation(self):
+        from food_search.llm import same_search
+        assert same_search("Kuy teav in Toul Kork?", "kuy teav in toul kork")
+        assert not same_search("kuy teav in Toul Kork", "kuy teav in BKK1")
+        assert not same_search("kuy teav open now", "kuy teav")
+
+    def test_a_link_every_place_shares_is_one_sentence(self, conversation):
+        a = conversation(["do you know Brown Coffee?", "can it deliver?"], model="none")
+        text = a[1]["answer"]
+        assert text.count("foodpanda.com.kh") <= len(set(re.findall(r"\((https?://[^)]+)\)", text))), text

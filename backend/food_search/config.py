@@ -63,6 +63,13 @@ EMBED_CANDIDATES = 5000   # places scored by embeddings per query: all of them f
 MIN_EMBED_SIM = 0.45      # no keyword hit and cosine below this = "not a match" (chosen for MiniLM)
 RERANK_MODEL = get_secret("RERANK_MODEL")   # cross-encoder that re-orders the best places, e.g. BAAI/bge-reranker-v2-m3 (2.2 GB); empty = off
 RERANK_TOP = 10           # how many of the best places the reranker puts in order (the rest keep their order)
+# Multi-query + HyDE (RAG-Fusion): the AI writes 2 other wordings of a search and a short made-up "ideal place" text;
+# each is searched and the lists are merged with reciprocal rank fusion. Measured in results/eval_results.csv.
+RAG_FUSION = get_secret("RAG_FUSION", "1") == "1"   # the other wordings; 0 = off
+RAG_HYDE = get_secret("RAG_HYDE", "1") == "1"       # the made-up place text; 0 = off
+RRF_K = 60                # reciprocal rank fusion: score = sum of 1 / (RRF_K + rank) over the lists (the usual 60)
+FUSION_MAIN_WEIGHT = 2.0  # the user's own wording counts this many times in the merge (the AI's wordings once each)
+EXPAND_TIMEOUT_S = 10     # one quick attempt for the wordings (Gemini's minimum); slow or busy = the plain search
 TYPO_CUTOFF = 75          # rapidfuzz score needed to auto-correct a query word
 FUZZY_MIN = 0.70          # minimum fuzzy score for the typo fallback
 CHEAP_MAX_USD = 3.0       # what "cheap" means

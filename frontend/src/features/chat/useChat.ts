@@ -1,7 +1,10 @@
 /** The conversation: messages, the bot's status, sending questions and photos, and the "near me" location step. */
 import { useCallback, useRef, useState, type MutableRefObject } from "react";
 import { api, ApiError, type Turn } from "../../lib/api";
+import { STRINGS, type StringKey } from "../../i18n/strings";
 import { withPlace } from "../../lib/format";
+import { isMoreRequest } from "../../lib/moreIntent";
+import { PLACE_PAGE } from "./PlaceCard";
 import { haptic } from "../../lib/telegram";
 import type { ChatResponse, Coords } from "../../lib/types";
 
@@ -29,7 +32,8 @@ export type Message =
   | { id: number; kind: "voice-choice"; text: string; at: Date }
   | { id: number; kind: "user-photo"; url: string; text?: string; at: Date }
   | { id: number; kind: "pending" }
-  | { id: number; kind: "reply"; data: ChatResponse; audio?: AudioState; at: Date }
+  /** shown: how many places of data.results are revealed ("Show more" adds 5); more than that is held back */
+  | { id: number; kind: "reply"; data: ChatResponse; audio?: AudioState; shown?: number; at: Date }
   | { id: number; kind: "error"; error: ApiError; retry?: () => void; at: Date };
 
 /** Which message the thread should scroll to: the end (while typing) or the start of a new reply. */
@@ -50,6 +54,10 @@ function summary(data: ChatResponse): string {
 }
 let lastId = 0;
 const nextId = () => ++lastId;
+
+/** A line of the UI in the language of what the user typed (an answer follows the question's language, not the app's). */
+const lineIn = (lang: "en" | "kh", key: StringKey, vars: Record<string, string | number>) =>
+  Object.entries(vars).reduce((s, [k, v]) => s.replaceAll(`{${k}}`, String(v)), String(STRINGS[lang][key]));
 const t_unclear = (lang: string) => (lang === "kh"
   ? "ខ្ញុំស្តាប់មិនបានទេ។ សូមព្យាយាមម្តងទៀត ឬវាយសំណួររបស់អ្នក។"
   : "I couldn’t hear that. Please try again, or type your question.");
@@ -80,6 +88,8 @@ export function useChat({
   const [location, setLocationState] = useState<Coords | null>(null);
   const [scroll, setScroll] = useState<ScrollRequest | null>(null);
   const busyRef = useRef(false);
+  const messagesRef = useRef<Message[]>([]);     // the latest list, for "more" typed in the box
+  messagesRef.current = messages;
   const locationRef = useRef<Coords | null>(null); // memory only: never written to storage
   // the conversation, sent with every question (memory only, cleared by "New chat")
   const historyRef = useRef<Turn[]>([]);
@@ -202,6 +212,45 @@ export function useChat({
     [askLocation, modelRef, rememberTurn, chatBody],
   );
 
+  /** A list shows `n` places now (the "Show more" button). */
+  const setShown = useCallback((id: number, n: number) =>
+    setMessages((list) => list.map((m) => (m.id === id && m.kind === "reply" ? { ...m, shown: n } : m))), []);
+
+  /** "more" / "continue" / "next" typed: the next places of the last list, as a new answer under the question (numbered
+   *  after the ones already shown; that list ends where this one starts). Nothing left: says so. No list yet: false (the
+   *  server answers: tell me what to look for first). */
+  const showMore = useCallback((query: string): boolean => {
+    const source = [...messagesRef.current].reverse().find(
+      (m): m is Extract<Message, { kind: "reply" }> =>
+        m.kind === "reply" && (m.data.kind === "search" || m.data.kind === "dish") && (m.data.results?.length ?? 0) > 0);
+    if (!source) return false;
+    const all = source.data.results ?? [];
+    const numbers = source.data.numbers ?? all.map((_, i) => i + 1);
+    const taken = Math.min(source.shown ?? PLACE_PAGE, all.length);
+    const lang: "en" | "kh" = /[\u1780-\u17ff]/.test(query) ? "kh" : "en";
+    const searched = lastQueryRef.current || source.data.search_query || source.data.query;
+    haptic("tap");
+    stopCorrecting();
+    const reply: ChatResponse = taken >= all.length
+      ? { kind: "chat", query, lang, provider: "facts", results: [], filters: {}, answer: lineIn(lang, "noMore", { q: searched }) }
+      : { kind: "search", query, lang, provider: "facts", filters: {}, suggestions: source.data.suggestions,
+          answer: lineIn(lang, "moreLead", { from: numbers[taken], to: numbers[Math.min(taken + PLACE_PAGE, all.length) - 1],
+                                              total: numbers[all.length - 1], q: searched }),
+          results: all.slice(taken), numbers: numbers.slice(taken) };
+    const id = nextId();
+    setMessages((list) => [
+      ...list.map((m) => (m.id === source.id && m.kind === "reply" && taken < all.length   // that list ends where the new one starts
+        ? { ...m, shown: taken, data: { ...m.data, results: all.slice(0, taken) } } : m)),
+      { id: nextId(), kind: "user-text", text: query, at: new Date() },
+      { id, kind: "reply", data: reply, at: new Date() },
+    ]);
+    setRecent((list) => [query, ...list.filter((q) => q !== query)].slice(0, RECENT_MAX));
+    historyRef.current = [...historyRef.current, { role: "user" as const, text: query },
+                          { role: "assistant" as const, text: summary(reply) }].slice(-HISTORY_MAX);
+    setScroll({ id, mode: "start" });
+    return true;
+  }, [stopCorrecting]);
+
   const send = useCallback(
     (text: string, isRetry = false, asCorrection = false, speak = false,
      ahead?: { first: Promise<ChatResponse>; audio?: Promise<string | null> }) => {
@@ -209,6 +258,7 @@ export function useChat({
       if (!query || busyRef.current) return;
       // the answer to "what is the right answer?": sent as "/correction <it>", shown as typed
       const correction = asCorrection || (awaitingRef.current && !query.startsWith("/"));
+      if (!isRetry && !correction && !asCorrection && isMoreRequest(query) && showMore(query)) return;
       stopCorrecting();
       haptic("tap");
       if (!isRetry) {
@@ -219,7 +269,7 @@ export function useChat({
       void run(() => ask(asked, correction ? undefined : ahead?.first), () => send(query, true, correction, speak), speak,
                ahead?.audio);
     },
-    [ask, run, stopCorrecting],
+    [ask, run, stopCorrecting, showMore],
   );
 
   /** A food photo, with an optional question. "… near me" without a location: the location sheet first, then the
@@ -357,6 +407,6 @@ export function useChat({
     });
   }, [stopCorrecting]);
 
-  return { messages, status, busy, recent, location, setLocation, send, sendPhoto, sendVoice, chooseVoice, pickDish, newChat, scroll,
+  return { messages, status, busy, recent, location, setLocation, send, sendPhoto, sendVoice, chooseVoice, pickDish, newChat, scroll, setShown,
            correcting, cancelCorrection: stopCorrecting };
 }
